@@ -1,0 +1,143 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #F1F5F9;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+header {
+  background-color: #1e3a8a;
+  color: white;
+  padding:20px;
+  font-size: 24px;
+  width: 100%;
+  text-align: center;
+}
+
+.menu{
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap:10px;
+  background-color: #e5e7eb;
+  padding: 15px;
+  width:100% ;
+}
+
+.menu button{
+  background-color: #09b6d4;
+  border: none;
+  padding: 10px 20px ;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: bacground-color o.3s;
+}
+
+menu button:hover{
+  background-color: #3b82f6;
+}
+
+.contenido{
+  width: 90%;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.formulario{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.formulario input,
+.formulario select{
+  padding: 10px;
+  border:1px solid #ccc;
+  border-radius: 5px;
+}
+
+.formulario button{
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor:pointer;
+}
+
+.tarjetas-usuarios{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 15px;
+}
+
+.tarjeta{
+  background-color: white;
+  padding: 15px;
+  border-radius:8px ;
+  box-shadow: o 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-usuarios{
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.tabla-usuarios th {
+  background-color: #E5E7EB;
+}
+
+.tabla-usuarios button {
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.estado-usuario {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border: 2px solid #06B6D4; 
+}
+
+.estado-usuario h2 {
+  color: #1E3A8A; 
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.estado-usuario ul {
+  padding-left: 2;
+}
+
+.estado-usuario li {
+  background-color: #E5E7EB; 
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  color: #1E3A8A;
+}

@@ -1,0 +1,63 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.calendario {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+  
+h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+  
+.dias-semana {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+  
+.dias-semana div {
+    width: 100px;
+    text-align: center;
+}
+  
+.cuadricula {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+  
+.cuadricula div {
+    width: 100px;
+    height: 100px;
+    background-color: #fff;
+    border: 2px solid #1E3A8A;
+    border-radius: 12px;
+    box-sizing: border-box;
+    padding: 5px;
+    text-align: left;
+    position: relative;
+}
+  
+.cuadricula div span {
+    font-weight: bold;
+}
+  
+.cuadricula div p {
+    font-size: 12px;
+    color: #333;
+    margin-top: 5px;
+}
+  
