@@ -1,61 +1,45 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calendario</title>
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
-<body>
-    <div class="calendario">
-        <section class="calendario">
-            <h2>Abril 2025</h2>
-            <div class="dias-semana">
-                <div>Lun</div>
-                <div>Mar</div>
-                <div>Mié</div>
-                <div>Jue</div>
-                <div>Vie</div>
-                <div>Sáb</div>
-                <div>Dom</div>
+<body> 
+  <div class="container"> <!-- Principal -->
+        <div class="calendar"> <!-- Calendario -->
+        <div class="month"> <!-- Encabezado -->
+            <i class="prev">&#10094;</i> <!-- Boton para mes ANTERIOR-->
+            <div class="date">
+            <h1></h1> <!-- Mes y año (Abril 2025) -->
+            <p></p> <!-- Fecha del día ACTUAL -->
             </div>
-            <div class="cuadricula">
-                <div></div>
-                <div></div>
-                <div><span>1</span></div>
-                <div><span>2</span></div>
-                <div><span>3</span><p>Contratar aprendiz</p></div>
-                <div><span>4</span></div>
-                <div><span>5</span></div>
-                <div><span>6</span></div>
-                <div><span>7</span></div>
-                <div><span>8</span></div>
-                <div><span>9</span></div>
-                <div><span>10</span></div>
-                <div><span>11</span><p>Reunión</p></div>
-                <div><span>12</span></div>
-                <div><span>13</span></div>
-                <div><span>14</span></div>
-                <div><span>15</span></div>
-                <div><span>16</span></div>
-                <div><span>17</span><p>Entrega de informe</p></div>
-                <div><span>18</span></div>
-                <div><span>19</span></div>
-                <div><span>20</span></div>
-                <div><span>21</span></div>
-                <div><span>22</span></div>
-                <div><span>23</span></div>
-                <div><span>24</span></div>
-                <div><span>25</span></div>
-                <div><span>26</span><p>Realizar nomina</p></div>
-                <div><span>27</span></div>
-                <div><span>28</span></div>
-                <div><span>29</span></div>
-                <div><span>30</span></div>
-                <div></div>
-                <div></div>
-                <div></div>
-            </div>
-        </section>
+            <i class="next">&#10095;</i> <!-- Boton para mes SIGUIENTE -->
+        </div>
+        <div class="weekdays"> <!-- nombre de los dias -->
+            <div>Dom</div>
+            <div>Lun</div>
+            <div>Mar</div>
+            <div>Mié</div>
+            <div>Jue</div>
+            <div>Vie</div>
+            <div>Sáb</div>
+        </div>
+        <div class="days"></div> <!-- Dias del mes -->
+        </div>
+  </div>
+
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Pendientes del <span id="selectedDate"></span></h2>
+      <ul id="taskList">
+        <li>No hay pendientes.</li>
+      </ul>
     </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
