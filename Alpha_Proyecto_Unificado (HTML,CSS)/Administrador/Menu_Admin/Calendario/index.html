@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body> 
+  <div class="container"> <!-- Principal -->
+        <div class="calendar"> <!-- Calendario -->
+        <div class="month"> <!-- Encabezado -->
+            <i class="prev">&#10094;</i> <!-- Boton para mes ANTERIOR-->
+            <div class="date">
+            <h1></h1> <!-- Mes y año (Abril 2025) -->
+            <p></p> <!-- Fecha del día ACTUAL -->
+            </div>
+            <i class="next">&#10095;</i> <!-- Boton para mes SIGUIENTE -->
+        </div>
+        <div class="weekdays"> <!-- nombre de los dias -->
+            <div>Dom</div>
+            <div>Lun</div>
+            <div>Mar</div>
+            <div>Mié</div>
+            <div>Jue</div>
+            <div>Vie</div>
+            <div>Sáb</div>
+        </div>
+        <div class="days"></div> <!-- Dias del mes -->
+        </div>
+  </div>
+
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Pendientes del <span id="selectedDate"></span></h2>
+      <ul id="taskList">
+        <li>No hay pendientes.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

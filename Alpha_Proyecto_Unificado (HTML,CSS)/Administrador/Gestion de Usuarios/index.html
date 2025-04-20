@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Usuarios</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    .oculto {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Gestión de Usuarios
+    <div class="logo"><img src="../" alt=""></div>
+        <div class="nombre"><h1>Dayana Machado</h1>
+        <h2 class="rol">Administrador</h2></div>
+        <div class="foto"><img src="./Img/Cecilia.jpg"></div>
+        <a href=""></a>
+  </header>
+
+  <div class="menu">
+    <button onclick="mostrarSeccion('crear')">Crear Usuario</button>
+    <button onclick="mostrarSeccion('consultar')">Consultar Usuario</button>
+    <button onclick="mostrarSeccion('eliminar')">Eliminar Usuario</button>
+    <button onclick="mostrarSeccion('roles')">Asignar Roles</button>
+    <button onclick="mostrarSeccion('contrasena')">Gestionar Contraseña</button>
+    <button onclick="mostrarSeccion('permisos')">Controlar Permisos</button>
+    <button onclick="mostrarSeccion('estado')">Ver Estado del Usuario</button>
+  </div>
+
+  <div class="contenido">
+    <!-- CREAR -->
+    <div id="crear" class="seccion">
+      <h2>Crear Usuario</h2>
+      <form class="formulario">
+        <input type="text" placeholder="Nombre Completo">
+        <input type="email" placeholder="Correo electrónico">
+        <input type="text" placeholder="Rol (ej: Administrador)">
+        <button type="submit">Registrar</button>
+      </form>
+    </div>
+
+    <!-- CONSULTAR -->
+    <div id="consultar" class="seccion oculto">
+      <h2>Consultar Usuario</h2>
+      <div class="tarjetas-usuarios">
+        <div class="tarjeta">
+          <h3>Dayana Machado</h3>
+          <p>Correo: dayana@example.com</p>
+          <p>Rol: Administradora</p>
+        </div>
+        <div class="tarjeta">
+          <h3>Danna Rodriguez</h3>
+          <p>Correo: danna@example.com</p>
+          <p>Rol: Coordinadora</p>
+        </div>
+        <div class="tarjeta">
+          <h3>Daniel Valbuena</h3>
+          <p>Correo: daniel@example.com</p>
+          <p>Rol: Colaborador</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ELIMINAR -->
+    <div id="eliminar" class="seccion oculto">
+      <h2>Eliminar Usuario</h2>
+      <table class="tabla-usuarios">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Dayana Machado</td>
+            <td>dayana@example.com</td>
+            <td><button>Eliminar</button></td>
+          </tr>
+          <tr>
+            <td>Danna Rodriguez</td>
+            <td>danna@example.com</td>
+            <td><button>Eliminar</button></td>
+          </tr>
+          <tr>
+            <td>Daniel Valbuena</td>
+            <td>daniel@example.com</td>
+            <td><button>Eliminar</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ROLES -->
+    <div id="roles" class="seccion oculto">
+      <h2>Asignar Rol a Usuario</h2>
+      <form class="formulario">
+        <select>
+          <option value="">Selecciona un usuario</option>
+          <option value="danna">Danna Rodriguez</option>
+          <option value="daniel">Daniel Valbuena</option>
+          <option value="dayana">Dayana Machado</option>
+        </select>
+        <input type="text" placeholder="Nuevo rol (ej: Líder del proyecto)">
+        <button type="submit">Asignar Rol</button>
+      </form>
+    </div>
+
+    <!-- CONTRASEÑA -->
+    <div id="contrasena" class="seccion oculto">
+      <h2>Gestionar Contraseña</h2>
+      <form class="formulario">
+        <select>
+          <option value="">Selecciona un usuario</option>
+          <option value="danna">Danna Rodriguez</option>
+          <option value="daniel">Daniel Valbuena</option>
+          <option value="dayana">Dayana Machado</option>
+        </select>
+        <input type="password" placeholder="Nueva contraseña">
+        <button type="submit">Actualizar Contraseña</button>
+      </form>
+    </div>
+
+    <!-- PERMISOS -->
+    <div id="permisos" class="seccion oculto">
+      <h2>Controlar Permisos</h2>
+      <form class="formulario">
+        <select>
+          <option value="">Selecciona un usuario</option>
+          <option value="danna">Danna Rodriguez</option>
+          <option value="daniel">Daniel Valbuena</option>
+          <option value="dayana">Dayana Machado</option>
+        </select>
+        <input type="text" placeholder="Permiso (ej: Editar contenido)">
+        <button type="submit">Asignar Permiso</button>
+      </form>
+    </div>
+
+    <!-- ESTADO -->
+    <div id="estado" class="seccion oculto estado-usuario">
+      <h2>Estado del Usuario</h2>
+      <ul>
+        <li>Dayana Machado - Estado: Activo</li>
+        <li>Danna Rodriguez - Estado: Inactivo</li>
+        <li>Daniel Valbuena - Estado: Activo</li>
+      </ul>
+    </div>
+    
+
+  <script>
+    function mostrarSeccion(id) {
+      const secciones = document.querySelectorAll('.seccion');
+      secciones.forEach(sec => sec.classList.add('oculto'));
+      document.getElementById(id).classList.remove('oculto');
+    }
+  </script>
+</body>
+</html>
+
+

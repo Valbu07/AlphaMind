@@ -1,0 +1,119 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+    font-size: 15px; 
+}
+
+body {
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+}
+  
+.container {
+    border-radius: 10px;
+    background: #fff;
+    padding: 30px;
+    max-width: 900px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+    font-size: 35px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: black;
+}
+
+
+form {
+    margin-bottom: 50px; 
+}
+  
+.form-group {
+    margin-bottom: 20px; 
+}
+  
+label {
+    display: block;
+    margin-bottom: 8px; 
+    font-size: 16px; 
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #a8cdff; 
+    font-size: 15px; 
+    box-sizing: border-box;
+}
+  
+textarea {
+    resize: vertical;
+}
+
+#prioridad {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 2px solid #a8cdff; /* Borde azul */
+    font-size: 15px; 
+    box-sizing: border-box;
+}
+  
+button {
+    padding: 14px 24px; 
+    border: none;
+    border-radius: 8px;
+    background-color: #3e74ff;
+    color: #fff;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+  
+button:hover {
+    background-color: #133fff;
+}
+
+
+/*Historial*/
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+  
+table th, table td {
+    padding: 15px; 
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.edit-btn, .delete-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Botón Editar */
+.edit-btn {
+    background-color: #3e74ff; 
+    color: #fff;
+}
+
+/* Botón Eliminar */
+.delete-btn {
+    background-color: #3e74ff;
+    color: #fff;
+}
+
