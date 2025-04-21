@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Usuarios</title>
   <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="../fontello.css">
   <style>
     .oculto {
       display: none;
@@ -12,9 +13,43 @@
   </style>
 </head>
 <body>
-  <header>
-    Gestión de Usuarios
+  <header class="header">
+    <div class="container">
+          <div class="btn-menu">
+            <label for="btn-menu" class="icon-menu btn-open">☰</label>
+          </div>
+          <div class="logo">
+              <img src="./img/yj7BIp2t_400x400-removebg-preview.png" alt="">
+          </div>
+    </div>
+  
+  
+    <div class="nombre-rol">
+      <h1>Dayana Machado</h1>
+      <h2 class="rol">Administrador</h2>
+    </div>
+  
+    <div class="foto">
+      <img src="./img/FotoPerfil.jpg" alt="">
+    </div>
   </header>
+
+  <div class="capa"></div>
+  
+  <input type="checkbox" id="btn-menu" />
+  <div class="container-menu">
+    <div class="cont-menu">
+      <nav>
+        <a href="../Gestion de Usuarios/index.html">Usuarios</a>
+        <a href="../Tareas/index.html">Tareas</a>
+        <a href="../CrearTareas/index.html">Crear tareas</a>
+        <a href="../Calendario/index.html">Calendario</a>
+        <a href="../Reportes-AlphaMind/Reportes.html">Reportes</a>
+        <a href="../Chat/index.html">Chat</a>
+      </nav>
+      <label for="btn-menu" class="icon-cancel btn-close">x</label>
+    </div>
+  </div>
 
   <div class="menu">
     <button onclick="mostrarSeccion('crear')">Crear Usuario</button>
@@ -145,7 +180,6 @@
         <li>Daniel Valbuena - Estado: Activo</li>
       </ul>
     </div>
-    
 
   <script>
     function mostrarSeccion(id) {
@@ -156,5 +190,3 @@
   </script>
 </body>
 </html>
-
-
