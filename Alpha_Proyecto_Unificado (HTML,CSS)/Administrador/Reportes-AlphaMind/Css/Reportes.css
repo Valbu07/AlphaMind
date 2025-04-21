@@ -81,11 +81,11 @@ header .foto img {
 }
 
 header .logo img{
-        position: absolute;
-        top: 40%;
-        left: 12%;
-        transform: translate(-50%, -50%);
-        width: 12%;
+  margin: 5px;
+  margin-top: 10px; /* Posición de CEDIPLUS IMG*/
+  width: 150px; 
+  height: auto;
+  display: block;
 }
 
 .contenedor{
