@@ -177,21 +177,21 @@ header .logo img{
     }
 
 
-.contenedor-principal{ 
-    position: absolute;
-    top: 50%;
-    left: 37%;
-    transform: translate(-50%, -50%);
-}
 
-  
+
+/*CALENDARIO*/    
+.contenedor-principal{ 
+  margin: 100px;
+  margin-left: 13%;
+}    
+
 .calendar {
     width: 800%;
     max-width: 1000px;
     background: #fff;
     padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 0 20px rgba(56, 4, 4, 0.1);
+    box-shadow: 0 0 20px rgba(56, 4, 4, 0.1); 
 }
   
 .month {
