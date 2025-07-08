@@ -9,7 +9,6 @@ select titulo, fecha_creacion
 from tarea
 where fecha_creacion < (select max(fecha_de_entrega) from entregable_tarea)and prioridad like 'Alta';
 
-
 -- Funcionarios que tengan el mismo cargo que Sebastian
 select primer_nombre, primer_apellido 
 from funcionario 
