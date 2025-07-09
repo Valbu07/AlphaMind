@@ -37,7 +37,38 @@ header h2{
   transform: translate(-50%, -50%);
 }
 
+#menu-cerrar {
+  display: none;
+  position: absolute;
+  top: 160%;
+  left: 95%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  background: #74abff;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 10px;
 
+}
+
+#menu-cerrar a {
+  display: block;
+  text-align: center;
+  padding: 6px 0;
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+#menu-cerrar a:hover {
+  background-color: #c8def1;
+}
+
+#cerrar-menu:checked ~ #menu-cerrar {
+  display: block;
+}
 
 header .foto img {
   position: absolute;

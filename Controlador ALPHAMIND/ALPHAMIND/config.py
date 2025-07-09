@@ -1,0 +1,1 @@
+#Aqui van las configuraciones importantes del proyecto ya sea la contraseña de la base de datos, la clave para las sesiones y todo lo que se necesita para que la aplicacion funciones correctamente 
