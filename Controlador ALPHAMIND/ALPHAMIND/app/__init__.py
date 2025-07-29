@@ -1,1 +1,0 @@
-# Aqui lo que hago es iniciar mi aplicacion Flask , este archivo le dice a python , ey, esto es una aplicacion Flask , y esta es la configuracion que voy a usar
