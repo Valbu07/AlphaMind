@@ -1,0 +1,287 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estilos del Header*/
+
+/* Iniciamos los estilos del boton y todo lo relacionado*/
+
+.boton-menu {
+  border: none ;
+  margin-top: -5px;
+  padding: 4px;
+  background-color: transparent !important;
+  color: transparent !important;
+  font-size: 23px !important;
+}
+
+.navbar {
+  background-color: #faca77 !important;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.nav-item {
+  display: flex ;
+  justify-content: space-between;
+  font-size: 18px;
+  transition: 0.3s;
+  z-index: 1000 !important;
+}
+
+.nav-item:hover {
+  background-color: #fce1ac;
+  border-radius: 5px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgb(210, 205, 238);
+
+}
+
+.offcanvas-start {
+  width: 20rem !important;
+  background-color: #fef2d6 !important;
+}
+
+
+.offcanvas-start {
+  transition: 0.5s !important;
+}
+
+/* Fin de los estilos del boton y todo lo relacionado*/
+
+/* Estilos De del logo*/
+
+.logo {
+  position: absolute;
+  top: 20%;
+  left: 6%;
+  transform: translateX(-50%, -50%);
+}
+
+
+@media (max-width: 900px) {
+  .logo {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    transform: translateX(-50%, -50%);
+  }
+}
+
+/* Fin de Estilos De del logo*/
+
+/*   Estilos De del foto-perfil*/
+.foto-perfil {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 1px;
+  right: 20px;
+  transform: translateX(50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+
+}
+
+.dropdown {
+  text-decoration: none;
+  background-color: transparent !important;
+  position: absolute;
+  top: 5px;
+  left: 100%;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 50px   !important;
+  right: 40px !important;
+  padding: 20px;
+  background-color: #fef2d6 ;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);   
+  color: #000;
+  border-radius: 10px;
+  gap: 10px;
+    
+}
+
+.nombre {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.dropdown-item {
+  gap: 10px;
+}
+
+.dropdown-item:hover {
+  background-color: #fce1ac;
+}
+
+/*  Fin de Estilos De  foto perfil*/
+
+/* Crear Tareas */
+.container {
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px ;
+  max-width: 900px;
+  margin: 30px auto;
+  margin-top: 90px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #333; 
+  text-align: center;
+}
+
+h2 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #333; 
+  text-align: center;
+}
+
+/* Formulario */
+form {
+  margin-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+}
+
+input[type="text"],
+input[type="date"],
+textarea,
+#prioridad {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #faca77; 
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Botones */
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #faca77;
+  color: #333;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #f7a840;
+}
+
+/* Botones secundarios */
+#cancelBtn {
+  background-color: #bdbdbd;
+}
+
+#cancelBtn:hover {
+  background-color: #999;
+}
+
+/* Historial de tareas */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table th {
+  background-color: #fccb75;
+  color: #333;
+  font-weight: bold;
+  padding: 15px;
+}
+
+table th, table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+/* Botones de tabla */
+.edit-btn, .delete-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.edit-btn {
+  background-color: #7597e5;
+  color: white;
+}
+
+.delete-btn {
+  background-color:#f7a840;
+  color: white;
+}
+
+/* Responsive (pantallas pequeñas) */
+@media (max-width: 768px) {
+  .container {
+    margin: 50px 20px;
+    padding: 20px;
+  }
+
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none;
+  }
+
+  td {
+    padding: 10px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    position: relative;
+    text-align: right;
+  }
+
+  td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 10px;
+    font-weight: bold;
+    text-align: left;
+  }
+}
+

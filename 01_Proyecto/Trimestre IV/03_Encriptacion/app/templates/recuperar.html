@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/recuperar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+</head>
+
+<body>
+    <div class="header">
+        <img src="./Recursos/Diseño sin título.svg" alt="" class="logo">
+    </div>
+    <hr>
+    <div class="container">
+        <div class="row ">
+            <div class="col-12">
+                <div class="Validacion">
+                    <div class="icono">
+                        <i class="bi bi-person-fill-lock"></i>
+                    </div>
+                    <form>
+                        
+                        <h3>¿Tienes problemas para iniciar sesión?</h3>
+                        <p>Ingresa tu correo electrónico, teléfono o nombre de usuario</p>
+                            <hr> <p>y te enviaremos un enlace para que recuperes el acceso a tu cuenta.</p>
+                        <div class="input-group has-validation">
+                            <span class="input-group-text"><i class="bi bi-badge-cc-fill"></i></i></span>
+                            <div class="form-floating is-invalid">
+                                <input type="text" class="form-control " id="floatingInputGroup2" placeholder="Username"
+                                    required>
+                                <label for="floatingInputGroup2">Documento</label>
+                            </div>
+                        </div>
+                        <div class="boton">
+                                 <button type="button" class="btn btn-primary"><a href="{{ url_for('login') }}">Enviar</a></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

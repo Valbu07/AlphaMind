@@ -1,0 +1,336 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #F1F5F9;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
+
+header{
+  background-color: white;
+  width: 100%;
+  height: 80px;
+  color: black;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0 2px 60px rgba(0, 0, 0, 0.1);
+  text-align: end;
+}
+
+
+header h1{
+    font-size: 20px;
+    position: absolute;
+    top: 30%;
+    left: 87.5%;
+    transform: translate(-50%, -50%);
+}
+
+
+header h2{
+  font-size: 12px;
+  color: #62cb42;
+  position: absolute;
+  top: 60%;
+  left: 87.5%;
+  transform: translate(-50%, -50%);
+}
+
+
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 5px; 
+  padding: 0 20px;
+}
+  
+
+.container .btn-menu,
+.logo {
+  float: left;
+  line-height: 70px;
+}
+
+.container .btn-menu label {
+  color: black;
+  font-size: 30px;
+  cursor: pointer;
+
+}
+
+.logo img {
+  margin: 5px;
+  margin-top: -5px; /* Posición de CEDIPLUS IMG*/
+  width: 150px; 
+  height: auto;
+  display: block;
+}
+
+
+
+header .foto img {
+  position: absolute;
+  top: 50%;
+  left: 90%;
+  transform: translate(50px, -50%);
+  width: 5%;
+  height: 94%;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+#menu-cerrar {
+  display: none;
+  position: absolute;
+  top: 160%;
+  left: 95%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  background: #74abff;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 10px;
+
+}
+
+#menu-cerrar a {
+  display: block;
+  text-align: center;
+  padding: 6px 0;
+  text-decoration: none;
+  color: black;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  border-radius: 5px;
+}
+
+#menu-cerrar a:hover {
+  background-color: #c8def1;
+}
+
+#cerrar-menu:checked ~ #menu-cerrar {
+  display: block;
+}
+
+
+
+
+
+
+
+
+  /*Menù lateral*/
+#btn-menu {
+  display: none;
+}
+
+.container-menu {
+  position: absolute;
+  background: #e4f1ffc2;
+  width: 100%;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  transition: all 500ms ease;
+  opacity: 0;
+  visibility: hidden;
+}
+
+#btn-menu:checked ~ .container-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cont-menu {
+  width: 100%;
+  max-width: 250px;
+  background: #74abff;
+  height: 100vh;
+  position: relative;
+  transition: all 500ms ease;
+  transform: translateX(-100%);
+  
+}
+
+#btn-menu:checked ~ .container-menu .cont-menu {
+  transform: translateX(0%);
+}
+
+.cont-menu nav {
+  transform: translateY(15%);
+}
+
+.cont-menu nav a {
+  display: block;
+  text-decoration: none;
+  padding: 20px;
+  color: rgb(0, 0, 0);
+  transition: all 400ms ease;
+  font-size: 19px;
+}
+
+.cont-menu nav a:hover {
+  background: #a8cdff;
+}
+
+.cont-menu label {
+  position: absolute;
+  right: 5px;
+  top: 10px;
+  color: #000000;
+  cursor: pointer;
+  font-size: 22px;
+}
+/*Fin de Menù lateral*/
+  
+
+.menu{
+  display:flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 5.5%;
+  gap:10px;
+  padding: 20px;
+  width:100% ;
+  background-color: #e5e7eb;
+
+}
+
+.menu button{
+  background-color: #09b6d4;
+  border: none;
+  padding: 10px 20px ;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.menu button:hover{
+  background-color: #18181a;
+}
+
+.contenido{
+  width: 90%;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.formulario{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.formulario input,
+.formulario select{
+  padding: 10px;
+  border:1px solid #ccc;
+  border-radius: 5px;
+}
+
+.formulario button{
+  background-color: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor:pointer;
+}
+
+.tarjetas-usuarios{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 15px;
+}
+
+.tarjeta{
+  background-color: white;
+  padding: 15px;
+  border-radius:8px ;
+  box-shadow: o 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-usuarios{
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.tabla-usuarios th {
+  background-color: #E5E7EB;
+}
+
+.tabla-usuarios button {
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
+.estado-usuario {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border: 2px solid #06B6D4; 
+}
+
+.estado-usuario h2 {
+  color: #1E3A8A; 
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.estado-usuario ul {
+  padding-left: 2;
+}
+
+.estado-usuario li {
+  background-color: #E5E7EB; 
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  color: #1E3A8A;
+}
+
+.menu-boton {
+  font-size: 28px;
+  cursor: pointer;
+  padding: 10px;
+  display: none; /* Oculto por defecto */
+  position: fixed;
+  top: 30px;
+  left: 30px;
+  background-color: #06B6D4;
+  color: white;
+  border-radius: 5px;
+  z-index: 1100;
+}
