@@ -1,1 +1,0 @@
-# Este archivo es como el boton de inicio de mi aplicacion , aqui es donde se ejecuta todo lo que he escrito en los otros archivos , y es el punto de entrada a mi aplicacion
