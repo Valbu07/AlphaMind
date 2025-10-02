@@ -1,0 +1,121 @@
+.navbar-toggler {
+  border: none !important;
+  background-color: transparent !important;
+  color: transparent !important;
+  font-size: 23px;
+}
+
+.navbar {
+  background-color: #faca77 !important;
+  padding: 15px !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/*container-fluid*/
+
+.nav-item {
+  display: flex;
+  padding: 5px 15px;
+  justify-content: space-between;
+  font-size: 20px;
+  transition: 0.3s;
+  z-index: 1000 !important;
+}
+
+.link-text {
+  margin-left: 20px;
+}
+
+.nav-item:hover {
+  background-color: #fce1ac;
+  border-radius: 5px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgb(210, 205, 238);
+
+}
+
+.offcanvas-start {
+  width: 20rem !important;
+  background-color: #fef2d6 !important;
+}
+
+.offcanvas-start {
+  transition: 0.5s !important;
+}
+
+/* Estilos De del logo*/
+.logoCediplus {
+  position: absolute;
+  top: 20%;
+  left: 6%;
+  transform: translate(5%, -15%);
+  width: 210px;
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  .logoCediplus {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    transform: translate(5%, -15%);
+  }
+}
+
+/*   Estilos De del foto-perfil*/
+.foto-perfil {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 1px;
+  right: 20px;
+  transform: translateX(50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+
+}
+
+.dropdown {
+  text-decoration: none;
+  background-color: transparent ;
+  position: absolute !important;
+  top: 8px;
+  left: 100%;
+}
+
+
+.dropdown-menu {
+  position: absolute !important;
+  top: 50px   !important;
+  right: 40px !important;
+  padding: 20px !important;
+  background-color: #fef2d6 !important;
+  border: none !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);   
+  color: #000;
+  border-radius: 10px !important;
+  gap: 10px;
+    
+}
+
+.nombre {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.dropdown-item {
+  gap: 10px;
+  align-items: center;
+  border-radius: 4px !important;
+}
+
+.dropdown-item:hover {
+  background-color: #fce1ac !important;
+}
+
+/*  Fin de Estilos De  foto perfil*/
+
+

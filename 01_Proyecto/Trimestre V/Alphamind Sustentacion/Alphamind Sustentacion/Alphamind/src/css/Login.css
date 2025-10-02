@@ -1,0 +1,164 @@
+* {
+  box-sizing: border-box; 
+
+}
+
+hr {
+  color: #160468;
+
+}
+
+.login-page {
+  
+  background-color: #a59f9f27;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo {
+  width: 20em;
+  margin-top: -30px;
+}
+
+.bi-person-circle,
+.bi-key-fill {
+  font-size: 1.8rem;
+  color: #fc9222;
+}
+
+.form-control {
+  transition: 0.5s;
+  border: #374e9f solid 1px;
+}
+
+.form-control:focus {
+  box-shadow: 0px 0px 4px #374e9f;
+}
+
+.container-login {
+  margin-top: 2em;
+  display: flex;
+}
+
+.col-12,
+.col-md-6 {
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  margin-top: 5em;
+}
+
+.login-page .has-validation {
+  width: 30em;
+  margin-bottom: 10px;
+}
+
+.footer-formulario {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn-primary {
+  justify-content: center;
+  color: black;
+  background-color: #fc9222;
+  border: #faca77 solid 2px;
+  transition: 0.3s;
+  margin-top: 1em;
+  width: 15em;
+}
+
+.btn-primary:hover {
+  background-color: #ffcb71;
+  border: #ffffff88 solid 1px;
+  box-shadow: 0 2px 10px #faca77;
+  font-weight: bold;
+  color: #0d0d0eb9;
+}
+
+.contraseña-login {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #374e9f;
+  font-weight: bold;
+}
+
+.ingresar-login {
+  text-decoration: none;
+  color: #000000;
+  font-weight: bold;
+}
+
+label {
+  transition: 0.1s !important;
+}
+
+.carousel-inner {
+  max-width: 100%;
+  height: 100%;
+  transition: 1s;
+}
+
+.carousel-item {
+  object-fit: cover;
+  max-height: 500px;
+  min-width: 526px;
+  transition: 1s;
+}
+
+.carousel-inner:hover {
+  box-shadow: 0 2px 15px black;
+}
+
+h2 {
+  text-align: center;
+  font-size: 44px;
+  color: #000000 !important;
+}
+
+/* Responsivo */
+@media (max-width: 1187px) {
+  .login-page .has-validation {
+    width: 28em;
+  }
+}
+
+@media (max-width: 992px) {
+  .login-page .logo {
+    width: 18em;
+    margin-left: 5em;
+  }
+  .login-page .has-validation {
+    width: 18em;
+  }
+  .login-page h2 {
+    font-size: 2em;
+  }
+}
+
+@media (max-width: 769px) {
+  .login-page .carousel-inner {
+    display: none;
+  }
+  .login-page .col-12,
+  .login-page .col-md-6 {
+    margin-top: 2em;
+    margin-left: 5em;
+  }
+}
+
+@media (max-width: 531px) {
+  .login-page .col-12,
+  .login-page .col-md-6 {
+    margin-top: 8em;
+    margin-left: 1em;
+  }
+}

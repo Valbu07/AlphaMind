@@ -1,0 +1,179 @@
+/* Botones principales */
+.botones-principales {
+  padding: 10px;
+  margin-bottom: 15px !important;
+  display: flex;            
+  justify-content: center;  
+          
+  gap: 110px;                
+}
+
+.botones-principales button {
+  padding: 13px 28px;   
+  font-size: 22px;    
+  font-weight: bold;    
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background-color: #faca77;
+}
+
+.botones-principales button:hover {
+  background-color: #f7a840;
+}
+
+/* Contenedor de Crear Actividades */
+.contenedor-CA {
+  box-shadow: 0 0 20px rgba(56, 4, 4, 0.1); 
+  margin: auto;
+  gap: 20px;
+  display: block;
+  margin-bottom: 20px !important;
+  border: 1px solid #faca77;
+  padding: 24px;
+  border-radius: 12px;
+  border-color: #faca77;
+}
+
+.contenedor-CA h1 {
+  font-size: 27px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Formulario */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px; 
+}
+
+/* Inputs, selects, textarea */
+.form .form-control,
+.form input[type="text"],
+.form input[type="date"],
+.form textarea,
+.form select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #faca77;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Subtareas */
+.subTarea button {
+  width: 100%; 
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #faca77;
+  color: #333;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+
+.subTarea button:hover {
+  background-color: #f7a840;
+}
+
+.subtarea-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subtarea-container .subtarea-input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #faca77;
+  font-size: 15px;
+}
+
+.subtarea-container .btn-icon {
+  background: #faca77;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subtarea-container .btn-icon:hover {
+  background-color: #f7a840;
+}
+
+/* Contenedor de los botones finales */
+.botones-finales {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px; 
+  margin-top: 15px;
+}
+
+.botones-finales button {
+  flex: 1; 
+  max-width: 200px; 
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Cancelar */
+.botones-finales .boton-cancelar button {
+  background-color: #a2bbee;
+  color: #333;
+}
+
+.botones-finales .boton-cancelar button:hover {
+  background-color: #7597e5;
+}
+
+/* Asignar */
+.botones-finales .boton-asignar button {
+  background-color: #faca77;
+  color: #333;
+}
+
+.botones-finales .boton-asignar button:hover {
+  background-color: #f7a840;
+}
+
+/*Contenedor de Actividades asignadas*/
+.contenedor-AA {
+  box-shadow: 0 0 20px rgba(56, 4, 4, 0.1); 
+  margin: auto;
+  gap: 20px;
+  display: block;
+  margin-bottom: 20px !important;
+  border: 1px solid #faca77;
+  padding: 24px;
+  border-radius: 12px;
+  border-color: #faca77;
+}
+
+.asignado{
+  font-size: 24px;
+  display: flex;
+  gap: 24px;
+  font-weight: bold;
+  color: #1f2937;
+}
