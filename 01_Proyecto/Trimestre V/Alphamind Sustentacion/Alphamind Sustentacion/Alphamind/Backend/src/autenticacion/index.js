@@ -1,0 +1,12 @@
+const config  = require('../config');
+const jwt = require('jsonwebtoken'); // Importamos la configuracion
+
+const secret = config.jwt.secret;
+
+function asignarToken(data){
+    return jwt.sign(data,secret)
+}
+
+module.exports={
+    asignarToken
+}
