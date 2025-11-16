@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const keys = require('../config').jwt;
+const keys = require('../config/config').jwt;
 
 
 function verificarToken(req, res, next) {

@@ -1,4 +1,4 @@
-const conexion = require("./mysql")
+const conexion = require('../config/db'); 
 
 
 function login(num_documento) {

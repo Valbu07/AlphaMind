@@ -1,4 +1,4 @@
-const db = require('../../DB/myqlTareas'); 
+const db = require('../models/tarea.model.js'); 
 const table = 'actividad';
 
 

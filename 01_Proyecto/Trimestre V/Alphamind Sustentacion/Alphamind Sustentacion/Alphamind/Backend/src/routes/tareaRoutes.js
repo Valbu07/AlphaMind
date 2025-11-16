@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const respuesta = require('../../red/respuestas');
-const controlador = require('./controlador');
+const controlador = require('../middlewares/authMiddleware');
+const respuesta = require("../utils/repuesta");
 
 router.get('/', async (req,res) => {
     try {

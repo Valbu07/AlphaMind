@@ -1,14 +1,15 @@
 const express = require('express');   // importamos express
-const config = require('./config');   // Importamos la configuracion
-const funcionarios = require('./modulos/funcionarios/rutas'); // Importamos las rutas de funcionarios
-const login =  require('./modulos/auth/authRutas');
-const tareas = require('./modulos/Tareas/rutas');
+const config = require('./config/config');   // Importamos la configuracion
+const funcionarios = require('./routes/funcionarioRoutes'); // Importamos las rutas de funcionarios
+const login =  require('./routes/authRoutes');
+const tareas = require('./routes/tareaRoutes');
 const cors = require ('cors')
+require('dotenv').config(); // Cargar variables de entorno
 
 const app = express(); // Creamos la app de express
 
 // Configuración del puerto
-app.set('port', config.app.port);
+app.set('port', config.app.port) || 3306;
 
 // Middlewares
 app.use(cors({
@@ -20,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Rutas
-app.use('/funcionarios', funcionarios); // El router de funcionarios
+app.use('/funcionarios' , funcionarios);
 app.use('/auth', login)
 app.use('/tareas', tareas)
 

@@ -1,7 +1,6 @@
-const db = require('../../DB/sqlLogin'); 
-const auth = require('../../autenticacion');
+const db = require('../models/auth.model'); 
+const auth = require('../utils/jwt');
 const bcrypt = require('bcryptjs');
-
 async function login(num_documento, contraseña, id_usuario, tipo_de_rol) {
   try {
     const data = await db.login(num_documento);

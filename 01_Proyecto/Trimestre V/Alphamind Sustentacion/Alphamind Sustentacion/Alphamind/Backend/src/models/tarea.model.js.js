@@ -1,5 +1,4 @@
-const conexion = require('../DB/mysql'); 
-const { error } = require('../red/respuestas');
+const conexion = require('../config/db'); 
 
 
 /*****************/// Buscar Todas las tareas //**************** */

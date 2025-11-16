@@ -1,4 +1,4 @@
-const db = require('../../DB/mysqlFuncionario'); 
+const db = require('../models/funcionario.model'); 
 const table = 'funcionario';
 const tableCargo = 'cargo'
 
@@ -17,7 +17,7 @@ function uno (num_documento) {
 }
 
 function eliminar (num_documento) {
-    return db.eliminar(table , num_documento);
+    return db.eliminar(num_documento);
 }
 
 function agregar (body) {
