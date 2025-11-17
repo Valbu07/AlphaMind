@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "../css/Actividades.css";
+import "./Actividades.css";
 
 export default function Actividades() {        
 

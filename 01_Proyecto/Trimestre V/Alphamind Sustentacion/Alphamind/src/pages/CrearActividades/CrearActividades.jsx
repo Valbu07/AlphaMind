@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsJournalPlus } from "react-icons/bs";
-import "../css/CrearActividades.css";
+import "./CrearActividades.css";
 
 export default function CrearActividades() {        
     const [vista, setVista] = useState("crear"); /*controla botones*/

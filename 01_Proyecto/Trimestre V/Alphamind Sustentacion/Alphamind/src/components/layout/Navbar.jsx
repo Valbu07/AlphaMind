@@ -1,6 +1,7 @@
-import logoCediplus from "../assets/Recursos/logoCediplus.svg";
-import persona from "../assets/Recursos/Foto.jpg";
-import "../css/Navbar.css"
+import logoCediplus from "../../assets/Recursos/logoCediplus.svg";
+import persona from "../../assets/Recursos/Foto.jpg";
+
+import "./Navbar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link } from "react-router-dom";
