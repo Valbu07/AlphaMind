@@ -27,9 +27,13 @@ const Usuarios = () => {
     contraseña: ""
   });
 
+  
+  const [modoEdicion, setModoEdicion] = useState(false); // Indica si se está en modo edición
+  const [usuarioEditando, setUsuarioEditando] = useState(null); //Almacena la cedula
+
   // Cargar usuarios automáticamente cuando cambia de sección
   useEffect(() => {
-    if (seccionActiva === "consultar" || seccionActiva === "eliminar") {
+    if (seccionActiva === "consultar" || seccionActiva === "eliminar" || seccionActiva === "editar") {
       cargarUsuarios();
     }
   }, [seccionActiva]);
@@ -38,6 +42,9 @@ const Usuarios = () => {
   const mostrarSeccion = (seccion) => {
     setSeccionActiva(seccion);
     setMensaje("");
+    // Limpiar 
+    setModoEdicion(false);
+    setUsuarioEditando(null);
   };
 
   // Cargar usuarios
@@ -61,11 +68,11 @@ const Usuarios = () => {
       console.error("Error al cargar usuarios:", error);
       
       if (error.response?.status === 401) {
-        setMensaje("Error: Sesión expirada. Por favor inicia sesión nuevamente.");
+        setMensaje(" Error: Sesión expirada. Por favor inicia sesión nuevamente.");
       } else if (error.response?.status === 403) {
         setMensaje(" Error: No tienes permisos para ver esta información.");
       } else {
-        setMensaje(" Error de conexión con el servidor.");
+        setMensaje("Error de conexión con el servidor.");
       }
     } finally {
       setLoading(false);
@@ -80,7 +87,47 @@ const Usuarios = () => {
     });
   };
 
-  // Crear usuario
+  // Manejar click en editar usuario
+  const handleEditarClick = (usuario) => {
+    setFormData({
+      tipo_documento: "",
+      num_documento: usuario.Num_Documento || usuario.num_documento,
+      primer_nombre: usuario.Primer_Nombre || usuario.primer_nombre,
+      segundo_nombre: usuario.Segundo_Nombre || usuario.segundo_nombre || "",
+      primer_apellido: usuario.Primer_Apellido || usuario.primer_apellido,
+      segundo_apellido: usuario.Segundo_Apellido || usuario.segundo_apellido || "",
+      correo_electronico: usuario.Correo_Electronico || usuario.correo_electronico,
+      numero_telefonico: usuario.Numero_telefonico || usuario.numero_telefonico,
+      tipo_de_rol: usuario.Tipo_de_Rol || usuario.tipo_de_rol || "",
+      contraseña: ""
+    });
+    
+    setUsuarioEditando(usuario.Num_Documento || usuario.num_documento);
+    setModoEdicion(true);
+    setSeccionActiva("crear");
+    setMensaje("");
+  };
+
+  // Cancelar edición 
+  const handleCancelarEdicion = () => {
+    setModoEdicion(false);
+    setUsuarioEditando(null);
+    setFormData({
+      tipo_documento: "",
+      num_documento: "",
+      primer_nombre: "",
+      segundo_nombre: "",
+      primer_apellido: "",
+      segundo_apellido: "",
+      correo_electronico: "",
+      numero_telefonico: "",
+      tipo_de_rol: "",
+      contraseña: ""
+    });
+    setMensaje("");
+  };
+
+  // Crear O Actualizar usuario
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -105,14 +152,22 @@ const Usuarios = () => {
         },
         usuario: {
           tipo_de_rol: formData.tipo_de_rol,
-          contraseña: formData.contraseña
+          ...(formData.contraseña && { contraseña: formData.contraseña })
         }
       };
 
-      const data = await funcionariosService.create(token, requestBody);
-      console.log("Respuesta del servidor:", data);
+      let data;
 
-      setMensaje(" Usuario creado exitosamente");
+
+      if (modoEdicion && usuarioEditando) {
+        data = await funcionariosService.update(token, usuarioEditando, requestBody);
+        setMensaje(" Usuario actualizado exitosamente");
+      } else {
+        data = await funcionariosService.create(token, requestBody);
+        setMensaje(" Usuario creado exitosamente");
+      }
+
+      console.log("Respuesta del servidor:", data);
 
       // Limpiar formulario
       setFormData({
@@ -127,18 +182,23 @@ const Usuarios = () => {
         tipo_de_rol: "",
         contraseña: ""
       });
+
+
+      setModoEdicion(false);
+      setUsuarioEditando(null);
       
       setTimeout(() => setMensaje(""), 3000);
       
     } catch (error) {
-      console.error("Error al crear usuario:", error);
+      console.error(`Error al ${modoEdicion ? 'actualizar' : 'crear'} usuario:`, error);
       
       if (error.response?.status === 401) {
         setMensaje(" Error: Sesión expirada. Por favor inicia sesión nuevamente.");
       } else if (error.response?.status === 403) {
-        setMensaje(" Error: No tienes permisos para crear usuarios.");
+        setMensaje(` Error: No tienes permisos para ${modoEdicion ? 'actualizar' : 'crear'} usuarios.`);
       } else {
-        const mensajeError = error.response?.data?.mensaje || error.response?.data?.message || "No se pudo crear el usuario";
+        const mensajeError = error.response?.data?.mensaje || error.response?.data?.message || 
+          `No se pudo ${modoEdicion ? 'actualizar' : 'crear'} el usuario`;
         setMensaje(` Error: ${mensajeError}`);
       }
     } finally {
@@ -176,7 +236,7 @@ const Usuarios = () => {
       if (error.response?.status === 401) {
         setMensaje(" Error: Sesión expirada. Por favor inicia sesión nuevamente.");
       } else if (error.response?.status === 403) {
-        setMensaje("Error: No tienes permisos para eliminar usuarios.");
+        setMensaje(" Error: No tienes permisos para eliminar usuarios.");
       } else {
         const mensajeError = error.response?.data?.mensaje || error.response?.data?.message || "No se pudo eliminar";
         setMensaje(` Error: ${mensajeError}`);
@@ -190,7 +250,7 @@ const Usuarios = () => {
     <>
       {/* Mensaje global */}
       {mensaje && (
-        <div className={`mensaje ? "exito" : "error"}`}>
+        <div className={`mensaje ${mensaje.includes('✅') ? "exito" : "error"}`}>
           {mensaje}
           <button 
             type="button" 
@@ -217,7 +277,7 @@ const Usuarios = () => {
             backgroundColor: seccionActiva === "crear" ? "#e67417" : "#faca77"
           }}
         >
-          Crear Usuario
+          {modoEdicion ? "Editando Usuario" : "Crear Usuario"}
         </button>
         <button 
           onClick={() => mostrarSeccion("consultar")}
@@ -226,6 +286,14 @@ const Usuarios = () => {
           }}
         >
           Consultar Usuarios
+        </button>
+        <button 
+          onClick={() => mostrarSeccion("editar")}
+          style={{
+            backgroundColor: seccionActiva === "editar" ? "#e67417" : "#faca77"
+          }}
+        >
+          Editar Usuario
         </button>
         <button 
           onClick={() => mostrarSeccion("eliminar")}
@@ -242,7 +310,7 @@ const Usuarios = () => {
         {/* Sección: Crear Usuario */}
         {seccionActiva === "crear" && (
           <div className="seccion">
-            <h2>Crear Usuario</h2>
+            <h2>{modoEdicion ? "Editar Usuario" : "Crear Usuario"}</h2>
             <form className="formulario" onSubmit={handleSubmit}>
               <select 
                 name="tipo_documento" 
@@ -262,7 +330,9 @@ const Usuarios = () => {
                 placeholder="Número de documento"
                 value={formData.num_documento}
                 onChange={handleChange}
+                readOnly={modoEdicion}
                 required
+                style={modoEdicion ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
               />
 
               <div className="fila">
@@ -334,10 +404,10 @@ const Usuarios = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   name="contraseña"
-                  placeholder="Contraseña"
+                  placeholder={modoEdicion ? "Nueva contraseña (dejar vacío para mantener actual)" : "Contraseña"}
                   value={formData.contraseña}
                   onChange={handleChange}
-                  required
+                  required={!modoEdicion}
                   minLength="6"
                 />
                 <span
@@ -349,8 +419,21 @@ const Usuarios = () => {
               </div>
 
               <button type="submit" disabled={loading}>
-                {loading ? "Registrando..." : "Registrar Usuario"}
+                {loading 
+                  ? (modoEdicion ? "Actualizando..." : "Registrando...") 
+                  : (modoEdicion ? "Actualizar Usuario" : "Registrar Usuario")
+                }
               </button>
+
+              {modoEdicion && (
+                <button 
+                  type="button" 
+                  onClick={handleCancelarEdicion}
+
+                >
+                  Cancelar Edición
+                </button>
+              )}
             </form>
           </div>
         )}
@@ -378,6 +461,57 @@ const Usuarios = () => {
                   <p style={{ textAlign: 'center', width: '100%' }}>No hay usuarios registrados</p>
                 )}
               </div>
+            )}
+          </div>
+        )}
+
+        {/*  Editar Usuario  */}
+        {seccionActiva === "editar" && (
+          <div className="seccion">
+            <h2>Editar Usuario</h2>
+            {loading ? (
+              <p style={{ textAlign: 'center' }}>Cargando usuarios...</p>
+            ) : (
+              <table className="tabla-usuarios">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Documento</th>
+                    <th>Correo</th>
+                    <th>Rol</th>
+                    <th>Acción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuarios.length > 0 ? (
+                    usuarios.map((usuario) => (
+                      <tr key={usuario.Num_Documento || usuario.num_documento}>
+                        <td>
+                          {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
+                        </td>
+                        <td>{usuario.Num_Documento || usuario.num_documento}</td>
+                        <td>{usuario.Correo_Electronico || usuario.correo_electronico}</td>
+                        <td>{usuario.Tipo_de_Rol || usuario.tipo_de_rol || 'N/A'}</td>
+                        <td>
+                          <button 
+                            onClick={() => handleEditarClick(usuario)}
+                            disabled={loading}
+                            style={{ backgroundColor: '#007bff' }}
+                          >
+                            Editar
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" style={{ textAlign: 'center' }}>
+                        No hay usuarios para editar
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             )}
           </div>
         )}
