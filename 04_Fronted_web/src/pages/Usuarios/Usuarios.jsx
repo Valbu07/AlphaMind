@@ -167,7 +167,6 @@ const Usuarios = () => {
         setMensaje(" Usuario creado exitosamente");
       }
 
-      console.log("Respuesta del servidor:", data);
 
       // Limpiar formulario
       setFormData({
