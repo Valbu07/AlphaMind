@@ -35,7 +35,7 @@ export const funcionariosService = {
 
   // Actualizar funcionario 
   update: async (token, num_documento, funcionarioData) => {
-    const { data } = await axios.put(`${API}/${num_documento}`, funcionarioData, {
+    const { data } = await axios.put(`${API}/actualizar/${num_documento}`, funcionarioData, {
       headers: getHeaders(token)
     });
     return data;

@@ -176,7 +176,7 @@ function actualizar(data) {
             const actualizarUsuario = () => {
               return new Promise((res, rej) => {
                 if (Object.keys(dataUsuario).length === 0) {
-                  console.log('⏭️ No hay cambios en Usuario, saltando...');
+                  console.log('⏭No hay cambios en Usuario, saltando...');
                   return res();
                 }
 
@@ -211,7 +211,7 @@ function actualizar(data) {
             const actualizarFuncionario = () => {
               return new Promise((res, rej) => {
                 if (Object.keys(dataFuncionario).length === 0) {
-                  console.log('⏭️ No hay cambios en Funcionario, saltando...');
+                  console.log('No hay cambios en Funcionario');
                   return res();
                 }
 
