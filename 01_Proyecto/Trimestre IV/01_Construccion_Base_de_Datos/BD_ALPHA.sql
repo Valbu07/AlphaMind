@@ -3,6 +3,7 @@
 CREATE DATABASE Alphamind;
 USE Alphamind;
 
+-- Usuarios
 -- Crear tabla usuario
 CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
@@ -101,7 +102,7 @@ create table asignacion_actividad (
   foreign key (Asignado_a_idUsuario) references usuario(id_usuario)
 );
 
-
+-- Crear tabla asignacion de actividad
 create table tarea (
   id_Tarea  int auto_increment primary key,
   tarea varchar(100),
@@ -109,4 +110,3 @@ create table tarea (
 
   foreign key (actividad_id_Actividad) references actividad(id_Actividad)
 );
-

@@ -1,0 +1,364 @@
+.menu {
+  display: flex;
+  justify-content: space-around !important;
+  margin: 0px auto !important;
+  margin-top: 5em !important;
+  padding: 20px !important;
+  width: 100% !important;
+  max-width: 100vw !important; 
+  border-color: rgb(46, 88, 143) rgb(247, 149, 57) rgb(231, 120, 15);
+  border-width: 1px 0px 1px;
+  border-style: solid;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important; 
+}
+
+.menu button {
+  width: 18em;
+  background-color: #faca77;
+  border: none;
+  padding: 12px 20px;
+  color: black;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+  white-space: nowrap;
+  font-size: 14px; 
+}
+
+.menu button:hover {
+  background-color: #e67417;
+  color: #F1F5F9;
+}
+
+.oculto {
+  display: none;
+}
+
+
+/*  mensajes*/
+
+.mensaje {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 18px 50px 18px 20px;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 9999;
+  animation: toastSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  max-width: 400px;
+  min-width: 280px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  text-align: left;
+}
+
+/* Mensaje de éxito  */
+.mensaje.exito {
+  background: rgba(212, 237, 218, 0.95);
+  color: #0f5132;
+  border-left: 5px solid #198754;
+}
+
+/* Mensaje de error  */
+.mensaje.error {
+  background: rgba(248, 215, 218, 0.95);
+  color: #58151c;
+  border-left: 5px solid #dc3545;
+}
+
+/* Animación entrada */
+@keyframes toastSlide {
+  from {
+    transform: translateX(450px) translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Botón de cerrar*/
+.mensaje button {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: inherit;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+  opacity: 0.5;
+  line-height: 1;
+  padding: 0;
+}
+
+.mensaje button:hover {
+  opacity: 1;
+}
+
+.mensaje:hover {
+  transform: scale(1.02);
+  transition: transform 0.2s;
+}
+
+/* Efecto de salida */
+.mensaje.fadeOut {
+  animation: fadeOutToast 0.3s ease-out forwards;
+}
+
+@keyframes fadeOutToast {
+  to {
+    transform: translateX(500px);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .mensaje {
+    right: 15px;
+    left: 15px;
+    max-width: calc(100% - 30px);
+    font-size: 14px;
+    padding: 16px 45px 16px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mensaje {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: calc(100% - 20px);
+    font-size: 13px;
+    padding: 14px 40px 14px 15px;
+    border-radius: 12px;
+  }
+  
+  .mensaje button {
+    width: 28px;
+    height: 28px;
+    font-size: 20px;
+  }
+  
+  @keyframes toastSlide {
+    from {
+      transform: translateY(-100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Fin de mensajes*/
+
+@media (max-width: 768px) {
+  .menu {
+    padding: 10px 15px;
+  }
+  
+  .menu button {
+    padding: 10px 15px;
+    font-size: 13px;
+    flex: 1 1 auto; 
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu button {
+    padding: 8px 12px;
+    font-size: 12px;
+    min-width: 120px;
+  }
+}
+
+
+.contenido {
+  width: 90%;
+  max-width: 700px; 
+  padding: 20px;
+  margin: 20px auto; 
+}
+
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 7px rgba(0, 0, 0, 0.15);
+}
+
+.formulario input,
+.formulario select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 0; 
+}
+
+.formulario button {
+  background-color: #e67417;
+  color: black;
+  border: 2px solid #faca77;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.formulario button:hover {
+  background-color: #faca77;
+}
+
+
+.fila {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0; 
+}   
+
+.fila input {
+  flex: 1;
+}
+
+
+.password-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 0; 
+}
+
+.password-container input {
+  width: 100%;
+  padding: 10px;
+  padding-right: 40px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.icono-ojo {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  font-size: 20px;
+}
+
+.tarjetas-usuarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+}
+
+.tarjeta {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tarjeta:hover {
+  background-color: #faca77;
+}
+
+.tabla-usuarios {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.tabla-usuarios th,
+.tabla-usuarios td {
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+}
+
+.tabla-usuarios th {
+  background-color: #E5E7EB;
+}
+
+.tabla-usuarios button {
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.tabla-usuarios button:hover {
+  background-color: #8d1111;
+}
+
+.estado-usuario {
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+  border: 2px solid #faca77;
+}
+
+.estado-usuario h2 {
+  color: #1E3A8A;
+  font-size: 20px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+.estado-usuario ul {
+  padding-left: 20px;
+}
+
+.estado-usuario li {
+  background-color: #fce1ac;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 5px;
+  color: #1E3A8A;
+}
+
+#permisos {
+  text-align: center;
+}
+
+#crear {
+  text-align: center;
+}
+
+#roles {
+  text-align: center;
+}
+
+#contrasena {
+  text-align: center;
+}
