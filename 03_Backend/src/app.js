@@ -3,6 +3,7 @@ const config = require('./config/config');   // Importamos la configuracion
 const funcionarios = require('./routes/funcionarioRoutes'); // Importamos las rutas de funcionarios
 const login =  require('./routes/authRoutes');
 const tareas = require('./routes/tareaRoutes');
+const reportes = require('./routes/reportes');
 const cors = require ('cors')
 require('dotenv').config(); // Cargar variables de entorno
 
@@ -24,5 +25,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/funcionarios' , funcionarios);
 app.use('/auth', login)
 app.use('/tareas', tareas)
+app.use('/reportes', reportes)
 
 module.exports = app;

@@ -2,7 +2,7 @@ const db = require('../models/tarea.model.js');
 const table = 'actividad';
 
 
-function todas () {
+function todas() {
     return db.todas(table);
 }
 
