@@ -36,5 +36,16 @@ function conexionmysql() {
 
 conexionmysql();
 
+//  para usar async/await 
+const queryPromise = (sql, params) => {
+    return new Promise((resolve, reject) => {
+        conexion.query(sql, params, (err, results) => {
+            if (err) reject(err);
+            else resolve(results);
+        });
+    });
+};
 
-module.exports = conexion
+// Exporta ambos: lo viejo sigue funcionando
+module.exports = conexion;
+module.exports.queryPromise = queryPromise;

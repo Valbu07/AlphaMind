@@ -5,6 +5,7 @@ import Usuarios from "../pages/Usuarios/Usuarios";
 import Actividades from "../pages/Actividades/Actividades";
 import CrearActividades from "../pages/CrearActividades/CrearActividades";
 import Calendario from "../pages/Calendario/Calendario";
+import Reportes from "../pages/reportes/reportes.jsx";
 
 import Navbar from "../components/layout/Navbar";
 
@@ -21,6 +22,7 @@ export default function AppRouter() {
           <Route path="/actividades" element={<NavbarWrapper><Actividades /></NavbarWrapper>} />
           <Route path="/crear-actividades" element={<NavbarWrapper><CrearActividades /></NavbarWrapper>} />
           <Route path="/calendario" element={<NavbarWrapper><Calendario /></NavbarWrapper>} />
+          <Route path="/reportes" element={<NavbarWrapper><Reportes/></NavbarWrapper>} />
         </Route>
       </Routes>
     </BrowserRouter>
