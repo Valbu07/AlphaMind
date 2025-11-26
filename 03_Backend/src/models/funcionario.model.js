@@ -71,7 +71,7 @@ function uno(table, num_documento){
 
 async function agregar(data) {
   return new Promise((resolve, reject) => {
-    console.log("Data recibida" ,data)
+    console.log("Data recibida: " ,data)
     conexion.beginTransaction(async (err) => {
       if (err) return reject(err);
 

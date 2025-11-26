@@ -2,16 +2,16 @@
 .botones-principales {
   padding: 10px;
   margin-bottom: 15px !important;
-  display: flex;            
-  justify-content: center;  
-          
-  gap: 110px;                
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 110px;
 }
 
 .botones-principales button {
-  padding: 13px 28px;   
-  font-size: 22px;    
-  font-weight: bold;    
+  padding: 13px 28px;
+  font-size: 22px;
+  font-weight: bold;
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -24,7 +24,7 @@
 
 /* Contenedor de Crear Actividades */
 .contenedor-CA {
-  box-shadow: 0 0 20px rgba(56, 4, 4, 0.1); 
+  box-shadow: 0 0 20px rgba(56, 4, 4, 0.1);
   margin: auto;
   gap: 20px;
   display: block;
@@ -47,7 +47,7 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 18px; 
+  gap: 18px;
 }
 
 /* Inputs, selects, textarea */
@@ -72,7 +72,7 @@
 
 /* Subtareas */
 .subTarea button {
-  width: 100%; 
+  width: 100%;
   padding: 12px;
   border: none;
   border-radius: 8px;
@@ -121,13 +121,13 @@
 .botones-finales {
   display: flex;
   justify-content: flex-end;
-  gap: 15px; 
+  gap: 15px;
   margin-top: 15px;
 }
 
 .botones-finales button {
-  flex: 1; 
-  max-width: 200px; 
+  flex: 1;
+  max-width: 200px;
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -159,7 +159,7 @@
 
 /*Contenedor de Actividades asignadas*/
 .contenedor-AA {
-  box-shadow: 0 0 20px rgba(56, 4, 4, 0.1); 
+  box-shadow: 0 0 20px rgba(56, 4, 4, 0.1);
   margin: auto;
   gap: 20px;
   display: block;
@@ -170,7 +170,7 @@
   border-color: #faca77;
 }
 
-.asignado{
+.asignado {
   font-size: 24px;
   display: flex;
   gap: 24px;

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controlador = require('../middlewares/authMiddleware');
+const controlador = require('../controllers/tareaController');
 const respuesta = require("../utils/repuesta");
 
 router.get('/', async (req,res) => {
@@ -8,6 +8,9 @@ router.get('/', async (req,res) => {
         const data = await controlador.todas();
         respuesta.success(req,res,data,200);
     } catch (error) {
+
+        console.error('Error al obtener las tareas', error);
+
         respuesta.error(req,res,'Error al obtener las tareas', 500);
     }
 });
