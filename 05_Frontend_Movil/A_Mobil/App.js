@@ -1,20 +1,14 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import UsersScreen from "./screens/UsersScreen";
 
-export default function App() {
+function App() {
   return (
-    <View style={styles.container}>
-      <Text>me debe algo</Text>
-      <StatusBar style="auto" />
-    </View>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/UsersScreens" element={<UsersScreen />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
