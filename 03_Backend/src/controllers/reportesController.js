@@ -1,17 +1,29 @@
-const model = require("../models/reportes.model");
+// backend/controllers/reportesController.js
+const { obtenerReporteFuncionario } = require('../models/reportes.model');
 
-// Controlador principal de reporte por usuario
-async function funcionario(num_documento) {
+async function getReportes(req, res) {
+  try {
+    const { documento } = req.params;
+    if (!documento) {
+      return res.status(400).json({ 
+        error: 'Documento es requerido' 
+      });
+    }
+    const datos = await obtenerReporteFuncionario(documento);
 
-  
-  const data = await model.funcionario(num_documento);
-  if (!data) {
-    throw new Error("No existe información para este usuario");
+    if (!datos) {
+      return res.status(404).json({ 
+        error: 'Usuario no encontrado' 
+      });
+    }
+    res.json(datos);
+
+  } catch (error) {
+    res.status(500).json({ 
+      error: 'Error al obtener reportes',
+      detalle: error.message 
+    });
   }
-
-  return data;
 }
 
-module.exports = {
- funcionario,
-};
+module.exports = { getReportes };

@@ -6,17 +6,22 @@ const { verificarToken } = require("../middlewares/authMiddleware");
 const { autorizaciondeRoles } = require("../middlewares/authMiddleware");
 
 // Obtener reporte por documento
-router.get( "/:num_documento",verificarToken, autorizaciondeRoles(["Administrador"]),
-
+// backend/routes/reportes.js
+router.get(
+  "/:num_documento",
+  verificarToken,
+  autorizaciondeRoles(["Administrador"]),
   async (req, res) => {
     try {
-      const data = await controlador.funcionario(req.params.num_documento);
-      respuesta.success(req, res, data, 200);
+      req.params.documento = req.params.num_documento;
+      await controlador.getReportes(req, res);
+
     } catch (error) {
-      
-      respuesta.error(req, res, "Error al obtener el reporte", 500);
+
+      respuesta.error(req, res, "Error interno del servidor", 500);
     }
   }
 );
+
 
 module.exports = router;
