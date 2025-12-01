@@ -10,7 +10,7 @@ require('dotenv').config(); // Cargar variables de entorno
 const app = express(); // Creamos la app de express
 
 // Configuración del puerto
-app.set('port', config.app.port) || 3306;
+app.set('port', config.app.port) || 3307;
 
 // Middlewares
 app.use(cors({

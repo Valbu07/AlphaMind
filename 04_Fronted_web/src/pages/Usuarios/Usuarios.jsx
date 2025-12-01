@@ -252,16 +252,7 @@ const Usuarios = () => {
         <div className={`mensaje ${mensaje.includes('✅') ? "exito" : "error"}`}>
           {mensaje}
           <button 
-            type="button" 
             onClick={() => setMensaje("")}
-            style={{
-              float: 'right',
-              background: 'none',
-              border: 'none',
-              fontSize: '20px',
-              cursor: 'pointer',
-              padding: '0 5px'
-            }}
           >
             ×
           </button>

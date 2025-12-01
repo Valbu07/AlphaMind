@@ -1,8 +1,38 @@
 /* ======== GLOBAL ======== */
 body {
-    background: #fcf6f0 !important;
+    background: #fff !important;
     font-family: "Segoe UI", sans-serif !important;
 }
+
+
+
+.btn-usuario {
+    background: #97b6f7 !important;
+    border-radius: 12px !important;
+    border: 1px solid #ebe2db;
+}
+
+.btn-usuario:hover {
+
+    color: #fff !important;
+    transition: all 0.5s ;
+      background: #3948b9 !important;
+    
+}
+
+.btn-pdf{
+background-color: #faca77;
+color: #333;
+margin-left: auto;
+}
+
+.btn-pdf:hover {
+ color: #fff !important;
+    transition: all 0.5s ;
+background-color: #f7a840;
+}
+
+
 
 /* ======== PANEL IZQUIERDO ======== */
 .panel-left {
@@ -60,5 +90,7 @@ body {
 
 /* ======== TITULOS ======== */
 h4, h5, h2 {
-    color: #4b2e39 !important;
+    color: #1b191a !important;
 }
+
+
