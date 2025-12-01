@@ -1,14 +1,23 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import UsersScreen from "./screens/UsersScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { CustomNavbar } from "./src/components/Navbar";
+// import UsersScreen from "./screens/UsersScreen";
+import CrearActividad from "./src/screens/CrearActScreen";
 
-function App() {
+
+const Drawer = createDrawerNavigator();
+
+export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/UsersScreens" element={<UsersScreen />} />
-      </Routes>
-    </BrowserRouter>
+    <NavigationContainer>
+      <Drawer.Navigator
+        drawerContent={(props) => <CustomNavbar {...props} />}
+        screenOptions={{ headerShown: false }}
+      >
+        <Drawer.Screen name="CrearActividad" component={CrearActividad} />
+      </Drawer.Navigator>
+    </NavigationContainer>
   );
 }
 
-export default App;
+
