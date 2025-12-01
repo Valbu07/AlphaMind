@@ -108,7 +108,7 @@ export default function Navbar() {
             <li>
               <Link
                 className="dropdown-item d-flex align-items-center"
-                to={"/login"}
+                to={"/"}
               >
                 <BsBoxArrowRight className="me-2" /> Salir
               </Link>

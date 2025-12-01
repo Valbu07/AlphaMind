@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Calendario.css"; 
+import fondo from "../../assets/Recursos/fondoAlpha.png";
 
 
 export default function Calendario() {
@@ -80,7 +81,7 @@ export default function Calendario() {
   ];
 
   return (
-        <div className="calendar">
+      <div className="calendar">
           <div className="month">
             <i className="prev" onClick={() => setDate(new Date(date.getFullYear(), date.getMonth() - 1, 1))}>
               &#10094;
