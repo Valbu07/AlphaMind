@@ -36,7 +36,7 @@ export default function CrearActividades() {
 
     const asignar = () => {
     console.log("Nueva tarea:", {para, asunto, fecha, prioridad, subtareas, descripcion });
-    alert("✅ Tarea creada con éxito");
+    alert(" Tarea creada con éxito");
         setPara("");
         setFecha("");
         setAsunto("");
@@ -63,15 +63,25 @@ export default function CrearActividades() {
     return (
         <div className="contenedor-principal">
         <div className="botones-principales">
-            <button className="btn btn-warning" onClick={() => setVista("crear")}>
+            <button className="btn btn-editar" onClick={() => setVista("crear")}
+                style={{
+            backgroundColor: vista === "crear" ? "#f7a840" : "#faca77"
+          }}>
             Crear Actividades
             </button>
-            <button className="btn btn-warning" onClick={() => setVista("asignadas")}>
+            <button className="btn " onClick={() => setVista("asignadas")} 
+            style={{
+            backgroundColor: vista === "asignadas" ? "#f7a840" : "#faca77"
+          }}>
             Actividades Asignadas
             </button>
         </div>
 
         {vista === "crear" && (
+      
+
+            
+
             <div className="contenedor-CA">
             <h1>Crear actividad</h1>
             <form className="form">
