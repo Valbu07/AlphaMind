@@ -28,7 +28,6 @@
 }
 
 .menu button:hover {
-  background-color: #e67417;
   color: #F1F5F9;
 }
 
@@ -193,7 +192,7 @@
 
 .contenido {
   width: 90%;
-  max-width: 700px; 
+  max-width: 900px; 
   padding: 20px;
   margin: 20px auto; 
 }
@@ -218,7 +217,7 @@
 }
 
 .formulario button {
-  background-color: #e67417;
+  background-color: #faca77;
   color: black;
   border: 2px solid #faca77;
   padding: 10px;
@@ -228,7 +227,7 @@
 }
 
 .formulario button:hover {
-  background-color: #faca77;
+  background-color: #f7a840;
 }
 
 
