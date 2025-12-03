@@ -1,14 +1,14 @@
-// ✅ PASO 1: Importaciones correctas
-import React, { useState, useEffect, useContext } from 'react'; // 👈 Agregado useContext
+// src/pages/reportes/ReporteDashboard.jsx
+import React, { useState, useEffect, useContext } from 'react';
 import './reportes.css';
-import { getReportes } from '../../services/reportesServices'; // 👈 Corregido "reportes"
-import { AuthContext } from '../../context/AuthContext'; // 👈 Importar el contexto
+import { getReportes } from '../../services/reportesServices';
+import { AuthContext } from '../../context/AuthContext';
 
 const ReporteDashboard = () => {
-  // ✅ PASO 2: Obtener usuario del contexto
-  const { usuario } = useContext(AuthContext);
+  // ✅ Obtener usuario y estado de carga del contexto
+  const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
 
-  // Estados
+  // ✅ Estados locales
   const [metricas, setMetricas] = useState({
     tareasTotales: 0,
     completadas: 0,
@@ -23,42 +23,69 @@ const ReporteDashboard = () => {
   });
 
   const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null); // 👈 Nuevo estado para errores
+  const [error, setError] = useState(null);
 
-  // ✅ PASO 3: useEffect con dependencia correcta
+  // ✅ DEBUG: Mostrar información del usuario (puedes comentar después)
   useEffect(() => {
-    if (usuario?.documento || usuario?.num_documento) {
-      cargarDatosIniciales();
-    }
-  }, [usuario]); // 👈 Cambié la dependencia a 'usuario'
+    console.log('🔍 [REPORTES] Estado del contexto:', {
+      cargandoAuth,
+      usuario,
+      num_documento: usuario?.num_documento,
+      documento_alternativo: usuario?.documento
+    });
+  }, [usuario, cargandoAuth]);
 
-  // ✅ PASO 4: Función mejorada con logs de debugging
-  const cargarDatosIniciales = async () => {
+  // ✅ Cargar datos automáticamente cuando el contexto esté listo
+  useEffect(() => {
+    // 1. Esperar a que el contexto termine de cargar
+    if (cargandoAuth) {
+      console.log('⏳ [REPORTES] Esperando a que termine de cargar el contexto...');
+      return;
+    }
+
+    // 2. Validar que exista usuario
+    if (!usuario) {
+      console.error('❌ [REPORTES] No hay usuario logueado');
+      setError('No hay sesión activa. Por favor inicia sesión.');
+      setCargando(false);
+      return;
+    }
+
+    // 3. Obtener documento del usuario (soporta múltiples nombres de campo)
+    const documento = usuario.num_documento || usuario.documento || usuario.cedula;
+
+    if (!documento) {
+      console.error('❌ [REPORTES] Usuario sin documento:', usuario);
+      setError('El usuario no tiene número de documento registrado.');
+      setCargando(false);
+      return;
+    }
+
+    // 4. Cargar datos del reporte
+    console.log('✅ [REPORTES] Cargando datos para documento:', documento);
+    cargarDatosIniciales(documento);
+
+  }, [usuario, cargandoAuth]);
+
+  // ✅ Función para cargar datos del reporte
+  const cargarDatosIniciales = async (documento) => {
     try {
       setCargando(true);
-      setError(null); // Limpiar errores previos
+      setError(null);
 
-      // Obtener documento del usuario
-      const usuarioDocumento = usuario?.documento || usuario?.num_documento;
+      console.log('📡 [REPORTES] Solicitando reporte para:', documento);
       
-      console.log('🔍 Usuario logueado:', usuario); // 👈 LOG 1
-      console.log('📄 Documento a consultar:', usuarioDocumento); // 👈 LOG 2
+      // Llamar al servicio
+      const datosReporte = await getReportes(documento);
       
-      if (!usuarioDocumento) {
-        throw new Error('No hay usuario logueado o falta el documento');
-      }
-
-      // Llamada a la API
-      console.log('📡 Llamando a getReportes...'); // 👈 LOG 3
-      const datosReporte = await getReportes(usuarioDocumento);
-      console.log('✅ Datos recibidos:', datosReporte); // 👈 LOG 4
+      console.log('✅ [REPORTES] Datos recibidos:', datosReporte);
 
       // Validar estructura de datos
       if (!datosReporte?.estadisticas || !datosReporte?.graficos) {
         throw new Error('Formato de datos inválido desde la API');
       }
 
-      // Actualizar estados
+      // Actualizar métricas
       setMetricas({
         tareasTotales: datosReporte.estadisticas.tareasTotales || 0,
         completadas: datosReporte.estadisticas.completadas || 0,
@@ -66,33 +93,35 @@ const ReporteDashboard = () => {
         atrasadas: datosReporte.estadisticas.atrasadas || 0
       });
 
+      // Actualizar datos de gráficos
       setDataGraficos({
         completadasMes: datosReporte.graficos.completadasMes || [],
         categorias: datosReporte.graficos.categorias || [],
         estados: datosReporte.graficos.estados || []
       });
 
-      console.log('✅ Estados actualizados correctamente'); // 👈 LOG 5
+      console.log('✅ [REPORTES] Estados actualizados correctamente');
 
     } catch (error) {
-      console.error("❌ Error al cargar métricas:", error); // 👈 LOG 6
+      console.error('❌ [REPORTES] Error al cargar métricas:', error);
       setError(error.message);
-      alert(`Error: ${error.message}`);
     } finally {
       setCargando(false);
     }
   };
 
+  // ✅ Función para generar PDF (placeholder)
   const handleGenerarPDF = () => {
     alert("Funcionalidad de PDF en desarrollo");
   };
 
+  // ✅ Función para cambiar usuario (placeholder)
   const handleCambiarUsuario = () => {
     alert("Selector de usuario en desarrollo");
   };
 
-  // ✅ PASO 5: Pantalla de carga mejorada
-  if (cargando) {
+  // ✅ Pantalla de carga (mientras carga el contexto o los datos)
+  if (cargandoAuth || cargando) {
     return (
       <div className="container-fluid p-4">
         <div className="loading-container">
@@ -100,70 +129,77 @@ const ReporteDashboard = () => {
             <div className="spinner-border text-primary loading-spinner" role="status">
               <span className="visually-hidden">Cargando...</span>
             </div>
-            <p className="loading-text">Cargando datos del reporte...</p>
+            <p className="loading-text">
+              {cargandoAuth ? 'Verificando sesión...' : 'Cargando datos del reporte...'}
+            </p>
           </div>
         </div>
       </div>
     );
   }
 
-  // ✅ PASO 6: Pantalla de error
+  // ✅ Pantalla de error
   if (error) {
     return (
       <div className="container-fluid p-4">
         <div className="alert alert-danger">
           <h4>⚠️ Error al cargar reportes</h4>
           <p>{error}</p>
-          <button className="btn btn-primary" onClick={cargarDatosIniciales}>
-            Reintentar
-          </button>
+          {(usuario?.num_documento || usuario?.documento) && (
+            <button 
+              className="btn btn-primary" 
+              onClick={() => cargarDatosIniciales(usuario.num_documento || usuario.documento)}
+            >
+              🔄 Reintentar
+            </button>
+          )}
         </div>
       </div>
     );
   }
 
-  // ✅ PASO 7: Renderizado principal con datos del usuario real
+  // ✅ Renderizado principal
   return (
     <div className="container-fluid dashboard-container">
-      {/* Header */}
+      {/* ========== HEADER ========== */}
       <div className="row dashboard-header">
         <div className="col-12">
           <div className="d-flex flex-column gap-3">
-            {/* Título arriba */}
+            {/* Título */}
             <div>
               <h2 className="dashboard-title">
-                Reporte de Tareas
+                📊 Reporte de Tareas
               </h2>
               <p className="dashboard-subtitle">
                 Análisis de desempeño del usuario: 
                 <strong>
-                  {/* ✅ Mostrar nombre real del usuario logueado */}
-                  {usuario?.nombre || usuario?.name || 'Usuario'}
+                  {' '}{usuario?.nombre || usuario?.name || 'Usuario'}
                 </strong>
               </p>
             </div>
 
+            {/* Botones de acción */}
             <div className="dashboard-actions d-flex gap-2">
               <button 
                 className="btn btn-usuario"
                 onClick={handleCambiarUsuario}
               >
-                Cambiar Usuario
+                👤 Cambiar Usuario
               </button>
               <button 
                 className="btn btn-pdf"
                 onClick={handleGenerarPDF}
               >
-                Exportar PDF
+                📄 Exportar PDF
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Contenido Principal */}
+      {/* ========== CONTENIDO PRINCIPAL ========== */}
       <div className="row g-4">
-        {/* Panel Lateral - KPIs */}
+        {/* ========== PANEL LATERAL - KPIs ========== */}
         <div className="col-12 col-lg-3">
           <div className="sidebar-sticky">
             <h5 className="sidebar-title">
@@ -191,7 +227,12 @@ const ReporteDashboard = () => {
                   <h3 className="kpi-value completadas">
                     {metricas.completadas}
                   </h3>
-                  <span className="badge bg-success kpi-badge"></span>
+                  <span className="badge bg-success kpi-badge">
+                    {metricas.tareasTotales > 0 
+                      ? `${Math.round((metricas.completadas / metricas.tareasTotales) * 100)}%`
+                      : '0%'
+                    }
+                  </span>
                 </div>
                 <div className="kpi-icon-circle completadas"></div>
               </div>
@@ -205,6 +246,12 @@ const ReporteDashboard = () => {
                   <h3 className="kpi-value pendientes">
                     {metricas.pendientes}
                   </h3>
+                  <span className="badge bg-warning kpi-badge">
+                    {metricas.tareasTotales > 0 
+                      ? `${Math.round((metricas.pendientes / metricas.tareasTotales) * 100)}%`
+                      : '0%'
+                    }
+                  </span>
                 </div>
                 <div className="kpi-icon-circle pendientes"></div>
               </div>
@@ -218,6 +265,12 @@ const ReporteDashboard = () => {
                   <h3 className="kpi-value atrasadas">
                     {metricas.atrasadas}
                   </h3>
+                  <span className="badge bg-danger kpi-badge">
+                    {metricas.tareasTotales > 0 
+                      ? `${Math.round((metricas.atrasadas / metricas.tareasTotales) * 100)}%`
+                      : '0%'
+                    }
+                  </span>
                 </div>
                 <div className="kpi-icon-circle atrasadas"></div>
               </div>
@@ -225,7 +278,7 @@ const ReporteDashboard = () => {
           </div>
         </div>
 
-        {/* Panel Principal - Gráficos */}
+        {/* ========== PANEL PRINCIPAL - GRÁFICOS ========== */}
         <div className="col-12 col-lg-9">
           <div className="row g-4">
             {/* Gráfico 1: Tareas Completadas Por Mes */}
@@ -234,11 +287,22 @@ const ReporteDashboard = () => {
                 <div className="card-body">
                   <div className="chart-header">
                     <div>
-                      <h5 className="chart-title">Tareas Completadas Por Mes</h5>
-                      <p className="chart-description">Tendencia de los últimos 6 meses</p>
+                      <h5 className="chart-title">
+                        📈 Tareas Completadas Por Mes
+                      </h5>
+                      <p className="chart-description">
+                        Tendencia de los últimos 6 meses
+                      </p>
                     </div>
                   </div>
-                  {/* TODO: Agregar gráfico */}
+                  
+                  {/* Placeholder para gráfico */}
+                  <div className="chart-placeholder">
+                    <p>Gráfico en desarrollo</p>
+                    <small>
+                      Datos disponibles: {dataGraficos.completadasMes.length} meses
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -247,7 +311,24 @@ const ReporteDashboard = () => {
             <div className="col-12 col-xl-6">
               <div className="card chart-card">
                 <div className="card-body">
-                  {/* TODO: Agregar gráfico */}
+                  <div className="chart-header">
+                    <div>
+                      <h5 className="chart-title">
+                        📊 Tareas Por Categoría
+                      </h5>
+                      <p className="chart-description">
+                        Distribución por tipo de tarea
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Placeholder para gráfico */}
+                  <div className="chart-placeholder">
+                    <p>Gráfico en desarrollo</p>
+                    <small>
+                      Categorías encontradas: {dataGraficos.categorias.length}
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -256,7 +337,24 @@ const ReporteDashboard = () => {
             <div className="col-12 col-xl-6">
               <div className="card chart-card">
                 <div className="card-body">
-                  {/* TODO: Agregar gráfico */}
+                  <div className="chart-header">
+                    <div>
+                      <h5 className="chart-title">
+                        🎯 Estado Actual de las Tareas
+                      </h5>
+                      <p className="chart-description">
+                        Distribución por estado
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Placeholder para gráfico */}
+                  <div className="chart-placeholder">
+                    <p>Gráfico en desarrollo</p>
+                    <small>
+                      Estados registrados: {dataGraficos.estados.length}
+                    </small>
+                  </div>
                 </div>
               </div>
             </div>
@@ -265,7 +363,22 @@ const ReporteDashboard = () => {
             <div className="col-12 col-xl-6">
               <div className="card chart-card">
                 <div className="card-body">
-                  {/* TODO: Agregar gráfico */}
+                  <div className="chart-header">
+                    <div>
+                      <h5 className="chart-title">
+                        ⏱️ Tiempo Promedio Por Categoría
+                      </h5>
+                      <p className="chart-description">
+                        Eficiencia por tipo de tarea
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Placeholder para gráfico */}
+                  <div className="chart-placeholder">
+                    <p>Gráfico en desarrollo</p>
+                    <small>Próximamente</small>
+                  </div>
                 </div>
               </div>
             </div>
