@@ -1,12 +1,12 @@
-// src/pages/reportes/ReporteDashboard.jsx
 import React, { useState, useEffect, useContext } from 'react';
 import './reportes.css';
 import { getReportes } from '../../services/reportesServices';
 import { AuthContext } from '../../context/AuthContext';
 
 const ReporteDashboard = () => {
-  // ✅ Obtener usuario y estado de carga del contexto
-  const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
+  
+  // ✅ Obtener tanto usuario como token del contexto
+  const { usuario, token, cargando: cargandoAuth } = useContext(AuthContext);
 
   // ✅ Estados locales
   const [metricas, setMetricas] = useState({
@@ -25,15 +25,16 @@ const ReporteDashboard = () => {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
-  // ✅ DEBUG: Mostrar información del usuario (puedes comentar después)
+  // ✅ DEBUG: Mostrar información del usuario y token
   useEffect(() => {
     console.log('🔍 [REPORTES] Estado del contexto:', {
       cargandoAuth,
       usuario,
+      token: token ? '✅ Token disponible' : '❌ Sin token',
       num_documento: usuario?.num_documento,
       documento_alternativo: usuario?.documento
     });
-  }, [usuario, cargandoAuth]);
+  }, [usuario, token, cargandoAuth]);
 
   // ✅ Cargar datos automáticamente cuando el contexto esté listo
   useEffect(() => {
@@ -51,7 +52,15 @@ const ReporteDashboard = () => {
       return;
     }
 
-    // 3. Obtener documento del usuario (soporta múltiples nombres de campo)
+    // 3. Validar que exista token
+    if (!token) {
+      console.error('❌ [REPORTES] No hay token disponible');
+      setError('No hay token de autenticación. Por favor inicia sesión nuevamente.');
+      setCargando(false);
+      return;
+    }
+
+    // 4. Obtener documento del usuario (soporta múltiples nombres de campo)
     const documento = usuario.num_documento || usuario.documento || usuario.cedula;
 
     if (!documento) {
@@ -61,22 +70,24 @@ const ReporteDashboard = () => {
       return;
     }
 
-    // 4. Cargar datos del reporte
+    // 5. Cargar datos del reporte
     console.log('✅ [REPORTES] Cargando datos para documento:', documento);
-    cargarDatosIniciales(documento);
+    cargarDatosIniciales(documento, token);
 
-  }, [usuario, cargandoAuth]);
+  }, [usuario, token, cargandoAuth]);
 
   // ✅ Función para cargar datos del reporte
-  const cargarDatosIniciales = async (documento) => {
+  const cargarDatosIniciales = async (documento, userToken) => {
     try {
       setCargando(true);
       setError(null);
 
       console.log('📡 [REPORTES] Solicitando reporte para:', documento);
+      console.log('🔑 [REPORTES] Con token:', userToken);
+      console.log('🌐 [REPORTES] URL completa:', `http://localhost:3000/reportes/${documento}`);
       
-      // Llamar al servicio
-      const datosReporte = await getReportes(documento);
+      // ✅ Llamar al servicio con AMBOS parámetros
+      const datosReporte = await getReportes(documento, userToken);
       
       console.log('✅ [REPORTES] Datos recibidos:', datosReporte);
 
@@ -145,10 +156,13 @@ const ReporteDashboard = () => {
         <div className="alert alert-danger">
           <h4>⚠️ Error al cargar reportes</h4>
           <p>{error}</p>
-          {(usuario?.num_documento || usuario?.documento) && (
+          {(usuario?.num_documento || usuario?.documento) && token && (
             <button 
               className="btn btn-primary" 
-              onClick={() => cargarDatosIniciales(usuario.num_documento || usuario.documento)}
+              onClick={() => cargarDatosIniciales(
+                usuario.num_documento || usuario.documento,
+                token
+              )}
             >
               🔄 Reintentar
             </button>
@@ -157,6 +171,7 @@ const ReporteDashboard = () => {
       </div>
     );
   }
+
 
   // ✅ Renderizado principal
   return (

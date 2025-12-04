@@ -1,31 +1,64 @@
-//token datos del usuario funciones login / logout persistencia en localStorage
+// Contexto de autenticación en localStorage
 
-
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [auth, setAuth] = useState({
-    token: localStorage.getItem('token'),
-    user: JSON.parse(localStorage.getItem('user')) || null
+    token: null,
+    user: null,
   });
 
+  const [cargando, setCargando] = useState(true);
+
+  //  Cargar sesión desde localStorage al iniciar la app
+  useEffect(() => {
+    try {
+      const storedToken = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+
+      if (storedToken && storedUser) {
+        setAuth({
+          token: storedToken,
+          user: JSON.parse(storedUser),
+        });
+      }
+    } catch (error) {
+      console.error("Error al cargar sesión:", error);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setAuth({ token: null, user: null });
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+
   const login = (token, user) => {
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
     setAuth({ token, user });
   };
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setAuth({ token: null, user: null });
   };
 
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        token: auth.token,
+        usuario: auth.user, 
+        cargando,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
-// Contexto para manejar la autenticación de usuarios en la aplicación.
