@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // src/pages/Reportes.jsx
 import React, { useState, useEffect } from 'react';
 import {BarChart,Bar,PieChart,Pie,Cell,XAxis,YAxis, CartesianGrid,Tooltip, Legend, ResponsiveContainer} from 'recharts';
@@ -9,26 +10,124 @@ import { getNumDocumentoFromToken } from '../../utils/jwtUtilis';
 const Reportes = () => {
   const [reporteData, setReporteData] = useState(null);
   const [loading, setLoading] = useState(true);
+=======
+import React, { useState, useEffect, useContext } from 'react';
+import './reportes.css';
+import { getReportes } from '../../services/reportesServices';
+import { AuthContext } from '../../context/AuthContext';
+
+const ReporteDashboard = () => {
+  
+  // ✅ Obtener tanto usuario como token del contexto
+  const { usuario, token, cargando: cargandoAuth } = useContext(AuthContext);
+
+  // ✅ Estados locales
+  const [metricas, setMetricas] = useState({
+    tareasTotales: 0,
+    completadas: 0,
+    pendientes: 0,
+    atrasadas: 0
+  });
+
+  const [dataGraficos, setDataGraficos] = useState({
+    completadasMes: [],
+    categorias: [],
+    estados: []
+  });
+
+  const [cargando, setCargando] = useState(true);
+>>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
   const [error, setError] = useState(null);
   const [numDocumento, setNumDocumento] = useState('');
 
   // Colores para los gráficos
   const COLORS = ['#4b2e39', '#8b5a6f', '#c99da3', '#e5d6cc', '#f4e9e2'];
 
+<<<<<<< HEAD
   useEffect(() => {
     cargarReporte();
   }, []);
 
   const cargarReporte = async () => {
+=======
+  // ✅ DEBUG: Mostrar información del usuario y token
+  useEffect(() => {
+    console.log('🔍 [REPORTES] Estado del contexto:', {
+      cargandoAuth,
+      usuario,
+      token: token ? '✅ Token disponible' : '❌ Sin token',
+      num_documento: usuario?.num_documento,
+      documento_alternativo: usuario?.documento
+    });
+  }, [usuario, token, cargandoAuth]);
+
+  // ✅ Cargar datos automáticamente cuando el contexto esté listo
+  useEffect(() => {
+    // 1. Esperar a que el contexto termine de cargar
+    if (cargandoAuth) {
+      console.log('⏳ [REPORTES] Esperando a que termine de cargar el contexto...');
+      return;
+    }
+
+    // 2. Validar que exista usuario
+    if (!usuario) {
+      console.error('❌ [REPORTES] No hay usuario logueado');
+      setError('No hay sesión activa. Por favor inicia sesión.');
+      setCargando(false);
+      return;
+    }
+
+    // 3. Validar que exista token
+    if (!token) {
+      console.error('❌ [REPORTES] No hay token disponible');
+      setError('No hay token de autenticación. Por favor inicia sesión nuevamente.');
+      setCargando(false);
+      return;
+    }
+
+    // 4. Obtener documento del usuario (soporta múltiples nombres de campo)
+    const documento = usuario.num_documento || usuario.documento || usuario.cedula;
+
+    if (!documento) {
+      console.error('❌ [REPORTES] Usuario sin documento:', usuario);
+      setError('El usuario no tiene número de documento registrado.');
+      setCargando(false);
+      return;
+    }
+
+    // 5. Cargar datos del reporte
+    console.log('✅ [REPORTES] Cargando datos para documento:', documento);
+    cargarDatosIniciales(documento, token);
+
+  }, [usuario, token, cargandoAuth]);
+
+  // ✅ Función para cargar datos del reporte
+  const cargarDatosIniciales = async (documento, userToken) => {
+>>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
     try {
       setLoading(true);
       setError(null);
 
+<<<<<<< HEAD
       // Obtener número de documento del token
       const num_doc = getNumDocumentoFromToken();
       
       if (!num_doc) {
         throw new Error('No se pudo obtener el número de documento del token');
+=======
+      console.log('📡 [REPORTES] Solicitando reporte para:', documento);
+      console.log('🔑 [REPORTES] Con token:', userToken);
+      console.log('🌐 [REPORTES] URL completa:', `http://localhost:3000/reportes/${documento}`);
+      
+      // ✅ Llamar al servicio con AMBOS parámetros
+      const datosReporte = await getReportes(documento, userToken);
+      
+      console.log('✅ [REPORTES] Datos recibidos:', datosReporte);
+
+      // Validar estructura de datos
+      if (!datosReporte?.estadisticas || !datosReporte?.graficos) {
+        throw new Error('Formato de datos inválido desde la API');
+>>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
       }
 
       setNumDocumento(num_doc);
@@ -83,14 +182,33 @@ const Reportes = () => {
         <div className="alert alert-danger" role="alert">
           <h4 className="alert-heading">Error</h4>
           <p>{error}</p>
+<<<<<<< HEAD
           <button className="btn btn-primary" onClick={cargarReporte}>
             Reintentar
           </button>
+=======
+          {(usuario?.num_documento || usuario?.documento) && token && (
+            <button 
+              className="btn btn-primary" 
+              onClick={() => cargarDatosIniciales(
+                usuario.num_documento || usuario.documento,
+                token
+              )}
+            >
+              🔄 Reintentar
+            </button>
+          )}
+>>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
         </div>
       </div>
     );
   }
 
+<<<<<<< HEAD
+=======
+
+  // ✅ Renderizado principal
+>>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
   return (
     <div className="container-fluid p-4">
       <div className="row g-4">

@@ -137,7 +137,7 @@ img {
 /*  Body*/
 
 .container{
-    margin-top: 62px;
+    margin-top: 65px;
 
     padding: 1em;
     
@@ -184,11 +184,11 @@ ul{
     cursor: pointer;
     box-shadow: 0 2px 4px #4d4b4a;
 }
-
+ 
 
 .chat-header{
     padding: 0.5em;
-    background-color: #fc9222;  
+    background-color: #fff;  
       box-shadow: 0 2px 4px #4d4b4a;
       border-radius: 2px;
   
@@ -196,7 +196,6 @@ ul{
 
 .chat-header-items{
      display: flex;
-    justify-content: space-between;
     align-items: center;
         
 }
@@ -213,7 +212,7 @@ h4{
 .form-cotrol{
     border-radius: 0.6em;
     margin-bottom: 1em;
-    border: solid 0.5px #fc9222;
+    border: solid 0.5px #4e72f3d3;
     padding: 2px;
     width: 90%;
 }
@@ -234,7 +233,10 @@ h4{
     margin: 0.2em;
 }
 
+h5{
+    font-size: 15px;
 
+}
 
 .chat-mensajes{
     display: flex;
@@ -276,7 +278,7 @@ h4{
     border-radius: 0.6em;
     border: solid 0.5px #fc9222;
     padding: 8px 50px 8px 15px;
-    width: 100%;
+    width: 900%;
 }
 
 .chat-enviar input:focus {
