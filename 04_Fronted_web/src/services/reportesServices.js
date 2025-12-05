@@ -1,61 +1,31 @@
-// src/services/reportesServices.js
-import axios from "axios";
-
-const API = "http://localhost:3000/reportes";
+// src/services/reporteService.js
+import axiosInstance from './axiosConfig';
 
 /**
- * 📊 Obtener reporte de un funcionario
+ * Obtiene el reporte de un funcionario por su número de documento
  * @param {string} num_documento - Número de documento del funcionario
- * @returns {Promise<Object>} Datos del reporte
+ * @returns {Promise<Object>} - Datos del reporte
  */
-export const getReportes = async (num_documento) => {
+export const obtenerReporteFuncionario = async (num_documento) => {
   try {
-    console.log('📡 [SERVICE] Solicitando reporte para documento:', num_documento);
-
-    // Obtener token desde localStorage
-    const token = localStorage.getItem('token');
-    
-    if (!token) {
-      throw new Error('No hay sesión activa. Inicia sesión nuevamente.');
-    }
-
-    // ✅ Llamada con token en headers
-    const res = await axios.get(`${API}/${num_documento}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    console.log('✅ [SERVICE] Respuesta recibida:', res.data);
-
-    // ✅ Validar estructura de respuesta
-    if (!res.data.success) {
-      throw new Error(res.data.message || 'Error al obtener reportes');
-    }
-
-    // ✅ Retornar SOLO los datos
-    return res.data.data; // 👈 Importante: retornar .data.data
-
+    const response = await axiosInstance.get(`/reportes/${num_documento}`);
+    return response.data;
   } catch (error) {
-    console.error('❌ [SERVICE] Error al obtener reportes:', {
-      mensaje: error.message,
-      response: error.response?.data,
-      status: error.response?.status
-    });
+    console.error('Error al obtener reporte:', error);
+    throw error;
+  }
+};
 
-    // Manejo de errores específicos
-    if (error.response?.status === 404) {
-      throw new Error('No se encontró información para este usuario');
-    }
-    
-    if (error.response?.status === 401) {
-      throw new Error('Sesión expirada. Inicia sesión nuevamente.');
-    }
-
-    throw new Error(
-      error.response?.data?.message || 
-      'No se pudieron cargar los reportes. Verifica tu conexión.'
-    );
+/**
+ * Obtiene el reporte del usuario actual (usando token)
+ * @returns {Promise<Object>} - Datos del reporte
+ */
+export const obtenerReporteUsuarioActual = async () => {
+  try {
+    const response = await axiosInstance.get('/reportes/mi-reporte'); // Endpoint alternativo si lo tienes
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener reporte del usuario actual:', error);
+    throw error;
   }
 };

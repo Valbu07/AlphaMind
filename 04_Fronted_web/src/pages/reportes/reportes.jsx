@@ -1,386 +1,247 @@
-// src/pages/reportes/ReporteDashboard.jsx
-import React, { useState, useEffect, useContext } from 'react';
-import './reportes.css';
-import { getReportes } from '../../services/reportesServices';
-import { AuthContext } from '../../context/AuthContext';
+// src/pages/Reportes.jsx
+import React, { useState, useEffect } from 'react';
+import {BarChart,Bar,PieChart,Pie,Cell,XAxis,YAxis, CartesianGrid,Tooltip, Legend, ResponsiveContainer} from 'recharts';
+import KPICard from '../../components/reportes/KPICard';
+import ChartCard from '../../components/reportes/ChartCard';
+import { obtenerReporteFuncionario } from '../../services/reportesServices';
+import { getNumDocumentoFromToken } from '../../utils/jwtUtilis';
 
-const ReporteDashboard = () => {
-  // ✅ Obtener usuario y estado de carga del contexto
-  const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
-
-  // ✅ Estados locales
-  const [metricas, setMetricas] = useState({
-    tareasTotales: 0,
-    completadas: 0,
-    pendientes: 0,
-    atrasadas: 0
-  });
-
-  const [dataGraficos, setDataGraficos] = useState({
-    completadasMes: [],
-    categorias: [],
-    estados: []
-  });
-
-  const [cargando, setCargando] = useState(true);
+const Reportes = () => {
+  const [reporteData, setReporteData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [numDocumento, setNumDocumento] = useState('');
 
-  // ✅ DEBUG: Mostrar información del usuario (puedes comentar después)
+  // Colores para los gráficos
+  const COLORS = ['#4b2e39', '#8b5a6f', '#c99da3', '#e5d6cc', '#f4e9e2'];
+
   useEffect(() => {
-    console.log('🔍 [REPORTES] Estado del contexto:', {
-      cargandoAuth,
-      usuario,
-      num_documento: usuario?.num_documento,
-      documento_alternativo: usuario?.documento
-    });
-  }, [usuario, cargandoAuth]);
+    cargarReporte();
+  }, []);
 
-  // ✅ Cargar datos automáticamente cuando el contexto esté listo
-  useEffect(() => {
-    // 1. Esperar a que el contexto termine de cargar
-    if (cargandoAuth) {
-      console.log('⏳ [REPORTES] Esperando a que termine de cargar el contexto...');
-      return;
-    }
-
-    // 2. Validar que exista usuario
-    if (!usuario) {
-      console.error('❌ [REPORTES] No hay usuario logueado');
-      setError('No hay sesión activa. Por favor inicia sesión.');
-      setCargando(false);
-      return;
-    }
-
-    // 3. Obtener documento del usuario (soporta múltiples nombres de campo)
-    const documento = usuario.num_documento || usuario.documento || usuario.cedula;
-
-    if (!documento) {
-      console.error('❌ [REPORTES] Usuario sin documento:', usuario);
-      setError('El usuario no tiene número de documento registrado.');
-      setCargando(false);
-      return;
-    }
-
-    // 4. Cargar datos del reporte
-    console.log('✅ [REPORTES] Cargando datos para documento:', documento);
-    cargarDatosIniciales(documento);
-
-  }, [usuario, cargandoAuth]);
-
-  // ✅ Función para cargar datos del reporte
-  const cargarDatosIniciales = async (documento) => {
+  const cargarReporte = async () => {
     try {
-      setCargando(true);
+      setLoading(true);
       setError(null);
 
-      console.log('📡 [REPORTES] Solicitando reporte para:', documento);
+      // Obtener número de documento del token
+      const num_doc = getNumDocumentoFromToken();
       
-      // Llamar al servicio
-      const datosReporte = await getReportes(documento);
-      
-      console.log('✅ [REPORTES] Datos recibidos:', datosReporte);
-
-      // Validar estructura de datos
-      if (!datosReporte?.estadisticas || !datosReporte?.graficos) {
-        throw new Error('Formato de datos inválido desde la API');
+      if (!num_doc) {
+        throw new Error('No se pudo obtener el número de documento del token');
       }
 
-      // Actualizar métricas
-      setMetricas({
-        tareasTotales: datosReporte.estadisticas.tareasTotales || 0,
-        completadas: datosReporte.estadisticas.completadas || 0,
-        pendientes: datosReporte.estadisticas.pendientes || 0,
-        atrasadas: datosReporte.estadisticas.atrasadas || 0
-      });
+      setNumDocumento(num_doc);
 
-      // Actualizar datos de gráficos
-      setDataGraficos({
-        completadasMes: datosReporte.graficos.completadasMes || [],
-        categorias: datosReporte.graficos.categorias || [],
-        estados: datosReporte.graficos.estados || []
-      });
+      // Llamar al servicio
+      const response = await obtenerReporteFuncionario(num_doc);
 
-      console.log('✅ [REPORTES] Estados actualizados correctamente');
-
-    } catch (error) {
-      console.error('❌ [REPORTES] Error al cargar métricas:', error);
-      setError(error.message);
+      if (response.success && response.data) {
+        setReporteData(response.data);
+      } else {
+        throw new Error('No se encontraron datos del reporte');
+      }
+    } catch (err) {
+      console.error('Error al cargar reporte:', err);
+      setError(err.message || 'Error al cargar el reporte');
     } finally {
-      setCargando(false);
+      setLoading(false);
     }
   };
 
-  // ✅ Función para generar PDF (placeholder)
-  const handleGenerarPDF = () => {
-    alert("Funcionalidad de PDF en desarrollo");
-  };
-
-  // ✅ Función para cambiar usuario (placeholder)
   const handleCambiarUsuario = () => {
-    alert("Selector de usuario en desarrollo");
+    // TODO: Implementar lógica para cambiar de usuario
+    console.log('Cambiar usuario');
   };
 
-  // ✅ Pantalla de carga (mientras carga el contexto o los datos)
-  if (cargandoAuth || cargando) {
-    return (
-      <div className="container-fluid p-4">
-        <div className="loading-container">
-          <div className="text-center">
-            <div className="spinner-border text-primary loading-spinner" role="status">
-              <span className="visually-hidden">Cargando...</span>
-            </div>
-            <p className="loading-text">
-              {cargandoAuth ? 'Verificando sesión...' : 'Cargando datos del reporte...'}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleGenerarPDF = () => {
+    // TODO: Implementar generación de PDF
+    console.log('Generar PDF');
+  };
 
-  // ✅ Pantalla de error
+  // Preparar datos para el gráfico de meses
+  const dataMeses = reporteData?.graficos?.completadasMes?.map(item => ({
+    mes: item.nombreMes,
+    total: item.total
+  })) || [];
+
+  // Preparar datos para el gráfico de categorías
+  const dataCategorias = reporteData?.graficos?.categorias?.map(item => ({
+    name: item.categoria,
+    value: item.total
+  })) || [];
+
+  // Preparar datos para el gráfico de estados
+  const dataEstados = reporteData?.graficos?.estados?.map(item => ({
+    name: item.estado,
+    value: item.total
+  })) || [];
+
   if (error) {
     return (
       <div className="container-fluid p-4">
-        <div className="alert alert-danger">
-          <h4>⚠️ Error al cargar reportes</h4>
+        <div className="alert alert-danger" role="alert">
+          <h4 className="alert-heading">Error</h4>
           <p>{error}</p>
-          {(usuario?.num_documento || usuario?.documento) && (
-            <button 
-              className="btn btn-primary" 
-              onClick={() => cargarDatosIniciales(usuario.num_documento || usuario.documento)}
-            >
-              🔄 Reintentar
-            </button>
-          )}
+          <button className="btn btn-primary" onClick={cargarReporte}>
+            Reintentar
+          </button>
         </div>
       </div>
     );
   }
 
-  // ✅ Renderizado principal
   return (
-    <div className="container-fluid dashboard-container">
-      {/* ========== HEADER ========== */}
-      <div className="row dashboard-header">
-        <div className="col-12">
-          <div className="d-flex flex-column gap-3">
-            {/* Título */}
-            <div>
-              <h2 className="dashboard-title">
-                📊 Reporte de Tareas
-              </h2>
-              <p className="dashboard-subtitle">
-                Análisis de desempeño del usuario: 
-                <strong>
-                  {' '}{usuario?.nombre || usuario?.name || 'Usuario'}
-                </strong>
-              </p>
-            </div>
-
-            {/* Botones de acción */}
-            <div className="dashboard-actions d-flex gap-2">
-              <button 
-                className="btn btn-usuario"
-                onClick={handleCambiarUsuario}
-              >
-                👤 Cambiar Usuario
-              </button>
-              <button 
-                className="btn btn-pdf"
-                onClick={handleGenerarPDF}
-              >
-                📄 Exportar PDF
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ========== CONTENIDO PRINCIPAL ========== */}
+    <div className="container-fluid p-4">
       <div className="row g-4">
-        {/* ========== PANEL LATERAL - KPIs ========== */}
-        <div className="col-12 col-lg-3">
-          <div className="sidebar-sticky">
-            <h5 className="sidebar-title">
-              Resumen General
-            </h5>
-            
-            {/* KPI: Tareas Totales */}
-            <div className="card kpi-card">
-              <div className="card-body kpi-card-body">
-                <div className="kpi-info">
-                  <p className="kpi-label">Tareas Totales</p>
-                  <h3 className="kpi-value total">
-                    {metricas.tareasTotales}
-                  </h3>
-                </div>
-                <div className="kpi-icon-circle total"></div>
-              </div>
-            </div>
+        {/* Panel izquierdo - KPIs */}
+        <div className="col-12 col-md-3">
+          <div className="card p-3 shadow-sm panel-left">
+            <h4 className="mb-3 fw-bold">Total</h4>
 
-            {/* KPI: Completadas */}
-            <div className="card kpi-card">
-              <div className="card-body kpi-card-body">
-                <div className="kpi-info">
-                  <p className="kpi-label">Completadas</p>
-                  <h3 className="kpi-value completadas">
-                    {metricas.completadas}
-                  </h3>
-                  <span className="badge bg-success kpi-badge">
-                    {metricas.tareasTotales > 0 
-                      ? `${Math.round((metricas.completadas / metricas.tareasTotales) * 100)}%`
-                      : '0%'
-                    }
-                  </span>
-                </div>
-                <div className="kpi-icon-circle completadas"></div>
-              </div>
-            </div>
+            <KPICard
+              title="Tareas Totales"
+              value={reporteData?.estadisticas?.tareasTotales || 0}
+              loading={loading}
+            />
 
-            {/* KPI: Pendientes */}
-            <div className="card kpi-card">
-              <div className="card-body kpi-card-body">
-                <div className="kpi-info">
-                  <p className="kpi-label">Pendientes</p>
-                  <h3 className="kpi-value pendientes">
-                    {metricas.pendientes}
-                  </h3>
-                  <span className="badge bg-warning kpi-badge">
-                    {metricas.tareasTotales > 0 
-                      ? `${Math.round((metricas.pendientes / metricas.tareasTotales) * 100)}%`
-                      : '0%'
-                    }
-                  </span>
-                </div>
-                <div className="kpi-icon-circle pendientes"></div>
-              </div>
-            </div>
+            <KPICard
+              title="Completadas"
+              value={reporteData?.estadisticas?.completadas || 0}
+              loading={loading}
+            />
 
-            {/* KPI: Atrasadas */}
-            <div className="card kpi-card">
-              <div className="card-body kpi-card-body">
-                <div className="kpi-info">
-                  <p className="kpi-label">Atrasadas</p>
-                  <h3 className="kpi-value atrasadas">
-                    {metricas.atrasadas}
-                  </h3>
-                  <span className="badge bg-danger kpi-badge">
-                    {metricas.tareasTotales > 0 
-                      ? `${Math.round((metricas.atrasadas / metricas.tareasTotales) * 100)}%`
-                      : '0%'
-                    }
-                  </span>
-                </div>
-                <div className="kpi-icon-circle atrasadas"></div>
-              </div>
-            </div>
+            <KPICard
+              title="Pendientes"
+              value={reporteData?.estadisticas?.pendientes || 0}
+              loading={loading}
+            />
+
+            <KPICard
+              title="Atrasadas"
+              value={reporteData?.estadisticas?.atrasadas || 0}
+              loading={loading}
+            />
           </div>
         </div>
 
-        {/* ========== PANEL PRINCIPAL - GRÁFICOS ========== */}
-        <div className="col-12 col-lg-9">
+        {/* Panel derecho - Gráficos */}
+        <div className="col-12 col-md-9">
+          <h2 className="text-center fw-bold mb-4">Reporte del Usuario</h2>
+
+          <div className="d-grid gap-2 col-6 mx-auto mb-4">
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={handleCambiarUsuario}
+            >
+              Usuario: {numDocumento}
+            </button>
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={handleGenerarPDF}
+              disabled
+            >
+              Generar PDF
+            </button>
+          </div>
+
           <div className="row g-4">
             {/* Gráfico 1: Tareas Completadas Por Mes */}
-            <div className="col-12 col-xl-6">
-              <div className="card chart-card">
-                <div className="card-body">
-                  <div className="chart-header">
-                    <div>
-                      <h5 className="chart-title">
-                        📈 Tareas Completadas Por Mes
-                      </h5>
-                      <p className="chart-description">
-                        Tendencia de los últimos 6 meses
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Placeholder para gráfico */}
-                  <div className="chart-placeholder">
-                    <p>Gráfico en desarrollo</p>
-                    <small>
-                      Datos disponibles: {dataGraficos.completadasMes.length} meses
-                    </small>
-                  </div>
-                </div>
-              </div>
+            <div className="col-md-6">
+              <ChartCard title="Tareas Completadas Por Mes" loading={loading}>
+                {dataMeses.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={dataMeses}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="mes" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="total" fill="#4b2e39" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="chart-placeholder">Sin datos</div>
+                )}
+              </ChartCard>
             </div>
 
             {/* Gráfico 2: Tareas Por Categoría */}
-            <div className="col-12 col-xl-6">
-              <div className="card chart-card">
-                <div className="card-body">
-                  <div className="chart-header">
-                    <div>
-                      <h5 className="chart-title">
-                        📊 Tareas Por Categoría
-                      </h5>
-                      <p className="chart-description">
-                        Distribución por tipo de tarea
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Placeholder para gráfico */}
-                  <div className="chart-placeholder">
-                    <p>Gráfico en desarrollo</p>
-                    <small>
-                      Categorías encontradas: {dataGraficos.categorias.length}
-                    </small>
-                  </div>
-                </div>
-              </div>
+            <div className="col-md-6">
+              <ChartCard title="Tareas Por Categoría" loading={loading}>
+                {dataCategorias.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <PieChart>
+                      <Pie
+                        data={dataCategorias}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) =>
+                          `${name}: ${(percent * 100).toFixed(0)}%`
+                        }
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {dataCategorias.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="chart-placeholder">Sin datos</div>
+                )}
+              </ChartCard>
             </div>
 
             {/* Gráfico 3: Estado Actual de las Tareas */}
-            <div className="col-12 col-xl-6">
-              <div className="card chart-card">
-                <div className="card-body">
-                  <div className="chart-header">
-                    <div>
-                      <h5 className="chart-title">
-                        🎯 Estado Actual de las Tareas
-                      </h5>
-                      <p className="chart-description">
-                        Distribución por estado
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Placeholder para gráfico */}
-                  <div className="chart-placeholder">
-                    <p>Gráfico en desarrollo</p>
-                    <small>
-                      Estados registrados: {dataGraficos.estados.length}
-                    </small>
-                  </div>
-                </div>
-              </div>
+            <div className="col-md-6">
+              <ChartCard title="Estado Actual de las Tareas" loading={loading}>
+                {dataEstados.length > 0 ? (
+                  <ResponsiveContainer width="100%" height={240}>
+                    <PieChart>
+                      <Pie
+                        data={dataEstados}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value }) => `${name}: ${value}`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {dataEstados.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="chart-placeholder">Sin datos</div>
+                )}
+              </ChartCard>
             </div>
 
-            {/* Gráfico 4: Tiempo Promedio Por Categoría */}
-            <div className="col-12 col-xl-6">
-              <div className="card chart-card">
-                <div className="card-body">
-                  <div className="chart-header">
-                    <div>
-                      <h5 className="chart-title">
-                        ⏱️ Tiempo Promedio Por Categoría
-                      </h5>
-                      <p className="chart-description">
-                        Eficiencia por tipo de tarea
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Placeholder para gráfico */}
-                  <div className="chart-placeholder">
-                    <p>Gráfico en desarrollo</p>
-                    <small>Próximamente</small>
-                  </div>
+            {/* Gráfico 4: Placeholder para futuro */}
+            <div className="col-md-6">
+              <ChartCard title="Tiempo Promedio Por Categoría" loading={loading}>
+                <div className="chart-placeholder">
+                  Próximamente
                 </div>
-              </div>
+              </ChartCard>
             </div>
           </div>
         </div>
@@ -389,4 +250,4 @@ const ReporteDashboard = () => {
   );
 };
 
-export default ReporteDashboard;
+export default Reportes;

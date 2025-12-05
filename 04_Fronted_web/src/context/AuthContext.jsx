@@ -1,6 +1,4 @@
-//token datos del usuario funciones login / logout persistencia en localStorage
-
-
+// src/context/AuthContext.js
 import { createContext, useState } from 'react';
 
 export const AuthContext = createContext();
@@ -12,12 +10,19 @@ export function AuthProvider({ children }) {
   });
 
   const login = (token, user) => {
+    console.log('🔐 [AuthContext] Guardando token y usuario...');
+    console.log('Token a guardar:', token);
+    console.log('Usuario a guardar:', user);
+    
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
     setAuth({ token, user });
+    
+    console.log('✅ [AuthContext] Token y usuario guardados exitosamente');
   };
 
   const logout = () => {
+    console.log('🚪 [AuthContext] Cerrando sesión...');
     localStorage.clear();
     setAuth({ token: null, user: null });
   };
@@ -28,4 +33,3 @@ export function AuthProvider({ children }) {
     </AuthContext.Provider>
   );
 }
-// Contexto para manejar la autenticación de usuarios en la aplicación.

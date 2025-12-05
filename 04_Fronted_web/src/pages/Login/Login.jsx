@@ -15,52 +15,70 @@ import { authService } from "../../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth(); // Obtener la función login del contexto
+  const { login } = useAuth();
 
   const [num_documento, setDocumento] = useState("");
   const [contraseña, setContraseña] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const [cargando, setCargando] = useState(false); //Estado de carga
+  const [cargando, setCargando] = useState(false);
 
-  //  Función para manejar el login
   const handleSubmit = async (e) => {
     e.preventDefault();
     setCargando(true);
     setMensaje("");
 
     try {
-      //  Usar el servicio de autenticación
+      console.log('🔐 Intentando login con documento:', num_documento);
+      
+      // Llamar al servicio de autenticación
       const data = await authService.login({
         num_documento,
         contraseña
       });
 
-      console.log("Respuesta del backend:", data);
+      console.log("📥 Respuesta del backend:", data);
 
-      // Verificar si la respuesta es exitosa
-      if (data.body && data.body.token) {
-        // Usar el contexto para guardar token y usuario
-        login(data.body.token, data.body.user || { num_documento });
-        
-        setMensaje("Bienvenido!");
-        
-        //  Redirigir con la espera de medio segundo 
-        setTimeout(() => {
-          navigate("/actividades");
-        }, 500);
-      } else {
-        setMensaje(" Error: No se recibió el token");
+      // Verificar que la respuesta tenga la estructura correcta
+      if (!data.body || !data.body.token) {
+        console.error('❌ Respuesta sin token:', data);
+        throw new Error("No se recibió el token del servidor");
       }
-    } catch (error) {
-      console.error("Error en login:", error);
+
+      const token = data.body.token;
+      const user = data.body.user || { num_documento };
+
+      console.log('✅ Token extraído:', token);
+      console.log('👤 Usuario extraído:', user);
+
+      // Guardar usando el contexto
+      login(token, user);
       
-      // Manejo de errores más específico
+      // Verificar que se guardó
+      const tokenVerificado = localStorage.getItem('token');
+      const userVerificado = localStorage.getItem('user');
+      console.log('🔍 Token guardado en localStorage:', tokenVerificado ? '✅ Sí' : '❌ No');
+      console.log('🔍 User guardado en localStorage:', userVerificado ? '✅ Sí' : '❌ No');
+      
+      setMensaje("✅ Bienvenido!");
+      
+      // Redirigir después de medio segundo
+      setTimeout(() => {
+        console.log('🚀 Redirigiendo a /actividades...');
+        navigate("/actividades");
+      }, 500);
+      
+    } catch (error) {
+      console.error("❌ Error completo en login:", error);
+      
       if (error.response) {
-        setMensaje(` ${error.response.data.message || "Credenciales incorrectas"}`);
+        console.error('Response error:', error.response.data);
+        setMensaje(`❌ ${error.response.data.body || error.response.data.message || "Credenciales incorrectas"}`);
       } else if (error.request) {
-        setMensaje("No se pudo conectar con el servidor");
+        console.error('Request error:', error.request);
+        setMensaje("❌ No se pudo conectar con el servidor");
       } else {
-        setMensaje(" Error inesperado");
+        console.error('Error message:', error.message);
+        setMensaje(`❌ ${error.message || "Error inesperado"}`);
       }
     } finally {
       setCargando(false);
@@ -76,7 +94,7 @@ export default function Login() {
       <div className="container">
         <div className="row">
           {/* CARRUSEL */}
-          <div className="col-md-6  carrusel-login">
+          <div className="col-md-6 carrusel-login">
             <div id="carouselExampleIndicators" className="carousel slide">
               <div className="carousel-inner">
                 <div className="carousel-item active">
