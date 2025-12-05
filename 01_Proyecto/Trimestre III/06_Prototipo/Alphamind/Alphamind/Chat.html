@@ -97,74 +97,54 @@
         </div>
         </div>
     </header>
+    
+        </header>
 
-
-    <div class="container principal">
-        <div class="row">
-            <div class="col-4 menu-chats">
-                <div class="lista">
-                    <h4>Mensajes</h4>
-                       <input type="text" class="form-cotrol" placeholder="Buscar. . .">
-                        <span><i class="bi bi-search"></i></span>
-                    <ul>
-                        <li  class="usuario-chat">
-                            <img src="./Recursos/Foto.jpg" alt="" class="foto-chats">
-                            <span>Usuario1</span>
-                        </li>
-                        <li class="usuario-chat">
-                                    <img src="./Recursos/Foto.jpg" alt="" class="foto-chats">
-                            <span>Usuario1</span>
-                        </li>
-                        <li class="usuario-chat">
-                                    <img src="./Recursos/Foto.jpg" alt="" class="foto-chats">
-                            <span>Usuario1</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="col-7">
-                <div class="row row-chat">
-                    <div class="col-12 chat-header">
-                        <div class="chat-header-items">
-                            <img src="./Recursos/Foto.jpg" alt="" class="foto-chats">
-                            <h5>Nombre de usuario</h5>
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="chat-mensajes">
-                            <div class="mensaje Usuario1">
-                                 <span><i class="bi bi-check-all"></i></span>
-                                <span class="usuario">Usuario1:</span>
-                                <span class="texto">Hola, ¿cómo estás? </span>
-                            </div>
-                            <div class="mensaje Usuario2">
-                                <span class="usuario">Usuario2:</span>
-                                <span class="texto">¡Hola! Estoy bien, gracias.</span>
-                                 <span><i class="bi bi-check"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-12 chat-enviar">
-    <input type="text" class="form-control" placeholder="Escribe un mensaje...">
-    <button type="button" class="btn-enviar">
-        <i class="bi bi-send"></i>
-    </button>
-
-    <button type="button" class="btn-archivo">
-                <i class="bi bi-file-earmark-arrow-up"></i> 
-    </button>
-</div>
-                </div>
-            </div>
+<!-- CONTENEDOR DEL CHAT -->
+<div class="chat-wrapper">
+  <div class="container principal">
+    <div class="row">
+      <!-- PANEL IZQUIERDO -->
+      <div class="col-md-4 panel-usuarios">
+        <h6 class="titulo-panel">Chats</h6>
+        <input type="text" class="buscador" placeholder="Buscar..." />
+        <div class="usuario activo">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>María</strong><small>Último mensaje...</small></div>
         </div>
+        <div class="usuario">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>Carlos</strong><small>Hola</small></div>
+        </div>
+        <div class="usuario">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>Soporte</strong><small>Nuevo mensaje</small></div>
+        </div>
+      </div>
+
+      <!-- PANEL DERECHO -->
+      <div class="col-md-8 panel-chat">
+        <div class="chat-header">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>María</strong></div>
+        </div>
+
+        <div class="chat-mensajes">
+          <div class="mensaje recibido">Hola, ¿me ayudas con el informe?</div>
+          <div class="mensaje enviado">Sí, dime qué necesitas.</div>
+          <div class="mensaje recibido">El resumen de hoy.</div>
+        </div>
+
+        <div class="chat-enviar">
+          <button class="btn-archivo"><i class="bi bi-paperclip"></i></button>
+          <input type="text" placeholder="Mensaje..." />
+          <button class="btn-enviar"><i class="bi bi-send"></i></button>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-
-
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
