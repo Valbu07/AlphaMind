@@ -28,7 +28,6 @@
 }
 
 .menu button:hover {
-  background-color: #e67417;
   color: #F1F5F9;
 }
 
@@ -121,79 +120,11 @@
   animation: fadeOutToast 0.3s ease-out forwards;
 }
 
-@keyframes fadeOutToast {
-  to {
-    transform: translateX(500px);
-    opacity: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .mensaje {
-    right: 15px;
-    left: 15px;
-    max-width: calc(100% - 30px);
-    font-size: 14px;
-    padding: 16px 45px 16px 18px;
-  }
-}
-
-@media (max-width: 480px) {
-  .mensaje {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    max-width: calc(100% - 20px);
-    font-size: 13px;
-    padding: 14px 40px 14px 15px;
-    border-radius: 12px;
-  }
-  
-  .mensaje button {
-    width: 28px;
-    height: 28px;
-    font-size: 20px;
-  }
-  
-  @keyframes toastSlide {
-    from {
-      transform: translateY(-100px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-}
-
-/* Fin de mensajes*/
-
-@media (max-width: 768px) {
-  .menu {
-    padding: 10px 15px;
-  }
-  
-  .menu button {
-    padding: 10px 15px;
-    font-size: 13px;
-    flex: 1 1 auto; 
-    min-width: 140px;
-  }
-}
-
-@media (max-width: 480px) {
-  .menu button {
-    padding: 8px 12px;
-    font-size: 12px;
-    min-width: 120px;
-  }
-}
 
 
 .contenido {
   width: 90%;
-  max-width: 700px; 
+  max-width: 900px; 
   padding: 20px;
   margin: 20px auto; 
 }
@@ -218,7 +149,7 @@
 }
 
 .formulario button {
-  background-color: #e67417;
+  background-color: #faca77;
   color: black;
   border: 2px solid #faca77;
   padding: 10px;
@@ -228,7 +159,7 @@
 }
 
 .formulario button:hover {
-  background-color: #faca77;
+  background-color: #f7a840;
 }
 
 
@@ -361,4 +292,36 @@
 
 #contrasena {
   text-align: center;
+}
+
+
+@media (max-width: 1199px) {
+  .menu {
+    gap: 15px;
+  }
+  .tabla-usuarios{
+    flex-wrap: wrap;
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .menu {
+    flex-wrap: wrap;
+
+  }
+  .menu button {
+    width: 35%;
+  }
+
+  .fila {
+     flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu button {
+    width: 100%;
+  }
 }

@@ -76,7 +76,7 @@ export default function Login() {
       <div className="container">
         <div className="row">
           {/* CARRUSEL */}
-          <div className="col-6">
+          <div className="col-md-6  carrusel-login">
             <div id="carouselExampleIndicators" className="carousel slide">
               <div className="carousel-inner">
                 <div className="carousel-item active">

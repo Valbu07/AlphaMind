@@ -261,34 +261,34 @@ const Usuarios = () => {
 
       {/* Botones del menú */}
       <div className="menu">
-        <button 
+        <button className="btn-menu" 
           onClick={() => mostrarSeccion("crear")}
           style={{
-            backgroundColor: seccionActiva === "crear" ? "#e67417" : "#faca77"
+            backgroundColor: seccionActiva === "crear" ? "#f7a840" : "#faca77"
           }}
         >
           {modoEdicion ? "Editando Usuario" : "Crear Usuario"}
         </button>
-        <button 
+        <button className="btn-menu"
           onClick={() => mostrarSeccion("consultar")}
           style={{
-            backgroundColor: seccionActiva === "consultar" ? "#e67417" : "#faca77"
+            backgroundColor: seccionActiva === "consultar" ? "#f7a840" : "#faca77"
           }}
         >
           Consultar Usuarios
         </button>
-        <button 
+        <button className="btn-menu"
           onClick={() => mostrarSeccion("editar")}
           style={{
-            backgroundColor: seccionActiva === "editar" ? "#e67417" : "#faca77"
+            backgroundColor: seccionActiva === "editar" ? "#f7a840" : "#faca77"
           }}
         >
           Editar Usuario
         </button>
-        <button 
+        <button className="btn-menu"
           onClick={() => mostrarSeccion("eliminar")}
           style={{
-            backgroundColor: seccionActiva === "eliminar" ? "#e67417" : "#faca77"
+            backgroundColor: seccionActiva === "eliminar" ? "#f7a840" : "#faca77"
           }}
         >
           Eliminar Usuario

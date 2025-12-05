@@ -8,9 +8,9 @@
   gap: 110px;
 }
 
-.botones-principales button {
+.btn {
   padding: 13px 28px;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: bold;
   border: none;
   border-radius: 12px;
@@ -18,8 +18,9 @@
   background-color: #faca77;
 }
 
-.botones-principales button:hover {
-  background-color: #f7a840;
+.btn:hover {
+  background-color: #faca77;
+  color: #ffffff;
 }
 
 /* Contenedor de Crear Actividades */
@@ -33,6 +34,9 @@
   padding: 24px;
   border-radius: 12px;
   border-color: #faca77;
+  background-color: #fff;
+  width: 900px;
+  max-width: 100%;
 }
 
 .contenedor-CA h1 {
@@ -82,7 +86,6 @@
   cursor: pointer;
   transition: background-color 0.3s;
 }
-
 
 .subTarea button:hover {
   background-color: #f7a840;
@@ -139,12 +142,14 @@
 
 /* Cancelar */
 .botones-finales .boton-cancelar button {
-  background-color: #a2bbee;
+  background-color: #97b6f7;
   color: #333;
 }
 
 .botones-finales .boton-cancelar button:hover {
-  background-color: #7597e5;
+  color: #fff !important;
+  transition: all 0.5s;
+  background: #3948b9 !important;
 }
 
 /* Asignar */
@@ -154,10 +159,12 @@
 }
 
 .botones-finales .boton-asignar button:hover {
+  color: #fff !important;
+  transition: all 0.5s;
   background-color: #f7a840;
 }
 
-/*Contenedor de Actividades asignadas*/
+/* Contenedor de Actividades asignadas */
 .contenedor-AA {
   box-shadow: 0 0 20px rgba(56, 4, 4, 0.1);
   margin: auto;
@@ -168,6 +175,8 @@
   padding: 24px;
   border-radius: 12px;
   border-color: #faca77;
+  background-color: #fff;
+  max-width: 100%;
 }
 
 .asignado {
@@ -176,4 +185,145 @@
   gap: 24px;
   font-weight: bold;
   color: #1f2937;
+}
+
+/* RESPONSIVE DESIGN */
+
+/* Tablets y pantallas medianas */
+@media (max-width: 768px) {
+  .botones-principales {
+    gap: 30px;
+    flex-wrap: wrap;
+    padding: 10px 15px;
+  }
+
+  .botones-principales button {
+    padding: 12px 24px;
+    font-size: 18px;
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .contenedor-CA {
+    width: auto;
+    margin: 0 15px 20px 15px;
+    padding: 20px;
+  }
+
+  .contenedor-CA h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .contenedor-AA {
+    margin: 0 15px 20px 15px;
+    padding: 20px;
+  }
+
+  .asignado {
+    font-size: 20px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .botones-finales {
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .botones-finales button {
+    max-width: 100%;
+  }
+
+  .form .form-control,
+  .form input[type="text"],
+  .form input[type="date"],
+  .form textarea,
+  .form select {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .botones-principales {
+    gap: 15px;
+    margin-top: 20px;
+    flex-direction: column;
+  }
+
+  .botones-principales button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 16px;
+    min-width: auto;
+  }
+
+  .contenedor-CA {
+    margin: 0 10px 15px 10px;
+    padding: 16px;
+  }
+
+  .contenedor-CA h1 {
+    font-size: 20px;
+    margin-bottom: 18px;
+  }
+
+  .contenedor-AA {
+    margin: 0 10px 15px 10px;
+    padding: 16px;
+  }
+
+  .asignado {
+    font-size: 18px;
+    gap: 12px;
+  }
+
+  .form {
+    gap: 14px;
+  }
+
+  .form .form-control,
+  .form input[type="text"],
+  .form input[type="date"],
+  .form textarea,
+  .form select {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .form textarea {
+    min-height: 70px;
+  }
+
+  .subTarea button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .subtarea-container {
+    gap: 8px;
+  }
+
+  .subtarea-container .subtarea-input {
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .subtarea-container .btn-icon {
+    padding: 6px 10px;
+  }
+
+  .botones-finales {
+    flex-direction: row;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .botones-finales button {
+    padding: 10px 16px;
+    font-size: 14px;
+    max-width: 48%;
+  }
 }
