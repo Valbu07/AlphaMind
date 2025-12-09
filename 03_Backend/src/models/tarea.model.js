@@ -1,41 +1,42 @@
 const conexion = require('../config/db'); 
 
 
-
-
-
 /*****************/// Buscar Todas las tareas //**************** */
-
-
 function todas(table) {
-
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM ??";  
-    conexion.query(sql, [table], (err, results) => {
+    const sql = 
+    `SELECT a.id_Actividad, a.asunto, a.descripcion, a.fecha_creacion, a.fecha_vencimiento,
+    a.prioridad, a.fecha_de_entrega, a.estado_actual, t.tarea,
+    aa.Asignado_por_idUsuario,
+    aa.Asignado_a_idUsuario
+    FROM actividad a
+    LEFT JOIN tarea t ON t.actividad_id_Actividad = a.id_Actividad
+    LEFT JOIN asignacion_actividad aa ON aa.actividad_idActividad = a.id_Actividad
+    ORDER BY a.fecha_creacion DESC`
+    ;
+    
+    conexion.query(sql, (err, results) => {
       if (err) {
         return reject(err);
       }
       resolve(results);
     });
   });
-  
 }
-
 /*****************/// Fin Buscar Todas las tareas //**************** */
 
 
 
 /*****************///  Buscar las tareas de un funcionario //**************** */
-
-
 function tareasPorFuncionario(num_documento){
     return new Promise ((resolve, reject)=>{
-        const sql = `SELECT f.primer_nombre, f.primer_apellido, f.segundo_apellido, a.asunto, a.descripcion, a.fecha_creacion, a.fecha_vencimiento, a.prioridad, a.fecha_de_entrega, a.estado_actual 
+        const sql = `SELECT f.primer_nombre, f.primer_apellido, f.segundo_apellido, a.asunto, a.descripcion, 
+        a.fecha_creacion, a.fecha_vencimiento, a.prioridad, a.fecha_de_entrega, a.estado_actual 
         FROM asignacion_actividad aa 
         INNER JOIN actividad a ON aa.actividad_idActividad = a.id_Actividad 
         INNER JOIN usuario u ON aa.Asignado_a_idUsuario = u.id_usuario 
         INNER JOIN funcionario f ON f.id_usuario = u.id_usuario WHERE a.estado_actual != 'Completado'
-         AND f.num_documento = ?`
+        AND f.num_documento = ?`
 
 
         conexion.query(sql, [ num_documento], (err,result)=> {
@@ -55,7 +56,6 @@ function tareasPorFuncionario(num_documento){
 
     })
 }
-
 /*****************/// Fin Buscar las tareas de un funcionario //**************** */
 
 
@@ -128,8 +128,6 @@ async function crearTarea(data) {
 }
 /*****************/// FIN CREAR TAREA //**************** */
 
-
-
 /*****************/// EDITAR TAREA //**************** */
 async function editarTarea(data, id_actividad) {
   return new Promise((resolve, reject) => {
@@ -189,10 +187,7 @@ async function editarTarea(data, id_actividad) {
 
 /*****************/// FIN EDITAR TAREA //**************** */
 
-
-
-
-
+/*****************/// ELIMINAR TAREA //**************** */
 function eliminarTarea(id_actividad) {
   return new Promise((resolve, reject) => {
     conexion.beginTransaction((err) => {
@@ -228,15 +223,7 @@ function eliminarTarea(id_actividad) {
     });
   });
 }
-
-
-
-
-
-
-
-
-
+/*****************/// FIN ELIMINAR TAREA //**************** */
 
 module.exports = {
   crearTarea,

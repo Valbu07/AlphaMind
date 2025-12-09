@@ -1,29 +1,110 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import { BsJournalPlus } from "react-icons/bs";
+import { useAuth } from "../../hooks/useAuth";
+import { actividadesService } from "../../services/actividadesServices";
+import { funcionariosService } from "../../services/FuncionariosService";
 import "./CrearActividades.css";
 
-export default function CrearActividades() {        
-    const [vista, setVista] = useState("crear"); /*controla botones*/
-
+export default function CrearActividades() {
+    const { token, user } = useAuth();
+    const [vista, setVista] = useState("crear");
+    const [loading, setLoading] = useState(false);
+    const [mensaje, setMensaje] = useState("");
+    const [funcionarios, setFuncionarios] = useState([]);
+    const [actividades, setActividades] = useState([]);
     const [subtareas, setSubtareas] = useState([]);
     const [para, setPara] = useState("");
     const [fecha, setFecha] = useState("");
     const [asunto, setAsunto] = useState("");
     const [prioridad, setPrioridad] = useState("");
     const [descripcion, setDescripcion] = useState("");
+    const [modoEdicion, setModoEdicion] = useState(false);
+    const [actividadEditando, setActividadEditando] = useState(null);
+    const [funcionariosCargados, setFuncionariosCargados] = useState(false);
 
-    const agregarSubtarea = () => setSubtareas([...subtareas, ""]); 
+    useEffect(() => { cargarFuncionarios(); }, [token]);
+    useEffect(() => { 
+        if (vista === "asignadas" && funcionariosCargados) cargarActividades(); 
+    }, [vista, funcionariosCargados, token]);
 
-    const cambiarSubtarea = (index, valor) => {
-        const nuevas = [...subtareas];
-        nuevas[index] = valor;
-        setSubtareas(nuevas);
+    const cargarFuncionarios = async () => {
+        try {
+            if (!token) return;
+            const data = await funcionariosService.getAll(token);
+            setFuncionarios(data.body || data);
+            setFuncionariosCargados(true);
+        } catch (error) {
+            setMensaje("Error al cargar funcionarios");
+        }
     };
 
-    const eliminarSubtarea = (index) =>
-        setSubtareas(subtareas.filter((_, i) => i !== index)
-);
+    const extraerSubtareas = (tarea) => {
+        if (!tarea) return [];
+        const texto = typeof tarea === "string" ? tarea : tarea.titulo || "";
+        return texto.split(" | ").filter((t) => t.trim());
+    };
+
+    const obtenerNombreFuncionario = (idAsignado) => {
+        if (!idAsignado) return "Sin asignar";
+        const func = funcionarios.find(
+            (f) => (f.id_usuario || f.Id_Usuario) == idAsignado
+        );
+        return func
+            ? `${func.Primer_Nombre || func.primer_nombre} ${
+                  func.Primer_Apellido || func.primer_apellido
+              }`.trim()
+            : "Sin asignar";
+    };
+
+    const cargarActividades = async () => {
+        setLoading(true);
+        setMensaje("");
+        try {
+            if (!token) return setMensaje("Error: No hay sesión activa");
+
+            const data = await actividadesService.getAll(token);
+            const actividadesConNombres = (data.body || data).map((act) => {
+                const idAsignado =
+                    act.asignacion?.asignado_a ||
+                    act.Asignado_a_idUsuario ||
+                    act.asignado_a;
+
+                return {
+                    ...act,
+                    nombre_asignado: obtenerNombreFuncionario(idAsignado),
+                    asunto: act.actividad?.asunto || act.asunto || "",
+                    descripcion:
+                        act.actividad?.descripcion || act.descripcion || "",
+                    fecha_vencimiento:
+                        act.actividad?.fecha_vencimiento ||
+                        act.fecha_vencimiento ||
+                        "",
+                    prioridad:
+                        act.actividad?.prioridad || act.prioridad || "Media",
+                    subtareas_array: extraerSubtareas(act.tarea),
+                    id_Actividad:
+                        act.actividad?.id_Actividad || act.id_Actividad,
+                    Asignado_a_idUsuario: idAsignado,
+                };
+            });
+
+            setActividades(actividadesConNombres);
+        } catch (error) {
+            setMensaje("Error al cargar actividades");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const agregarSubtarea = () => setSubtareas([...subtareas, ""]);
+    const cambiarSubtarea = (index, val) => {
+        const nuevas = [...subtareas];
+        nuevas[index] = val;
+        setSubtareas(nuevas);
+    };
+    const eliminarSubtarea = (i) =>
+        setSubtareas(subtareas.filter((_, idx) => idx !== i));
 
     const cancelar = () => {
         setPara("");
@@ -32,203 +113,433 @@ export default function CrearActividades() {
         setPrioridad("");
         setDescripcion("");
         setSubtareas([]);
+        setModoEdicion(false);
+        setActividadEditando(null);
+        setMensaje("");
     };
 
-    const asignar = () => {
-    console.log("Nueva tarea:", {para, asunto, fecha, prioridad, subtareas, descripcion });
-    alert(" Tarea creada con éxito");
-        setPara("");
-        setFecha("");
-        setAsunto("");
-        setPrioridad("");
-        setDescripcion("");
-        setSubtareas([]);
+    const asignar = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setMensaje("");
+
+        try {
+            if (!token || !para || !asunto || !fecha || !prioridad) {
+                setMensaje("Completa todos los campos obligatorios");
+                return;
+            }
+
+            let idUsuarioFinal =
+                user?.id_usuario ||
+                user?.Id_Usuario ||
+                user?.id ||
+                user?.ID;
+
+            if (!idUsuarioFinal && user?.num_documento) {
+                const func = funcionarios.find(
+                    (f) =>
+                        String(
+                            f.Num_Documento || f.num_documento
+                        ) === String(user.num_documento)
+                );
+                idUsuarioFinal =
+                    func?.id_usuario || func?.Id_Usuario || 1;
+            }
+
+            const asignadoA = parseInt(para);
+            const fechaCreacion =
+                new Date().toISOString().slice(0, 19).replace("T", " ");
+            const fechaVenc = fecha + " 23:59:59";
+
+            const actividadData = {
+                actividad: {
+                    asunto: asunto.trim(),
+                    descripcion: descripcion.trim(),
+                    fecha_creacion: fechaCreacion,
+                    fecha_vencimiento: fechaVenc,
+                    prioridad:
+                        prioridad.charAt(0).toUpperCase() +
+                        prioridad.slice(1),
+                    fecha_de_entrega: null,
+                    estado_actual: "Pendiente",
+                },
+                tarea: {
+                    titulo:
+                        subtareas.length > 0
+                            ? subtareas.filter((s) => s.trim()).join(" | ")
+                            : asunto.trim(),
+                },
+                asignacion: {
+                    asignado_por: idUsuarioFinal,
+                    asignado_a: asignadoA,
+                },
+            };
+
+            if (modoEdicion && actividadEditando) {
+                await actividadesService.update(
+                    token,
+                    actividadEditando,
+                    actividadData
+                );
+                setMensaje("✅ Actividad actualizada correctamente");
+            } else {
+                await actividadesService.create(token, actividadData);
+                setMensaje("✅ Actividad creada correctamente");
+            }
+
+            setTimeout(() => {
+                cancelar();
+                if (vista === "asignadas") cargarActividades();
+            }, 1500);
+        } catch (error) {
+            const mensajeError =
+                error.response?.data?.mensaje ||
+                error.response?.data?.message ||
+                "Error desconocido";
+            setMensaje(mensajeError);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const [actividades, setActividades] = useState([
-    {
-        asignado: "Danna Rodriguez",
-        asunto: "Crear plantilla para informe mensual",
-        fecha: "2024-10-15",
-        prioridad: "alta",
-        subtareas: [
-            { texto: "Estructura de documento (excel)", completada: true },
-            { texto: "Configurar formato y campos automáticos", completada: false }
-        ],
-        descripcion: "Debes crear una plantilla donde se pueda ejecutar fórmulas para automatizar cálculos..."
-    }
-    ]);
+    const handleEditarClick = (actividad) => {
+        const act = actividad.actividad || actividad;
+        setAsunto(act.asunto || actividad.asunto || "");
+        setDescripcion(act.descripcion || actividad.descripcion || "");
 
+        const fechaVenc =
+            act.fecha_vencimiento || actividad.fecha_vencimiento;
+        setFecha(
+            fechaVenc
+                ? fechaVenc.includes("T")
+                    ? fechaVenc.split("T")[0]
+                    : fechaVenc.split(" ")[0]
+                : ""
+        );
+
+        setPrioridad((act.prioridad || actividad.prioridad || "").toLowerCase());
+        setPara(
+            actividad.asignacion?.asignado_a ||
+                actividad.Asignado_a_idUsuario ||
+                actividad.asignado_a ||
+                ""
+        );
+        setSubtareas(
+            extraerSubtareas(actividad.tarea?.titulo || actividad.tarea)
+        );
+        setActividadEditando(act.id_Actividad || actividad.id_Actividad);
+        setModoEdicion(true);
+        setVista("crear");
+    };
+
+    const handleEliminar = async (id_actividad) => {
+        if (!window.confirm("¿Eliminar esta actividad?")) return;
+        setLoading(true);
+
+        try {
+            if (!token) return setMensaje("❌ No hay sesión activa");
+            await actividadesService.delete(token, id_actividad);
+            setMensaje("✅ Actividad eliminada correctamente");
+            cargarActividades();
+        } catch (error) {
+            setMensaje("No se pudo eliminar la actividad");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="contenedor-principal">
-        <div className="botones-principales">
-            <button className="btn btn-editar" onClick={() => setVista("crear")}
-                style={{
-            backgroundColor: vista === "crear" ? "#f7a840" : "#faca77"
-          }}>
-            Crear Actividades
-            </button>
-            <button className="btn " onClick={() => setVista("asignadas")} 
-            style={{
-            backgroundColor: vista === "asignadas" ? "#f7a840" : "#faca77"
-          }}>
-            Actividades Asignadas
-            </button>
-        </div>
-
-        {vista === "crear" && (
-      
-
-            
-
-            <div className="contenedor-CA">
-            <h1>Crear actividad</h1>
-            <form className="form">
-                <div className="input-group has-validation">
-                <select
-                    className="form-control"
-                    value={para}
-                    onChange={(e) => setPara(e.target.value)}
+            {mensaje && (
+                <div
+                    className={`mensaje-notificacion ${
+                        mensaje.includes("✅") ? "exito" : "error"
+                    }`}
                 >
-                    <option value="">Selecciona un usuario</option>
-                    <option value="danna">Danna Rodriguez</option>
-                    <option value="daniel">Daniel Valbuena</option>
-                    <option value="dayana">Dayana Machado</option>
-                </select>
-                </div>
-
-                <div className="input-group has-validation">
-                <div className="form-floating is-invalid">
-                    <input
-                    type="text"
-                    className="form-control"
-                    value={asunto}
-                    onChange={(e) => setAsunto(e.target.value)}
-                    placeholder="Asunto"
-                    required
-                    />
-                    <label>Asunto</label>
-                </div>
-                </div>
-
-                <div className="fecha">
-                <input
-                    type="date"
-                    value={fecha}
-                    onChange={(e) => setFecha(e.target.value)}
-                    required
-                />
-                </div>
-
-                <div className="input-group has-validation">
-                <select
-                    className="form-control"
-                    value={prioridad}
-                    onChange={(e) => setPrioridad(e.target.value)}
-                >
-                    <option value="">Prioridad</option>
-                    <option value="alta">Alta</option>
-                    <option value="media">Media</option>
-                    <option value="baja">Baja</option>
-                </select>
-                </div>
-
-                <div className="subTarea">
-                <button type="button" onClick={agregarSubtarea}>
-                    <BsJournalPlus size={20} /> Subtarea
-                </button>
-                </div>
-
-                {subtareas.map((sub, i) => (
-                <div key={i} className="subtarea-container">
-                    <input
-                    type="text"
-                    placeholder={`Subtarea ${i + 1}`}
-                    value={sub}
-                    onChange={(e) => cambiarSubtarea(i, e.target.value)}
-                    className="subtarea-input"
-                    />
+                    <span className="mensaje-texto">{mensaje}</span>
                     <button
-                    type="button"
-                    onClick={() => eliminarSubtarea(i)}
-                    className="btn-icon"
+                        className="mensaje-cerrar"
+                        onClick={() => setMensaje("")}
                     >
-                    <AiOutlineClose />
+                        ×
                     </button>
                 </div>
-                ))}
+            )}
 
-                <div className="input-group has-validation">
-                <div className="form-floating is-invalid">
-                    <input
-                    type="text"
-                    className="form-control"
-                    value={descripcion}
-                    onChange={(e) => setDescripcion(e.target.value)}
-                    placeholder="Descripción"
-                    />
-                    <label>Descripción</label>
-                </div>
-                </div>
+            <div className="botones-principales">
+                <button
+                    className="btn btn-editar"
+                    onClick={() => {
+                        setVista("crear");
+                        if (!modoEdicion) cancelar();
+                    }}
+                    style={{
+                        backgroundColor:
+                            vista === "crear" ? "#f7a840" : "#faca77",
+                    }}
+                >
+                    {modoEdicion ? "Editando Actividad" : "Crear Actividades"}
+                </button>
 
-                <div className="botones-finales">
-                <div className="boton-cancelar">
-                    <button type="button" onClick={cancelar}>
-                    Cancelar
-                    </button>
-                </div>
-                <div className="boton-asignar">
-                    <button type="submit" onClick={asignar}>Asignar</button>
-                </div>
-                </div>
-            </form>
+                <button
+                    className="btn"
+                    onClick={() => setVista("asignadas")}
+                    style={{
+                        backgroundColor:
+                            vista === "asignadas" ? "#f7a840" : "#faca77",
+                    }}
+                >
+                    Actividades Asignadas
+                </button>
             </div>
-        )}
 
-        {vista === "asignadas" && actividades.map((act) =>((
-        <div key={act.asunto} className="contenedor-AA">
-        <div className="header-actividad">
-            <h3 className="asignado">{act.asignado}</h3>
-            <span className={`prioridad ${act.prioridad}`}>
-                {act.prioridad.toUpperCase()}
-            </span>
-        </div>
+            {vista === "crear" && (
+                <div className="contenedor-CA">
+                    <h1>{modoEdicion ? "Editar Actividad" : "Crear Actividad"}</h1>
 
-        <div className="detalle-actividad">
-            <span><strong>Asunto:</strong> {act.asunto}</span>
-            <span><strong>Vence:</strong> {act.fecha}</span>
-        </div>
+                    <form className="form" onSubmit={asignar}>
+                        <div className="input-group has-validation">
+                            <select
+                                className="form-control"
+                                value={para}
+                                onChange={(e) => setPara(e.target.value)}
+                                required
+                                disabled={loading}
+                            >
+                                <option value="">Selecciona un funcionario</option>
+                                {funcionarios.map((func) => (
+                                    <option
+                                        key={func.Num_Documento || func.num_documento}
+                                        value={func.id_usuario || func.Id_Usuario}
+                                    >
+                                        {`${func.Primer_Nombre || func.primer_nombre} ${
+                                            func.Primer_Apellido ||
+                                            func.primer_apellido
+                                        }`}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
-        <div className="seccion-subtareas">
-            <h4 className="titulo-subtareas">Subtareas:</h4>
-            <ul className="lista-subtareas">
-                {act.subtareas.map((sub, i) => (
-                <li key={i} className="item-subtarea">
-                    <span className={`texto-subtarea ${sub.completada ? "completada" : ""}`}>
-                    {sub.texto}
-                    </span>
-                </li>
-                ))}
-            </ul>
-        </div>
+                        <div className="input-group has-validation">
+                            <div className="form-floating is-invalid">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={asunto}
+                                    onChange={(e) => setAsunto(e.target.value)}
+                                    placeholder="Asunto"
+                                    required
+                                    disabled={loading}
+                                />
+                                <label>Asunto</label>
+                            </div>
+                        </div>
 
-        <p className="descripcion">{act.descripcion}</p>
+                        <div className="fecha">
+                            <input
+                                type="date"
+                                value={fecha}
+                                onChange={(e) => setFecha(e.target.value)}
+                                required
+                                disabled={loading}
+                            />
+                        </div>
 
-        <div className="botones-finales">
-            <div className="boton-cancelar">
-                <button type="button" >Eliminar</button>
-            </div>
-            <div className="boton-asignar">
-                <button type="submit" >Actualizar</button>
-            </div>
-        </div>
+                        <div className="input-group has-validation">
+                            <select
+                                className="form-control"
+                                value={prioridad}
+                                onChange={(e) => setPrioridad(e.target.value)}
+                                required
+                                disabled={loading}
+                            >
+                                <option value="">Prioridad</option>
+                                <option value="alta">Alta</option>
+                                <option value="media">Media</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                        </div>
 
-        </div>
-        )))}
+                        <div className="subTarea">
+                            <button
+                                type="button"
+                                onClick={agregarSubtarea}
+                                disabled={loading}
+                            >
+                                <BsJournalPlus size={20} /> Subtarea
+                            </button>
+                        </div>
 
+                        {subtareas.map((sub, i) => (
+                            <div key={i} className="subtarea-container">
+                                <input
+                                    type="text"
+                                    placeholder={`Subtarea ${i + 1}`}
+                                    value={sub}
+                                    onChange={(e) =>
+                                        cambiarSubtarea(i, e.target.value)
+                                    }
+                                    className="subtarea-input"
+                                    disabled={loading}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => eliminarSubtarea(i)}
+                                    className="btn-icon"
+                                    disabled={loading}
+                                >
+                                    <AiOutlineClose />
+                                </button>
+                            </div>
+                        ))}
 
+                        <div className="input-group has-validation">
+                            <div className="form-floating is-invalid">
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    value={descripcion}
+                                    onChange={(e) =>
+                                        setDescripcion(e.target.value)
+                                    }
+                                    placeholder="Descripción"
+                                    disabled={loading}
+                                />
+                                <label>Descripción</label>
+                            </div>
+                        </div>
 
+                        <div className="botones-finales">
+                            <div className="boton-cancelar">
+                                <button
+                                    type="button"
+                                    onClick={cancelar}
+                                    disabled={loading}
+                                >
+                                    Cancelar
+                                </button>
+                            </div>
+                            <div className="boton-asignar">
+                                <button type="submit" disabled={loading}>
+                                    {loading
+                                        ? modoEdicion
+                                            ? "Actualizando..."
+                                            : "Asignando..."
+                                        : modoEdicion
+                                        ? "Actualizar"
+                                        : "Asignar"}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {vista === "asignadas" && (
+                <div>
+                    {loading ? (
+                        <p style={{ textAlign: "center", marginTop: "2rem" }}>
+                            Cargando...
+                        </p>
+                    ) : actividades.length === 0 ? (
+                        <p style={{ textAlign: "center", marginTop: "2rem" }}>
+                            No hay actividades
+                        </p>
+                    ) : (
+                        actividades.map((act) => (
+                            <div
+                                key={act.id_Actividad}
+                                className="contenedor-AA"
+                            >
+                                <div className="header-actividad">
+                                    <h3 className="asignado">
+                                        {act.nombre_asignado}
+                                    </h3>
+                                    <span
+                                        className={`prioridad ${(
+                                            act.prioridad || ""
+                                        ).toLowerCase()}`}
+                                    >
+                                        {(act.prioridad || "MEDIA").toUpperCase()}
+                                    </span>
+                                </div>
+
+                                <div className="detalle-actividad">
+                                    <span>
+                                        <strong>Asunto:</strong> {act.asunto}
+                                    </span>
+                                    <span>
+                                        <strong>Vence:</strong>{" "}
+                                        {act.fecha_vencimiento
+                                            ? act.fecha_vencimiento.includes("T")
+                                                ? act.fecha_vencimiento.split(
+                                                      "T"
+                                                  )[0]
+                                                : act.fecha_vencimiento.split(
+                                                      " "
+                                                  )[0]
+                                            : "Sin fecha"}
+                                    </span>
+                                </div>
+
+                                {act.subtareas_array.length > 0 && (
+                                    <div className="seccion-subtareas">
+                                        <h4 className="titulo-subtareas">
+                                            Subtareas:
+                                        </h4>
+                                        <ul className="lista-subtareas">
+                                            {act.subtareas_array.map(
+                                                (sub, i) => (
+                                                    <li
+                                                        key={i}
+                                                        className="item-subtarea"
+                                                    >
+                                                        <span className="texto-subtarea">
+                                                            {sub}
+                                                        </span>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <p className="descripcion">
+                                    {act.descripcion || "Sin descripción"}
+                                </p>
+
+                                <div className="botones-finales">
+                                    <div className="boton-cancelar">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleEliminar(act.id_Actividad)
+                                            }
+                                            disabled={loading}
+                                        >
+                                            {loading
+                                                ? "Eliminando..."
+                                                : "Eliminar"}
+                                        </button>
+                                    </div>
+                                    <div className="boton-asignar">
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                handleEditarClick(act)
+                                            }
+                                            disabled={loading}
+                                        >
+                                            Editar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            )}
         </div>
     );
 }
