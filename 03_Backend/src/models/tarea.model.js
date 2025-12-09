@@ -4,7 +4,6 @@ const conexion = require('../config/db');
 /*****************/// Buscar Todas las tareas //**************** */
 function todas(table) {
   return new Promise((resolve, reject) => {
-    // ✅ En lugar de SELECT *, hacemos JOIN para traer todo
     const sql = 
     `SELECT a.id_Actividad, a.asunto, a.descripcion, a.fecha_creacion, a.fecha_vencimiento,
     a.prioridad, a.fecha_de_entrega, a.estado_actual, t.tarea,
@@ -29,8 +28,6 @@ function todas(table) {
 
 
 /*****************///  Buscar las tareas de un funcionario //**************** */
-
-
 function tareasPorFuncionario(num_documento){
     return new Promise ((resolve, reject)=>{
         const sql = `SELECT f.primer_nombre, f.primer_apellido, f.segundo_apellido, a.asunto, a.descripcion, a.fecha_creacion, a.fecha_vencimiento, a.prioridad, a.fecha_de_entrega, a.estado_actual 

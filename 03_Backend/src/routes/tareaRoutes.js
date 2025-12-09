@@ -15,16 +15,6 @@ router.get('/', async (req,res) => {
     }
 });
 
-//  Tareas por funcionario por su documento
-router.get('/:num_documento', async (req,res) => {
-    try {
-        const data = await controlador.tareasPorFuncionario(req.params.num_documento);
-        respuesta.success(req,res,data,200);
-    } catch(error) {
-        respuesta.error(req,res,'Error al obtener las tareas del funcionario',500);
-    }
-});
-
 
 router.post('/crearTarea', async (req, res) => {
     try {
@@ -46,8 +36,6 @@ router.put('/editarTarea/:id_actividad', async (req, res) => {
     }
 });
 
-
-
 // eliminar Actividad
 router.delete('/:id_actividad', async (req,res) => {
     try {
@@ -58,5 +46,15 @@ router.delete('/:id_actividad', async (req,res) => {
     }
 });
 
+
+//  Tareas por funcionario por su documento
+router.get('/:num_documento', async (req,res) => {
+    try {
+        const data = await controlador.tareasPorFuncionario(req.params.num_documento);
+        respuesta.success(req,res,data,200);
+    } catch(error) {
+        respuesta.error(req,res,'Error al obtener las tareas del funcionario',500);
+    }
+});
 
 module.exports = router;

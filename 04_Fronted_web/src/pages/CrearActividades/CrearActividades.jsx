@@ -95,17 +95,6 @@ export default function CrearActividades() {
         setMensaje("");
     };
 
-<<<<<<< Updated upstream
-    const asignar = () => {
-    console.log("Nueva tarea:", {para, asunto, fecha, prioridad, subtareas, descripcion });
-    alert("✅ Tarea creada con éxito");
-        setPara("");
-        setFecha("");
-        setAsunto("");
-        setPrioridad("");
-        setDescripcion("");
-        setSubtareas([]);
-=======
     const asignar = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -113,7 +102,7 @@ export default function CrearActividades() {
         
         try {
             if (!token || !para || !asunto || !fecha || !prioridad) { 
-                setMensaje("❌ Completa todos los campos obligatorios"); 
+                setMensaje("Completa todos los campos obligatorios"); 
                 setLoading(false); 
                 return; 
             }
@@ -124,22 +113,20 @@ export default function CrearActividades() {
                 idUsuarioFinal = func?.id_usuario || func?.Id_Usuario || 1;
             }
             if (!idUsuarioFinal) { 
-                setMensaje("❌ Error al identificar usuario"); 
+                setMensaje("Error al identificar usuario"); 
                 setLoading(false); 
                 return; 
             }
 
             const asignadoA = parseInt(para);
             if (isNaN(asignadoA)) { 
-                setMensaje("❌ ID de funcionario inválido"); 
+                setMensaje("ID de funcionario inválido"); 
                 setLoading(false); 
                 return; 
             }
 
             const fechaCreacion = new Date().toISOString().slice(0, 19).replace('T', ' ');
-            const [año, mes, dia] = fecha.split('-');
-            const fechaLocal = new Date(año, mes - 1, dia, 23, 59, 59);
-            const fechaVencimiento = fechaLocal.toISOString().slice(0, 19).replace('T', ' ');
+            const fechaVencimiento = fecha + ' 23:59:59'; // Si fecha es YYYY-MM-DD, solo agrega la hora
 
             const actividadData = {
                 actividad: { 
@@ -164,15 +151,14 @@ export default function CrearActividades() {
 
             if (modoEdicion && actividadEditando) {
                 const response = await actividadesService.update(token, actividadEditando, actividadData);
-                console.log("✅ Respuesta actualización:", response);
+                console.log("Respuesta actualización:", response);
                 setMensaje("✅ Actividad actualizada correctamente");
             } else {
                 const response = await actividadesService.create(token, actividadData);
-                console.log("✅ Respuesta creación:", response);
+                console.log("Respuesta creación:", response);
                 setMensaje("✅ Actividad creada correctamente");
             }
 
-            // Esperar un momento antes de limpiar para que el usuario vea el mensaje
             setTimeout(() => {
                 cancelar();
                 if (vista === "asignadas") {
@@ -184,17 +170,16 @@ export default function CrearActividades() {
             setTimeout(() => setMensaje(""), 5000);
             
         } catch (error) {
-            console.error("❌ Error completo:", error);
+            console.error("Error completo:", error);
             const mensajeError = error.response?.data?.mensaje || 
                                error.response?.data?.message || 
                                error.message || 
                                "Error desconocido al procesar la actividad";
-            setMensaje(`❌ ${mensajeError}`);
+            setMensaje(`${mensajeError}`);
             setTimeout(() => setMensaje(""), 7000);
         } finally {
             setLoading(false);
         }
->>>>>>> Stashed changes
     };
 
     const handleEditarClick = (actividad) => {
@@ -225,8 +210,8 @@ export default function CrearActividades() {
             cargarActividades();
             setTimeout(() => setMensaje(""), 5000);
         } catch (error) {
-            console.error("❌ Error al eliminar:", error);
-            setMensaje(`❌ ${error.response?.data?.mensaje || "No se pudo eliminar la actividad"}`);
+            console.error("Error al eliminar:", error);
+            setMensaje(`${error.response?.data?.mensaje || "No se pudo eliminar la actividad"}`);
             setTimeout(() => setMensaje(""), 7000);
         } finally {
             setLoading(false);
@@ -235,26 +220,6 @@ export default function CrearActividades() {
 
     return (
         <div className="contenedor-principal">
-<<<<<<< Updated upstream
-        <div className="botones-principales">
-            <button className="btn btn-warning" onClick={() => setVista("crear")}>
-            Crear Actividades
-            </button>
-            <button className="btn btn-warning" onClick={() => setVista("asignadas")}>
-            Actividades Asignadas
-            </button>
-        </div>
-
-        {vista === "crear" && (
-            <div className="contenedor-CA">
-            <h1>Crear actividad</h1>
-            <form className="form">
-                <div className="input-group has-validation">
-                <select
-                    className="form-control"
-                    value={para}
-                    onChange={(e) => setPara(e.target.value)}
-=======
             {mensaje && (
                 <div className={`mensaje-notificacion ${mensaje.includes('✅') ? "exito" : "error"}`}>
                     <span className="mensaje-texto">{mensaje}</span>
@@ -270,7 +235,6 @@ export default function CrearActividades() {
                         if (!modoEdicion) cancelar(); 
                     }} 
                     style={{ backgroundColor: vista === "crear" ? "#f7a840" : "#faca77" }}
->>>>>>> Stashed changes
                 >
                     {modoEdicion ? "Editando Actividad" : "Crear Actividades"}
                 </button>

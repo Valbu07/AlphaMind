@@ -84,18 +84,17 @@
   transition: all 0.3s ease;
 }
 
-<<<<<<< Updated upstream
 .botones-principales button:hover {
   color: #fff !important;
   transition: all 0.5s;
   background-color: #f7a840;
-=======
+}
+
 .btn:hover {
   background-color: #f7a840;
   color: #ffffff;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
->>>>>>> Stashed changes
 }
 
 /* CONTENEDOR DE CREAR ACTIVIDADES */
