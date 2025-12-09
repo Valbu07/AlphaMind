@@ -1,101 +1,138 @@
+// backend/models/reportesModel.js
 const db = require("../config/db");
-const tebleFuncionario = "funcionario";
+
+// Nombres de tablas (corregido el typo)
+const tableFuncionario = "funcionario";
 const tableUsuarios = "usuario";
+const tableActividad = "actividad";
+const tableAsignacion = "asignacion_actividad";
+const tableTarea = "tarea";
 
 
-async function funcionario(num_documento) {
-  const usuario = await db.queryPromise(
-  `
-  SELECT u.id_usuario 
-  FROM ${tableUsuarios} u
-  INNER JOIN ${tebleFuncionario} f 
-    ON f.id_usuario = u.id_usuario
-  WHERE f.num_documento = ?
-  `,
-  [num_documento]
-);
+async function obtenerReporteFuncionario(num_documento) {
+  try {
+    console.log(' [MODEL] Obteniendo reporte para documento:', num_documento);
 
+    const usuario = await db.queryPromise(
+      `
+      SELECT u.id_usuario 
+      FROM ${tableUsuarios} u
+      INNER JOIN ${tableFuncionario} f 
+        ON f.id_usuario = u.id_usuario
+      WHERE f.num_documento = ?
+      `,
+      [num_documento]
+    );
 
-  if (usuario.length === 0) return null;
-
-  const id_usuario = usuario[0].id_usuario;
-
-
-  const estadisticas = await db.queryPromise(
-   `
-  SELECT 
-    COUNT(DISTINCT actividad.id_Actividad) AS total,
-    COUNT(DISTINCT CASE WHEN actividad.estado_actual = 'completada' THEN actividad.id_Actividad END) AS completadas,
-    COUNT(DISTINCT CASE WHEN actividad.estado_actual = 'pendiente' THEN actividad.id_Actividad END) AS pendientes,
-    COUNT(DISTINCT CASE WHEN actividad.estado_actual = 'atrasada' THEN actividad.id_Actividad END) AS atrasadas
-  FROM actividad
-  INNER JOIN asignacion_actividad
-    ON asignacion_actividad.actividad_idActividad = actividad.id_Actividad
-  WHERE asignacion_actividad.Asignado_a_idUsuario = ?
-`,
-[id_usuario]
-  );
-
-  const completadasMes = await db.queryPromise(
-   `
-  SELECT 
-    MONTH(actividad.fecha_creacion) AS mes, 
-    COUNT(DISTINCT actividad.id_Actividad) AS total
-  FROM actividad
-  INNER JOIN asignacion_actividad
-    ON asignacion_actividad.actividad_idActividad = actividad.id_Actividad
-  WHERE asignacion_actividad.Asignado_a_idUsuario = ? 
-    AND actividad.estado_actual = 'completada'
-  GROUP BY MONTH(actividad.fecha_creacion)
-  ORDER BY mes
-`,
-[id_usuario]
-  );
-
-  const categorias = await db.queryPromise(
-  `
-  SELECT 
-    tarea.tarea AS categoria, 
-    COUNT(DISTINCT actividad.id_Actividad) AS total
-  FROM actividad
-  INNER JOIN asignacion_actividad
-    ON asignacion_actividad.actividad_idActividad = actividad.id_Actividad
-  INNER JOIN tarea
-    ON tarea.actividad_id_Actividad = actividad.id_Actividad
-  WHERE asignacion_actividad.Asignado_a_idUsuario = ?
-  GROUP BY tarea.tarea
-  ORDER BY total DESC
-`,
-[id_usuario]
-  );
-
-  const estados = await db.queryPromise(
-  `
-  SELECT 
-    actividad.estado_actual AS estado, 
-    COUNT(DISTINCT tarea.id_Tarea) AS total
-  FROM tarea
-  INNER JOIN actividad
-    ON tarea.actividad_id_Actividad = actividad.id_Actividad
-  INNER JOIN asignacion_actividad
-    ON asignacion_actividad.actividad_idActividad = actividad.id_Actividad
-  WHERE asignacion_actividad.Asignado_a_idUsuario = ?
-  GROUP BY actividad.estado_actual
-  ORDER BY total DESC
-`,
-[id_usuario]
-  );
-
-  return {
-    estadisticas: estadisticas[0],
-    graficos: {
-      completadasMes,
-      categorias,
-      estados
+    // Validar que el usuario exista
+    if (!usuario || usuario.length === 0) {
+      console.log(' [MODEL] Usuario no encontrado:', num_documento);
+      return null;
     }
-  };
+
+    const id_usuario = usuario[0].id_usuario;
+    console.log('[MODEL] ID de usuario encontrado:', id_usuario);
+
+    const estadisticas = await db.queryPromise(
+      `
+      SELECT 
+        COUNT(DISTINCT a.id_Actividad) AS tareasTotales,
+        COUNT(DISTINCT CASE WHEN a.estado_actual = 'completada' THEN a.id_Actividad END) AS completadas,
+        COUNT(DISTINCT CASE WHEN a.estado_actual = 'pendiente' THEN a.id_Actividad END) AS pendientes,
+        COUNT(DISTINCT CASE WHEN a.estado_actual = 'atrasada' THEN a.id_Actividad END) AS atrasadas
+      FROM ${tableActividad} a
+      INNER JOIN ${tableAsignacion} aa
+        ON aa.actividad_idActividad = a.id_Actividad
+      WHERE aa.Asignado_a_idUsuario = ?
+      `,
+      [id_usuario]
+    );
+
+    const completadasMes = await db.queryPromise(
+      `
+      SELECT 
+        MONTH(a.fecha_creacion) AS mes,
+        MONTHNAME(a.fecha_creacion) AS nombreMes,
+        COUNT(DISTINCT a.id_Actividad) AS total
+      FROM ${tableActividad} a
+      INNER JOIN ${tableAsignacion} aa
+        ON aa.actividad_idActividad = a.id_Actividad
+      WHERE aa.Asignado_a_idUsuario = ? 
+        AND a.estado_actual = 'completada'
+        AND YEAR(a.fecha_creacion) = YEAR(CURDATE())
+      GROUP BY MONTH(a.fecha_creacion), MONTHNAME(a.fecha_creacion)
+      ORDER BY mes
+      `,
+      [id_usuario]
+    );
+
+    const categorias = await db.queryPromise(
+      `
+      SELECT 
+        t.tarea AS categoria, 
+        COUNT(DISTINCT a.id_Actividad) AS total
+      FROM ${tableActividad} a
+      INNER JOIN ${tableAsignacion} aa
+        ON aa.actividad_idActividad = a.id_Actividad
+      INNER JOIN ${tableTarea} t
+        ON t.actividad_id_Actividad = a.id_Actividad
+      WHERE aa.Asignado_a_idUsuario = ?
+      GROUP BY t.tarea
+      ORDER BY total DESC
+      LIMIT 10
+      `,
+      [id_usuario]
+    );
+
+
+    const estados = await db.queryPromise(
+      `
+      SELECT 
+        a.estado_actual AS estado, 
+        COUNT(DISTINCT t.id_Tarea) AS total
+      FROM ${tableTarea} t
+      INNER JOIN ${tableActividad} a
+        ON t.actividad_id_Actividad = a.id_Actividad
+      INNER JOIN ${tableAsignacion} aa
+        ON aa.actividad_idActividad = a.id_Actividad
+      WHERE aa.Asignado_a_idUsuario = ?
+      GROUP BY a.estado_actual
+      ORDER BY total DESC
+      `,
+      [id_usuario]
+    );
+
+    const resultado = {
+      estadisticas: {
+        tareasTotales: estadisticas[0].tareasTotales || 0,
+        completadas: estadisticas[0].completadas || 0,
+        pendientes: estadisticas[0].pendientes || 0,
+        atrasadas: estadisticas[0].atrasadas || 0
+      },
+      graficos: {
+        completadasMes: completadasMes || [],
+        categorias: categorias || [],
+        estados: estados || []
+      }
+    };
+
+    console.log('[MODEL] Reporte generado exitosamente:', {
+      tareasTotales: resultado.estadisticas.tareasTotales,
+      completadas: resultado.estadisticas.completadas
+    });
+
+    return resultado;
+
+  } catch (error) {
+    console.error(' [MODEL] Error al obtener reporte:', {
+      documento: num_documento,
+      error: error.message,
+      stack: error.stack
+    });
+    throw new Error(`Error en base de datos: ${error.message}`);
+  }
 }
 
 module.exports = {
-  funcionario,
+  obtenerReporteFuncionario
 };
