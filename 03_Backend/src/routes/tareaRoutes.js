@@ -59,5 +59,4 @@ router.delete('/:id_actividad', async (req,res) => {
 });
 
 
-
 module.exports = router;
