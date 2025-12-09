@@ -1,27 +1,15 @@
-<<<<<<< HEAD
 // src/pages/Reportes.jsx
-import React, { useState, useEffect } from 'react';
-import {BarChart,Bar,PieChart,Pie,Cell,XAxis,YAxis, CartesianGrid,Tooltip, Legend, ResponsiveContainer} from 'recharts';
-import KPICard from '../../components/reportes/KPICard';
-import ChartCard from '../../components/reportes/ChartCard';
-import { obtenerReporteFuncionario } from '../../services/reportesServices';
-import { getNumDocumentoFromToken } from '../../utils/jwtUtilis';
-
-const Reportes = () => {
-  const [reporteData, setReporteData] = useState(null);
-  const [loading, setLoading] = useState(true);
-=======
 import React, { useState, useEffect, useContext } from 'react';
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './reportes.css';
 import { getReportes } from '../../services/reportesServices';
 import { AuthContext } from '../../context/AuthContext';
+import KPICard from '../../components/reportes/KPICard';
+import ChartCard from '../../components/reportes/ChartCard';
 
 const ReporteDashboard = () => {
-  
-  // ✅ Obtener tanto usuario como token del contexto
-  const { usuario, token, cargando: cargandoAuth } = useContext(AuthContext);
+  const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
 
-  // ✅ Estados locales
   const [metricas, setMetricas] = useState({
     tareasTotales: 0,
     completadas: 0,
@@ -36,336 +24,257 @@ const ReporteDashboard = () => {
   });
 
   const [cargando, setCargando] = useState(true);
->>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
   const [error, setError] = useState(null);
-  const [numDocumento, setNumDocumento] = useState('');
 
-  // Colores para los gráficos
-  const COLORS = ['#4b2e39', '#8b5a6f', '#c99da3', '#e5d6cc', '#f4e9e2'];
+  const COLORS = ['#faca77', '#1E3A8A', '#60A5FA', '#FCD34D', '#A78BFA'];
 
-<<<<<<< HEAD
+
   useEffect(() => {
-    cargarReporte();
-  }, []);
-
-  const cargarReporte = async () => {
-=======
-  // ✅ DEBUG: Mostrar información del usuario y token
-  useEffect(() => {
-    console.log('🔍 [REPORTES] Estado del contexto:', {
-      cargandoAuth,
-      usuario,
-      token: token ? '✅ Token disponible' : '❌ Sin token',
-      num_documento: usuario?.num_documento,
-      documento_alternativo: usuario?.documento
-    });
-  }, [usuario, token, cargandoAuth]);
-
-  // ✅ Cargar datos automáticamente cuando el contexto esté listo
-  useEffect(() => {
-    // 1. Esperar a que el contexto termine de cargar
     if (cargandoAuth) {
-      console.log('⏳ [REPORTES] Esperando a que termine de cargar el contexto...');
+      console.log('⏳ [REPORTES] Esperando contexto...');
       return;
     }
 
-    // 2. Validar que exista usuario
     if (!usuario) {
-      console.error('❌ [REPORTES] No hay usuario logueado');
+      console.error('❌ [REPORTES] No hay usuario');
       setError('No hay sesión activa. Por favor inicia sesión.');
       setCargando(false);
       return;
     }
 
-    // 3. Validar que exista token
-    if (!token) {
-      console.error('❌ [REPORTES] No hay token disponible');
-      setError('No hay token de autenticación. Por favor inicia sesión nuevamente.');
-      setCargando(false);
-      return;
-    }
-
-    // 4. Obtener documento del usuario (soporta múltiples nombres de campo)
     const documento = usuario.num_documento || usuario.documento || usuario.cedula;
 
     if (!documento) {
-      console.error('❌ [REPORTES] Usuario sin documento:', usuario);
+      console.error('❌ [REPORTES] Usuario sin documento');
       setError('El usuario no tiene número de documento registrado.');
       setCargando(false);
       return;
     }
 
-    // 5. Cargar datos del reporte
-    console.log('✅ [REPORTES] Cargando datos para documento:', documento);
-    cargarDatosIniciales(documento, token);
+    console.log('✅ [REPORTES] Cargando datos para:', documento);
+    cargarDatosIniciales(documento);
 
-  }, [usuario, token, cargandoAuth]);
+  }, [usuario, cargandoAuth]);
 
-  // ✅ Función para cargar datos del reporte
-  const cargarDatosIniciales = async (documento, userToken) => {
->>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
+  const cargarDatosIniciales = async (documento) => {
     try {
-      setLoading(true);
+      setCargando(true);
       setError(null);
 
-<<<<<<< HEAD
-      // Obtener número de documento del token
-      const num_doc = getNumDocumentoFromToken();
+      console.log('📡 [REPORTES] Solicitando reporte...');
       
-      if (!num_doc) {
-        throw new Error('No se pudo obtener el número de documento del token');
-=======
-      console.log('📡 [REPORTES] Solicitando reporte para:', documento);
-      console.log('🔑 [REPORTES] Con token:', userToken);
-      console.log('🌐 [REPORTES] URL completa:', `http://localhost:3000/reportes/${documento}`);
-      
-      // ✅ Llamar al servicio con AMBOS parámetros
-      const datosReporte = await getReportes(documento, userToken);
+      const datosReporte = await getReportes(documento);
       
       console.log('✅ [REPORTES] Datos recibidos:', datosReporte);
 
-      // Validar estructura de datos
       if (!datosReporte?.estadisticas || !datosReporte?.graficos) {
-        throw new Error('Formato de datos inválido desde la API');
->>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
+        throw new Error('Formato de datos inválido');
       }
 
-      setNumDocumento(num_doc);
+      setMetricas({
+        tareasTotales: datosReporte.estadisticas.tareasTotales || 0,
+        completadas: datosReporte.estadisticas.completadas || 0,
+        pendientes: datosReporte.estadisticas.pendientes || 0,
+        atrasadas: datosReporte.estadisticas.atrasadas || 0
+      });
 
-      // Llamar al servicio
-      const response = await obtenerReporteFuncionario(num_doc);
+      setDataGraficos({
+        completadasMes: datosReporte.graficos.completadasMes || [],
+        categorias: datosReporte.graficos.categorias || [],
+        estados: datosReporte.graficos.estados || []
+      });
 
-      if (response.success && response.data) {
-        setReporteData(response.data);
-      } else {
-        throw new Error('No se encontraron datos del reporte');
-      }
-    } catch (err) {
-      console.error('Error al cargar reporte:', err);
-      setError(err.message || 'Error al cargar el reporte');
+    } catch (error) {
+      console.error('❌ [REPORTES] Error:', error);
+      setError(error.message);
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
-  const handleCambiarUsuario = () => {
-    // TODO: Implementar lógica para cambiar de usuario
-    console.log('Cambiar usuario');
-  };
-
   const handleGenerarPDF = () => {
-    // TODO: Implementar generación de PDF
     console.log('Generar PDF');
   };
 
-  // Preparar datos para el gráfico de meses
-  const dataMeses = reporteData?.graficos?.completadasMes?.map(item => ({
-    mes: item.nombreMes,
-    total: item.total
-  })) || [];
+  const handleCambiarUsuario = () => {
+    console.log('Cambiar usuario');
+  };
 
-  // Preparar datos para el gráfico de categorías
-  const dataCategorias = reporteData?.graficos?.categorias?.map(item => ({
-    name: item.categoria,
-    value: item.total
-  })) || [];
-
-  // Preparar datos para el gráfico de estados
-  const dataEstados = reporteData?.graficos?.estados?.map(item => ({
-    name: item.estado,
-    value: item.total
-  })) || [];
-
-  if (error) {
+  if (cargandoAuth || cargando) {
     return (
       <div className="container-fluid p-4">
-        <div className="alert alert-danger" role="alert">
-          <h4 className="alert-heading">Error</h4>
-          <p>{error}</p>
-<<<<<<< HEAD
-          <button className="btn btn-primary" onClick={cargarReporte}>
-            Reintentar
-          </button>
-=======
-          {(usuario?.num_documento || usuario?.documento) && token && (
-            <button 
-              className="btn btn-primary" 
-              onClick={() => cargarDatosIniciales(
-                usuario.num_documento || usuario.documento,
-                token
-              )}
-            >
-              🔄 Reintentar
-            </button>
-          )}
->>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
+        <div className="text-center">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+          <p className="mt-3">{cargandoAuth ? 'Verificando sesión...' : 'Cargando reporte...'}</p>
         </div>
       </div>
     );
   }
 
-<<<<<<< HEAD
-=======
-
-  // ✅ Renderizado principal
->>>>>>> e8da3c5781c0e087b1d322519cb79ad9926c659a
-  return (
-    <div className="container-fluid p-4">
-      <div className="row g-4">
-        {/* Panel izquierdo - KPIs */}
-        <div className="col-12 col-md-3">
-          <div className="card p-3 shadow-sm panel-left">
-            <h4 className="mb-3 fw-bold">Total</h4>
-
-            <KPICard
-              title="Tareas Totales"
-              value={reporteData?.estadisticas?.tareasTotales || 0}
-              loading={loading}
-            />
-
-            <KPICard
-              title="Completadas"
-              value={reporteData?.estadisticas?.completadas || 0}
-              loading={loading}
-            />
-
-            <KPICard
-              title="Pendientes"
-              value={reporteData?.estadisticas?.pendientes || 0}
-              loading={loading}
-            />
-
-            <KPICard
-              title="Atrasadas"
-              value={reporteData?.estadisticas?.atrasadas || 0}
-              loading={loading}
-            />
-          </div>
-        </div>
-
-        {/* Panel derecho - Gráficos */}
-        <div className="col-12 col-md-9">
-          <h2 className="text-center fw-bold mb-4">Reporte del Usuario</h2>
-
-          <div className="d-grid gap-2 col-6 mx-auto mb-4">
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={handleCambiarUsuario}
+  if (error) {
+    return (
+      <div className="container-fluid p-4">
+        <div className="alert alert-danger">
+          <h4>⚠️ Error al cargar reportes</h4>
+          <p>{error}</p>
+          {usuario?.num_documento && (
+            <button 
+              className="btn btn-primary" 
+              onClick={() => cargarDatosIniciales(usuario.num_documento)}
             >
-              Usuario: {numDocumento}
+              🔄 Reintentar
             </button>
-            <button
-              className="btn btn-primary"
-              type="button"
-              onClick={handleGenerarPDF}
-              disabled
-            >
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const dataMeses = dataGraficos.completadasMes.map(item => ({
+    mes: item.nombreMes,
+    total: item.total
+  }));
+
+  const dataCategorias = dataGraficos.categorias.map(item => ({
+    name: item.categoria,
+    value: item.total
+  }));
+
+  const dataEstados = dataGraficos.estados.map(item => ({
+    name: item.estado,
+    value: item.total
+  }));
+
+ 
+  return (
+  <div className="container-fluid p-4">
+    <div className="row g-4">
+      
+      {/* Panel izquierdo - KPIs */}
+      <div className="col-12 col-md-3">
+        <div className="card p-3 shadow-sm panel-left">
+          <h4 className="mb-3 fw-bold">Total</h4>
+
+          <KPICard title="Tareas Totales" value={metricas.tareasTotales} loading={false} />
+          <KPICard title="Completadas" value={metricas.completadas} loading={false} />
+          <KPICard title="Pendientes" value={metricas.pendientes} loading={false} />
+          <KPICard title="Atrasadas" value={metricas.atrasadas} loading={false} />
+        </div>
+      </div>
+
+      {/* Panel derecho CENTRADO */}
+      <div className="col-12 col-md-9 d-flex flex-column align-items-center">
+
+        {/* Header centrado */}
+        <div className="reportes-header text-center">
+          <h2 className="reportes-titulo">Reporte del Usuario</h2>
+
+          <div className="reportes-botones">
+            <button className="btn btn-primary" onClick={handleCambiarUsuario}>
+              Usuario: {usuario?.num_documento}
+            </button>
+
+            <button className="btn btn-secondary" onClick={handleGenerarPDF}>
               Generar PDF
             </button>
           </div>
+        </div>
 
-          <div className="row g-4">
-            {/* Gráfico 1: Tareas Completadas Por Mes */}
-            <div className="col-md-6">
-              <ChartCard title="Tareas Completadas Por Mes" loading={loading}>
-                {dataMeses.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <BarChart data={dataMeses}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="mes" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Bar dataKey="total" fill="#4b2e39" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="chart-placeholder">Sin datos</div>
-                )}
-              </ChartCard>
-            </div>
+        {/* Gráficos centrados */}
+        <div className="row g-4 justify-content-center text-center w-100 max-content">
 
-            {/* Gráfico 2: Tareas Por Categoría */}
-            <div className="col-md-6">
-              <ChartCard title="Tareas Por Categoría" loading={loading}>
-                {dataCategorias.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <PieChart>
-                      <Pie
-                        data={dataCategorias}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) =>
-                          `${name}: ${(percent * 100).toFixed(0)}%`
-                        }
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {dataCategorias.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="chart-placeholder">Sin datos</div>
-                )}
-              </ChartCard>
-            </div>
-
-            {/* Gráfico 3: Estado Actual de las Tareas */}
-            <div className="col-md-6">
-              <ChartCard title="Estado Actual de las Tareas" loading={loading}>
-                {dataEstados.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={240}>
-                    <PieChart>
-                      <Pie
-                        data={dataEstados}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, value }) => `${name}: ${value}`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {dataEstados.map((entry, index) => (
-                          <Cell
-                            key={`cell-${index}`}
-                            fill={COLORS[index % COLORS.length]}
-                          />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="chart-placeholder">Sin datos</div>
-                )}
-              </ChartCard>
-            </div>
-
-            {/* Gráfico 4: Placeholder para futuro */}
-            <div className="col-md-6">
-              <ChartCard title="Tiempo Promedio Por Categoría" loading={loading}>
-                <div className="chart-placeholder">
-                  Próximamente
-                </div>
-              </ChartCard>
-            </div>
+          {/* Gráfico 1 */}
+          <div className="col-md-6 d-flex justify-content-center">
+            <ChartCard title="Tareas Completadas Por Mes" loading={false}>
+              {dataMeses.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={dataMeses}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="mes" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="total" fill="#1E3A8A" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="chart-placeholder">Sin datos</div>
+              )}
+            </ChartCard>
           </div>
+
+          {/* Gráfico 2 */}
+          <div className="col-md-6 d-flex justify-content-center">
+            <ChartCard title="Tareas Por Categoría" loading={false}>
+              {dataCategorias.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={dataCategorias}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      dataKey="value"
+                    >
+                      {dataCategorias.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="chart-placeholder">Sin datos</div>
+              )}
+            </ChartCard>
+          </div>
+
+          {/* Gráfico 3 */}
+          <div className="col-md-6 d-flex justify-content-center">
+            <ChartCard title="Estado Actual de las Tareas" loading={false}>
+              {dataEstados.length > 0 ? (
+                <ResponsiveContainer width="100%" height={240}>
+                  <PieChart>
+                    <Pie
+                      data={dataEstados}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, value }) => `${name}: ${value}`}
+                      outerRadius={80}
+                      dataKey="value"
+                    >
+                      {dataEstados.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="chart-placeholder">Sin datos</div>
+              )}
+            </ChartCard>
+          </div>
+
+          {/* Gráfico 4 */}
+          <div className="col-md-6 d-flex justify-content-center">
+            <ChartCard title="NUEVA SECCION" loading={false}>
+              <div className="chart-placeholder">Próximamente</div>
+            </ChartCard>
+          </div>
+
         </div>
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
-export default Reportes;
+export default ReporteDashboard;

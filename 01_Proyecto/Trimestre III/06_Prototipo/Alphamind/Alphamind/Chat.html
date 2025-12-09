@@ -97,6 +97,9 @@
         </div>
         </div>
     </header>
+    
+        </header>
+
 
 
     <div class="container principal">
@@ -158,13 +161,53 @@
 </div>
                 </div>
             </div>
+
+<!-- CONTENEDOR DEL CHAT -->
+<div class="chat-wrapper">
+  <div class="container principal">
+    <div class="row">
+      <!-- PANEL IZQUIERDO -->
+      <div class="col-md-4 panel-usuarios">
+        <h6 class="titulo-panel">Chats</h6>
+        <input type="text" class="buscador" placeholder="Buscar..." />
+        <div class="usuario activo">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>María</strong><small>Último mensaje...</small></div>
+
         </div>
+        <div class="usuario">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>Carlos</strong><small>Hola</small></div>
+        </div>
+        <div class="usuario">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>Soporte</strong><small>Nuevo mensaje</small></div>
+        </div>
+      </div>
+
+      <!-- PANEL DERECHO -->
+      <div class="col-md-8 panel-chat">
+        <div class="chat-header">
+          <img src="./Recursos/Foto.jpg" />
+          <div><strong>María</strong></div>
+        </div>
+
+        <div class="chat-mensajes">
+          <div class="mensaje recibido">Hola, ¿me ayudas con el informe?</div>
+          <div class="mensaje enviado">Sí, dime qué necesitas.</div>
+          <div class="mensaje recibido">El resumen de hoy.</div>
+        </div>
+
+        <div class="chat-enviar">
+          <button class="btn-archivo"><i class="bi bi-paperclip"></i></button>
+          <input type="text" placeholder="Mensaje..." />
+          <button class="btn-enviar"><i class="bi bi-send"></i></button>
+        </div>
+      </div>
     </div>
+  </div>
+</div>
 
-
-
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
