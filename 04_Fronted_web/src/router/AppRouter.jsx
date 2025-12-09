@@ -6,6 +6,8 @@ import Actividades from "../pages/Actividades/Actividades";
 import CrearActividades from "../pages/CrearActividades/CrearActividades";
 import Calendario from "../pages/Calendario/Calendario";
 import ReporteDashboard from "../pages/reportes/reportes.jsx";
+import Chat from "../pages/Chat/Chat";
+
 
 import Navbar from "../components/layout/Navbar";
 
@@ -23,6 +25,7 @@ export default function AppRouter() {
           <Route path="/crear-actividades" element={<NavbarWrapper><CrearActividades /></NavbarWrapper>} />
           <Route path="/calendario" element={<NavbarWrapper><Calendario /></NavbarWrapper>} />
           <Route path="/reportes" element={<NavbarWrapper><ReporteDashboard/></NavbarWrapper>} />
+          <Route path="/chat" element={<NavbarWrapper><Chat /></NavbarWrapper>} />
         </Route>
       </Routes>
     </BrowserRouter>
