@@ -1,10 +1,4 @@
-// src/utils/jwtUtils.js
 
-/**
- * Decodifica un token JWT sin verificar la firma
- * @param {string} token - Token JWT a decodificar
- * @returns {object|null} - Payload del token o null si es inválido
- */
 export const decodeToken = (token) => {
   try {
     if (!token) {
@@ -30,10 +24,7 @@ export const decodeToken = (token) => {
   }
 };
 
-/**
- * Obtiene el número de documento del usuario desde el token
- * @returns {string|null} - Número de documento o null
- */
+
 export const getNumDocumentoFromToken = () => {
   const token = localStorage.getItem('token');
   
@@ -55,19 +46,12 @@ export const getNumDocumentoFromToken = () => {
   
   // Buscar el num_documento en diferentes posibles ubicaciones
   const numDocumento = decoded.num_documento || 
-                       decoded.numDocumento || 
-                       decoded.documento ||
-                       decoded.funcionario?.num_documento;
+  
   
   console.log('📄 [jwtUtils] Número de documento extraído:', numDocumento);
   
   return numDocumento || null;
 };
-
-/**
- * Verifica si el token ha expirado
- * @returns {boolean} - true si expiró, false si aún es válido
- */
 export const isTokenExpired = () => {
   const token = localStorage.getItem('token');
   if (!token) return true;
