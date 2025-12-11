@@ -5,6 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { actividadesService } from "../../services/actividadesServices";
 import { funcionariosService } from "../../services/FuncionariosService";
 import "./CrearActividades.css";
+import { decodeToken } from "../../utils/jwtUtilis"; 
 
 export default function CrearActividades() {
     const { token, user } = useAuth();
@@ -118,89 +119,85 @@ export default function CrearActividades() {
         setMensaje("");
     };
 
-    const asignar = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setMensaje("");
+   const asignar = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMensaje("");
 
-        try {
-            if (!token || !para || !asunto || !fecha || !prioridad) {
-                setMensaje("Completa todos los campos obligatorios");
-                return;
-            }
-
-            let idUsuarioFinal =
-                user?.id_usuario ||
-                user?.Id_Usuario ||
-                user?.id ||
-                user?.ID;
-
-            if (!idUsuarioFinal && user?.num_documento) {
-                const func = funcionarios.find(
-                    (f) =>
-                        String(
-                            f.Num_Documento || f.num_documento
-                        ) === String(user.num_documento)
-                );
-                idUsuarioFinal =
-                    func?.id_usuario || func?.Id_Usuario || 1;
-            }
-
-            const asignadoA = parseInt(para);
-            const fechaCreacion =
-                new Date().toISOString().slice(0, 19).replace("T", " ");
-            const fechaVenc = fecha + " 23:59:59";
-
-            const actividadData = {
-                actividad: {
-                    asunto: asunto.trim(),
-                    descripcion: descripcion.trim(),
-                    fecha_creacion: fechaCreacion,
-                    fecha_vencimiento: fechaVenc,
-                    prioridad:
-                        prioridad.charAt(0).toUpperCase() +
-                        prioridad.slice(1),
-                    fecha_de_entrega: null,
-                    estado_actual: "Pendiente",
-                },
-                tarea: {
-                    titulo:
-                        subtareas.length > 0
-                            ? subtareas.filter((s) => s.trim()).join(" | ")
-                            : asunto.trim(),
-                },
-                asignacion: {
-                    asignado_por: idUsuarioFinal,
-                    asignado_a: asignadoA,
-                },
-            };
-
-            if (modoEdicion && actividadEditando) {
-                await actividadesService.update(
-                    token,
-                    actividadEditando,
-                    actividadData
-                );
-                setMensaje("✅ Actividad actualizada correctamente");
-            } else {
-                await actividadesService.create(token, actividadData);
-                setMensaje("✅ Actividad creada correctamente");
-            }
-
-            setTimeout(() => {
-                cancelar();
-                if (vista === "asignadas") cargarActividades();
-            }, 1500);
-        } catch (error) {
-            const mensajeError =
-                error.response?.data?.mensaje ||
-                error.response?.data?.message ||
-                "Error desconocido";
-            setMensaje(mensajeError);
-        } finally {
-            setLoading(false);
+    try {
+        if (!token || !para || !asunto || !fecha || !prioridad) {
+            setMensaje("Completa todos los campos obligatorios");
+            return;
         }
-    };
+
+        const decoded = decodeToken(token);
+
+        const idUsuarioFinal =
+            decoded?.id_usuario ||
+            decoded?.Id_Usuario ||
+            decoded?.id ||
+            decoded?.ID;
+
+        if (!idUsuarioFinal) {
+            setMensaje("No se pudo obtener el ID del usuario desde el token");
+            return;
+        }
+
+        const asignadoA = parseInt(para);
+        const fechaCreacion = new Date().toISOString().slice(0, 19).replace("T", " ");
+        const fechaVenc = fecha + " 23:59:59";
+
+        const actividadData = {
+            actividad: {
+                asunto: asunto.trim(),
+                descripcion: descripcion.trim(),
+                fecha_creacion: fechaCreacion,
+                fecha_vencimiento: fechaVenc,
+                prioridad:
+                    prioridad.charAt(0).toUpperCase() + prioridad.slice(1),
+                fecha_de_entrega: null,
+                estado_actual: "Pendiente",
+            },
+            tarea: {
+                titulo:
+                    subtareas.length > 0
+                        ? subtareas.filter((s) => s.trim()).join(" | ")
+                        : asunto.trim(),
+            },
+            asignacion: {
+                asignado_por: idUsuarioFinal, 
+                asignado_a: asignadoA,
+            },
+        };
+
+        // Crear o editar actividad
+        if (modoEdicion && actividadEditando) {
+            await actividadesService.update(
+                token,
+                actividadEditando,
+                actividadData
+            );
+            setMensaje("✅ Actividad actualizada correctamente");
+        } else {
+            await actividadesService.create(token, actividadData);
+            setMensaje("✅ Actividad creada correctamente");
+        }
+
+        setTimeout(() => {
+            cancelar();
+            if (vista === "asignadas") cargarActividades();
+        }, 1500);
+
+    } catch (error) {
+        const mensajeError =
+            error.response?.data?.mensaje ||
+            error.response?.data?.message ||
+            "Error desconocido";
+        setMensaje(mensajeError);
+    } finally {
+        setLoading(false);
+    }
+};
 
     const handleEditarClick = (actividad) => {
         const act = actividad.actividad || actividad;
