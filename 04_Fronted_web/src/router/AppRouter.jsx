@@ -26,6 +26,9 @@ export default function AppRouter() {
           <Route path="/calendario" element={<NavbarWrapper><Calendario /></NavbarWrapper>} />
           <Route path="/reportes" element={<NavbarWrapper><ReporteDashboard/></NavbarWrapper>} />
           <Route path="/chat" element={<NavbarWrapper><Chat /></NavbarWrapper>} />
+
+          <Route path="/reportes" element={<><Navbar /><ReporteDashboard /></>} />
+
         </Route>
       </Routes>
     </BrowserRouter>

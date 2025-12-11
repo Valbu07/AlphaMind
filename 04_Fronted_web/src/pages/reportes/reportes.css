@@ -1,96 +1,128 @@
-/* ======== GLOBAL ======== */
-body {
-    background: #fff !important;
-    font-family: "Segoe UI", sans-serif !important;
+
+:root {
+    --azul-claro: #E7F1FF;
+    --azul-medio: #A9C9FF;
+    --azul-hover: #8BB6FF;
+    --azul-oscuro: #1E3A8A;
+    --blanco: #ffffff;
 }
 
 
-
-.btn-usuario {
-    background: #97b6f7 !important;
-    border-radius: 12px !important;
-    border: 1px solid #ebe2db;
-}
-
-.btn-usuario:hover {
-
-    color: #fff !important;
-    transition: all 0.5s ;
-      background: #3948b9 !important;
-    
-}
-
-.btn-pdf{
-background-color: #faca77;
-color: #333;
-margin-left: auto;
-}
-
-.btn-pdf:hover {
- color: #fff !important;
-    transition: all 0.5s ;
-background-color: #f7a840;
-}
-
-
-
-/* ======== PANEL IZQUIERDO ======== */
 .panel-left {
-    background: #faf6f2 !important;
-    border-radius: 14px !important;
-    border: 1px solid #eadfd6;
+    background: var(--azul-claro);
+    border-radius: 14px;
 }
 
-/* ======== KPI CARDS ======== */
+/* KPI Cards */
 .kpi-card {
-    background: #ffffff !important;
-    border-radius: 12px !important;
-    border: 1px solid #ebe2db;
+    background: var(--blanco) !important;
+    border-radius: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
 }
 
 .kpi-title {
     display: block;
-    font-size: 13.5px;
-    color: #6a5d58;
-    letter-spacing: 0.3px;
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 8px;
 }
 
 .kpi-value {
-    font-size: 30px;
-    font-weight: 700;
-    color: #4b2e39;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--azul-oscuro);
 }
 
-/* ======== CARDS DE GRÁFICOS ======== */
+.reportes-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.reportes-titulo {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--azul-oscuro);
+}
+
+.reportes-botones {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.recharts-pie-label-text {
+    font-size: 11px !important;
+}
+
+
 .chart-card {
-    background: #faf6f2 !important;
+    background: var(--azul-claro) !important;
     border-radius: 14px !important;
-    border: 1px solid #e8dbd2;
-    transition: transform 0.15s;
-    width: 100% !important;
+    min-height: 320px;
+    padding-bottom: 10px;
 }
 
-.chart-card:hover {
-    transform: translateY(-3px);
+.chart-container {
+    min-height: 240px;
 }
 
-/* ======== PLACEHOLDER DE GRÁFICOS ======== */
+
 .chart-placeholder {
     width: 100%;
     height: 240px;
-    background: #e5d6cc;
+    background: var(--azul-medio);
     border-radius: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #5b4a46;
+    color: var(--azul-oscuro);
     font-size: 18px;
     font-weight: bold;
 }
 
-/* ======== TITULOS ======== */
-h4, h5, h2 {
-    color: #1b191a !important;
+
+.btn-primary {
+    background-color: var(--azul-medio) !important;
+    border-color: var(--azul-medio) !important;
+    color: var(--azul-oscuro) !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--azul-hover) !important;
+    border-color: var(--azul-hover) !important;
+}
+
+.btn-secondary {
+    background-color: var(--azul-oscuro) !important;
+    border-color: var(--azul-oscuro) !important;
+    color: white !important;
+}
+
+.btn-secondary:hover {
+    background-color: #162e6a !important;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 10px 22px !important;
+    border-radius: 10px !important;
+    font-weight: 500;
 }
 
 
+@media (max-width: 768px) {
+    .kpi-value {
+        font-size: 24px;
+    }
+
+    .chart-placeholder {
+        height: 200px;
+        font-size: 16px;
+    }
+}

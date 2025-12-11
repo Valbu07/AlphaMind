@@ -1,8 +1,8 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 
@@ -13,46 +13,48 @@
 /* Iniciamos los estilos del boton y todo lo relacionado*/
 
 .boton-menu {
-    border: none;
-    background-color: transparent;
-    color: transparent !important;
-    font-size: 23px;
+  border: none;
+  background-color: transparent;
+  color: transparent !important;
+  font-size: 23px;
 }
 
 
 .navbar {
-    background-color: #faca77!important;
-    padding: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #faca77 !important;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .nav-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-    transition: 0.3s;
-    z-index: 1000 !important;
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  transition: 0.3s;
+  z-index: 1000 !important;
 
 }
 
 .nav-item:hover {
-    background-color: #fce1ac;
-    border-radius: 5px;
-    font-size: 20px;
-    box-shadow: 0 4px 8px rgb(210, 205, 238);
+  background-color: #fce1ac;
+  border-radius: 5px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgb(210, 205, 238);
 
 }
+
 img {
-    object-fit: cover;
+  object-fit: cover;
 }
+
 .offcanvas-start {
-    width: 20rem !important;
-    background-color: #fef2d6 !important;
+  width: 20rem !important;
+  background-color: #fef2d6 !important;
 }
 
 
 .offcanvas-start {
-    transition: 0.5s !important;
+  transition: 0.5s !important;
 }
 
 /* Fin de los estilos del boton y todo lo relacionado*/
@@ -60,85 +62,94 @@ img {
 /* Estilos De del logo*/
 
 .logo {
-    position: absolute;
-    top: 20%;
-    left: 6%;
-    transform: translateX(-50%, -50%);
+  position: absolute;
+  top: 20%;
+  left: 6%;
+  transform: translateX(-50%, -50%);
 }
 
 
 
 
 @media (max-width: 900px) {
-    .logo {
-        position: absolute;
-        top: 20%;
-        left: 30%;
-        transform: translateX(-50%, -50%);
-    }
+  .logo {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    transform: translateX(-50%, -50%);
+  }
 }
 
 /* Fin de Estilos De del logo*/
 
 /*   Estilos De del foto-perfil*/
 .foto-perfil {
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    top: 1px;
-    right: 20px;
-    transform: translateX(50%, -50%);
-    border-radius: 50%;
-    object-fit: cover;
-    cursor: pointer;
-    z-index: 2;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 1px;
+  right: 20px;
+  transform: translateX(50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+  z-index: 2;
 
 
 }
 
 .dropdown {
-    text-decoration: none;
-    background-color: transparent !important;
-    position: absolute;
-    top: 5px;
-    left: 100%;    
+  text-decoration: none;
+  background-color: transparent !important;
+  position: absolute;
+  top: 5px;
+  left: 100%;
 }
 
 .dropdown-menu {
-    position: absolute;
-    top: 50px   !important;
-    right: 40px !important;
-    padding: 20px;
-    background-color: #fef2d6 ;
-    border: none;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);   
-    color: #000;
-    border-radius: 10px;
-    gap: 10px;
-    
+  position: absolute;
+  top: 50px !important;
+  right: 40px !important;
+  padding: 20px;
+  background-color: #fef2d6;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #000;
+  border-radius: 10px;
+  gap: 10px;
+
 }
 
 .nombre {
-    font-size: 18px;
-    font-weight: bold;
-    color: #000;
-    margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 10px;
 }
 
 .dropdown-item {
-   gap: 10px;
+  gap: 10px;
 }
 
 .dropdown-item:hover {
-   background-color: #fce1ac;
+  background-color: #fce1ac;
 }
 
 /*  Fin de Estilos De  foto perfil*/
 
 /*  Body*/
 
+
+.container {
+  margin-top: 65px;
+
+  padding: 1em;
+
+}
+
 body {
   background: #ffffff;
+
 }
 
 
@@ -211,7 +222,7 @@ body {
   height: 82vh;
   display: flex;
   flex-direction: column;
-  
+
 }
 
 /* Header chat */
@@ -224,13 +235,88 @@ body {
   background: #f7a840;
 }
 
+
+
+ul {
+  list-style: none;
+  padding: 0%;
+}
+
+.usuario-chat {
+  display: flex;
+  align-items: center;
+  margin: 0.4em;
+  background-color: #4e72f334;
+  border-radius: 20px;
+  height: 4em;
+}
+
+.usuario-chat:hover {
+  background-color: #7c98fdb4;
+  cursor: pointer;
+  box-shadow: 0 2px 4px #4d4b4a;
+}
+
+
+.chat-header {
+  padding: 0.5em;
+  background-color: #fff;
+  box-shadow: 0 2px 4px #4d4b4a;
+  border-radius: 2px;
+
+}
+
+.chat-header-items {
+  display: flex;
+  align-items: center;
+
+}
+
+
+h4 {
+  text-align: center;
+  padding: 0.5em;
+  filter: drop-shadow(0 0px 4px #2255fc4d);
+  font-weight: bold;
+}
+
+
+.form-cotrol {
+  border-radius: 0.6em;
+  margin-bottom: 1em;
+  border: solid 0.5px #4e72f3d3;
+  padding: 2px;
+  width: 90%;
+}
+
+.bi-search {
+  color: #374e9f;
+}
+
+.form-cotrol:focus {
+  border: solid 1px #fc9222 !important;
+}
+
+.foto-chats {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top;
+  margin: 0.2em;
+}
+
 .chat-header img {
   width: 42px;
   height: 42px;
   border-radius: 50%;
+
 }
 
+h5 {
+  font-size: 15px;
 
+}
 
 /* Mensajes */
 .chat-mensajes {
@@ -272,11 +358,18 @@ body {
 }
 
 .chat-enviar input {
+
+  border-radius: 0.6em;
+  border: solid 0.5px #fc9222;
+  padding: 8px 50px 8px 15px;
+  width: 900%;
+
   flex: 1;
   padding: 8px 12px;
   border-radius: 20px;
   border: 1px solid #dcdfe3;
   outline: none;
+
 }
 
 .btn-enviar,
@@ -316,7 +409,8 @@ body {
 
 /* ===== CONTENEDOR CENTRAL ===== */
 .chat-wrapper {
-  min-height: calc(100vh - 70px); /* deja espacio para el navbar */
+  min-height: calc(100vh - 70px);
+  /* deja espacio para el navbar */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -326,7 +420,8 @@ body {
 /* controla el ancho máximo del layout */
 .principal {
   width: 100%;
-  max-width: 1400px; /* cambia por 1200 / 1600 según lo quieras más grande */
+  max-width: 1400px;
+  /* cambia por 1200 / 1600 según lo quieras más grande */
   padding: 10px;
 }
 
@@ -348,4 +443,3 @@ body {
   width: 46px;
   height: 46px;
 }
-
