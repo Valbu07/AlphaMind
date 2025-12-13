@@ -29,6 +29,8 @@ export default function CrearActividades() {
         if (vista === "asignadas" && funcionariosCargados) cargarActividades(); 
     }, [vista, funcionariosCargados, token]);
 
+
+    
     const cargarFuncionarios = async () => {
         try {
             if (!token) return;
