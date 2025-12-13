@@ -40,9 +40,10 @@ export default function CrearActividades() {
     };
 
     const extraerSubtareas = (tarea) => {
-        if (!tarea) return [];
-        const texto = typeof tarea === "string" ? tarea : tarea.titulo || "";
-        return texto.split(" | ").filter((t) => t.trim());
+    if (!tarea) return [];
+    const texto = typeof tarea === "string" ? tarea : tarea.titulo || tarea.tarea || "";
+    // Separar por " | " y limpiar espacios
+    return texto.split(" | ").filter((t) => t.trim()).map(t => t.trim());
     };
 
     const obtenerNombreFuncionario = (idAsignado) => {
@@ -58,43 +59,43 @@ export default function CrearActividades() {
     };
 
     const cargarActividades = async () => {
-        setLoading(true);
-        setMensaje("");
-        try {
-            if (!token) return setMensaje("Error: No hay sesión activa");
+    setLoading(true);
+    setMensaje("");
+    try {
+        if (!token) return setMensaje("Error: No hay sesión activa");
 
-            const data = await actividadesService.getAll(token);
-            const actividadesConNombres = (data.body || data).map((act) => {
-                const idAsignado =
-                    act.asignacion?.asignado_a ||
-                    act.Asignado_a_idUsuario ||
-                    act.asignado_a;
+        const data = await actividadesService.getAll(token);
+        const actividadesConNombres = (data.body || data).map((act) => {
+            const idAsignado =
+                act.asignacion?.asignado_a ||
+                act.Asignado_a_idUsuario ||
+                act.asignado_a;
 
-                return {
-                    ...act,
-                    nombre_asignado: obtenerNombreFuncionario(idAsignado),
-                    asunto: act.actividad?.asunto || act.asunto || "",
-                    descripcion:
-                        act.actividad?.descripcion || act.descripcion || "",
-                    fecha_vencimiento:
-                        act.actividad?.fecha_vencimiento ||
-                        act.fecha_vencimiento ||
-                        "",
-                    prioridad:
-                        act.actividad?.prioridad || act.prioridad || "Media",
-                    subtareas_array: extraerSubtareas(act.tarea),
-                    id_Actividad:
-                        act.actividad?.id_Actividad || act.id_Actividad,
-                    Asignado_a_idUsuario: idAsignado,
-                };
-            });
+            // Parsear subtareas del texto separado por " | "
+            const tareaRaw = act.tarea || "";
+            const subtareasTexto = tareaRaw.split(" | ").filter(t => t.trim()).map(t => t.trim());
 
-            setActividades(actividadesConNombres);
-        } catch (error) {
-            setMensaje("Error al cargar actividades");
-        } finally {
-            setLoading(false);
-        }
+            return {
+                ...act,
+                nombre_asignado: obtenerNombreFuncionario(idAsignado),
+                asunto: act.asunto || "",
+                descripcion: act.descripcion || "",
+                fecha_vencimiento: act.fecha_vencimiento || "",
+                prioridad: act.prioridad || "Media",
+                subtareas_array: subtareasTexto,
+                id_Actividad: act.id_Actividad,
+                Asignado_a_idUsuario: idAsignado,
+                estado_actual: act.estado_actual || "Pendiente"
+            };
+        });
+
+        setActividades(actividadesConNombres);
+    } catch (error) {
+        setMensaje("Error al cargar actividades");
+        console.error(error);
+    } finally {
+        setLoading(false);
+    }
     };
 
     const agregarSubtarea = () => setSubtareas([...subtareas, ""]);
@@ -147,9 +148,13 @@ export default function CrearActividades() {
             }
 
             const asignadoA = parseInt(para);
-            const fechaCreacion =
-                new Date().toISOString().slice(0, 19).replace("T", " ");
+            const fechaCreacion = new Date().toISOString().slice(0, 19).replace("T", " ");
             const fechaVenc = fecha + " 23:59:59";
+
+            let prioridadFinal = prioridad.charAt(0).toUpperCase() + prioridad.slice(1);
+            if (prioridadFinal === "Baja") {
+                prioridadFinal = "Bajo";
+            }
 
             const actividadData = {
                 actividad: {
@@ -157,17 +162,14 @@ export default function CrearActividades() {
                     descripcion: descripcion.trim(),
                     fecha_creacion: fechaCreacion,
                     fecha_vencimiento: fechaVenc,
-                    prioridad:
-                        prioridad.charAt(0).toUpperCase() +
-                        prioridad.slice(1),
+                    prioridad: prioridadFinal,
                     fecha_de_entrega: null,
                     estado_actual: "Pendiente",
                 },
                 tarea: {
-                    titulo:
-                        subtareas.length > 0
-                            ? subtareas.filter((s) => s.trim()).join(" | ")
-                            : asunto.trim(),
+                    titulo: subtareas.length > 0
+                        ? subtareas.filter(s => s.trim()).join(" | ")
+                        : asunto.trim()
                 },
                 asignacion: {
                     asignado_por: idUsuarioFinal,
@@ -175,6 +177,7 @@ export default function CrearActividades() {
                 },
             };
 
+            // Crear o editar actividad
             if (modoEdicion && actividadEditando) {
                 await actividadesService.update(
                     token,
@@ -191,6 +194,7 @@ export default function CrearActividades() {
                 cancelar();
                 if (vista === "asignadas") cargarActividades();
             }, 1500);
+
         } catch (error) {
             const mensajeError =
                 error.response?.data?.mensaje ||
@@ -203,33 +207,33 @@ export default function CrearActividades() {
     };
 
     const handleEditarClick = (actividad) => {
-        const act = actividad.actividad || actividad;
-        setAsunto(act.asunto || actividad.asunto || "");
-        setDescripcion(act.descripcion || actividad.descripcion || "");
+    const act = actividad.actividad || actividad;
+    setAsunto(act.asunto || actividad.asunto || "");
+    setDescripcion(act.descripcion || actividad.descripcion || "");
 
-        const fechaVenc =
-            act.fecha_vencimiento || actividad.fecha_vencimiento;
-        setFecha(
-            fechaVenc
-                ? fechaVenc.includes("T")
-                    ? fechaVenc.split("T")[0]
-                    : fechaVenc.split(" ")[0]
-                : ""
-        );
+    const fechaVenc = act.fecha_vencimiento || actividad.fecha_vencimiento;
+    setFecha(
+        fechaVenc
+            ? fechaVenc.includes("T")
+                ? fechaVenc.split("T")[0]
+                : fechaVenc.split(" ")[0]
+            : ""
+    );
 
-        setPrioridad((act.prioridad || actividad.prioridad || "").toLowerCase());
-        setPara(
-            actividad.asignacion?.asignado_a ||
-                actividad.Asignado_a_idUsuario ||
-                actividad.asignado_a ||
-                ""
-        );
-        setSubtareas(
-            extraerSubtareas(actividad.tarea?.titulo || actividad.tarea)
-        );
-        setActividadEditando(act.id_Actividad || actividad.id_Actividad);
-        setModoEdicion(true);
-        setVista("crear");
+    setPrioridad((act.prioridad || actividad.prioridad || "").toLowerCase());
+    setPara(
+        actividad.asignacion?.asignado_a ||
+            actividad.Asignado_a_idUsuario ||
+            actividad.asignado_a ||
+            ""
+    );
+    
+    // Cargar subtareas desde el array
+    setSubtareas(actividad.subtareas_array || []);
+    
+    setActividadEditando(act.id_Actividad || actividad.id_Actividad);
+    setModoEdicion(true);
+    setVista("crear");
     };
 
     const handleEliminar = async (id_actividad) => {
@@ -473,34 +477,35 @@ export default function CrearActividades() {
                                         <strong>Vence:</strong>{" "}
                                         {act.fecha_vencimiento
                                             ? act.fecha_vencimiento.includes("T")
-                                                ? act.fecha_vencimiento.split(
-                                                      "T"
-                                                  )[0]
-                                                : act.fecha_vencimiento.split(
-                                                      " "
-                                                  )[0]
+                                                ? act.fecha_vencimiento.split("T")[0]
+                                                : act.fecha_vencimiento.split(" ")[0]
                                             : "Sin fecha"}
+                                    </span>
+                                    <span>
+                                        <strong>Estado:</strong>{" "}
+                                        <span style={{
+                                            color: act.estado_actual === "Completado" ? "#4caf50" : 
+                                                act.estado_actual === "Entregado con retraso" ? "#ff5252" : "#f7a840",
+                                            fontWeight: "600"
+                                        }}>
+                                            {act.estado_actual}
+                                        </span>
                                     </span>
                                 </div>
 
-                                {act.subtareas_array.length > 0 && (
+                                {act.subtareas_array && act.subtareas_array.length > 0 && (
                                     <div className="seccion-subtareas">
                                         <h4 className="titulo-subtareas">
                                             Subtareas:
                                         </h4>
                                         <ul className="lista-subtareas">
-                                            {act.subtareas_array.map(
-                                                (sub, i) => (
-                                                    <li
-                                                        key={i}
-                                                        className="item-subtarea"
-                                                    >
-                                                        <span className="texto-subtarea">
-                                                            {sub}
-                                                        </span>
-                                                    </li>
-                                                )
-                                            )}
+                                            {act.subtareas_array.map((sub, i) => (
+                                                <li key={i} className="item-subtarea">
+                                                    <span className="texto-subtarea">
+                                                        {sub}
+                                                    </span>
+                                                </li>
+                                            ))}
                                         </ul>
                                     </div>
                                 )}

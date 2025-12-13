@@ -65,12 +65,16 @@
 
 /* BOTONES PRINCIPALES */
 .botones-principales {
-  padding: 10px;
+  padding: 20px 10px;
   margin-bottom: 15px !important;
   display: flex;
   justify-content: center;
   margin-top: 30px;
-  gap: 110px;
+  gap: 20px;
+  border-top: 2px solid #d4a95c;
+  border-bottom: 2px solid #d4a95c;
+  border-color: rgb(46, 88, 143) rgb(247, 149, 57) rgb(231, 120, 15);
+  border-width: 1px 0px 1px; 
 }
 
 .btn {
@@ -305,9 +309,9 @@
   color: #d97706;
 }
 
-.prioridad.baja {
-  background-color: #dbeafe;
-  color: #2563eb;
+.prioridad.bajo {
+  background: #dcfce7;
+  color: #15803d;
 }
 
 .detalle-actividad {
