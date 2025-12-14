@@ -1,7 +1,6 @@
 // backend/models/reportesModel.js
 const db = require("../config/db");
 
-// Nombres de tablas (corregido el typo)
 const tableFuncionario = "funcionario";
 const tableUsuarios = "usuario";
 const tableActividad = "actividad";
@@ -11,7 +10,7 @@ const tableTarea = "tarea";
 
 async function obtenerReporteFuncionario(num_documento) {
   try {
-    console.log(' [MODEL] Obteniendo reporte para documento:', num_documento);
+
 
     const usuario = await db.queryPromise(
       `
@@ -37,9 +36,9 @@ async function obtenerReporteFuncionario(num_documento) {
       `
       SELECT 
         COUNT(DISTINCT a.id_Actividad) AS tareasTotales,
-        COUNT(DISTINCT CASE WHEN a.estado_actual = 'completada' THEN a.id_Actividad END) AS completadas,
+        COUNT(DISTINCT CASE WHEN a.estado_actual = 'completado' THEN a.id_Actividad END) AS completadas,
         COUNT(DISTINCT CASE WHEN a.estado_actual = 'pendiente' THEN a.id_Actividad END) AS pendientes,
-        COUNT(DISTINCT CASE WHEN a.estado_actual = 'atrasada' THEN a.id_Actividad END) AS atrasadas
+        COUNT(DISTINCT CASE WHEN a.estado_actual = 'Entregado con retraso' THEN a.id_Actividad END) AS atrasadas
       FROM ${tableActividad} a
       INNER JOIN ${tableAsignacion} aa
         ON aa.actividad_idActividad = a.id_Actividad
@@ -58,7 +57,7 @@ async function obtenerReporteFuncionario(num_documento) {
       INNER JOIN ${tableAsignacion} aa
         ON aa.actividad_idActividad = a.id_Actividad
       WHERE aa.Asignado_a_idUsuario = ? 
-        AND a.estado_actual = 'completada'
+        AND a.estado_actual = 'completado'
         AND YEAR(a.fecha_creacion) = YEAR(CURDATE())
       GROUP BY MONTH(a.fecha_creacion), MONTHNAME(a.fecha_creacion)
       ORDER BY mes
