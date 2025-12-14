@@ -1,215 +1,208 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { actividadesService } from "../../services/actividadesServices";
-import { funcionariosService } from "../../services/FuncionariosService";
+import { decodeToken } from "../../utils/jwtUtilis";
 import "./Actividades.css";
 
 export default function Actividades() {
-    const { token, user } = useAuth();
+    const { token } = useAuth();
     const [actividades, setActividades] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [mensaje, setMensaje] = useState("");
-    const [idUsuarioActual, setIdUsuarioActual] = useState(null);
 
     useEffect(() => {
-        if (token && user) {
-            obtenerIdUsuario();
-        }
-    }, [token, user]);
-
-    useEffect(() => {
-        if (idUsuarioActual) {
-            cargarActividadesAsignadas();
-        }
-    }, [idUsuarioActual]);
-
-    const obtenerIdUsuario = async () => {
-        try {
-            console.log("=== OBTENIENDO ID USUARIO ===");
-            console.log("👤 Usuario desde auth:", user);
-
-            // Si ya tiene id_usuario, usarlo
-            let userId = user?.id_usuario || user?.Id_Usuario || user?.id || user?.ID;
-            
-            if (userId) {
-                console.log("✅ ID encontrado directamente:", userId);
-                setIdUsuarioActual(userId);
-                return;
-            }
-
-            // Si no tiene ID pero tiene num_documento, buscarlo en funcionarios
-            if (user?.num_documento) {
-                console.log("🔍 Buscando por num_documento:", user.num_documento);
-                const data = await funcionariosService.getAll(token);
-                const funcionarios = data.body || data;
-                
-                console.log("📋 Total funcionarios:", funcionarios.length);
-
-                const funcionarioActual = funcionarios.find(
-                    f => String(f.Num_Documento || f.num_documento) === String(user.num_documento)
-                );
-
-                if (funcionarioActual) {
-                    userId = funcionarioActual.id_usuario || funcionarioActual.Id_Usuario;
-                    console.log("✅ ID encontrado en funcionarios:", userId);
-                    console.log("👤 Funcionario completo:", funcionarioActual);
-                    setIdUsuarioActual(userId);
-                } else {
-                    console.error("❌ No se encontró funcionario con num_documento:", user.num_documento);
-                    setMensaje("❌ Error: Usuario no encontrado");
-                }
-            } else {
-                console.error("❌ Usuario no tiene ID ni num_documento");
-                setMensaje("❌ Error: Datos de usuario incompletos");
-            }
-        } catch (error) {
-            console.error("❌ Error al obtener ID usuario:", error);
-            setMensaje("❌ Error al cargar datos del usuario");
-        }
-    };
+        cargarActividadesAsignadas();
+    }, [token]);
 
     const cargarActividadesAsignadas = async () => {
         setLoading(true);
-        
         try {
-            if (!token) {
-                setMensaje("❌ No hay sesión activa");
-                setLoading(false);
+            if (!token) return;
+            
+            const decoded = decodeToken(token);
+            const idUsuario = decoded?.id_usuario || decoded?.Id_Usuario || decoded?.id || decoded?.ID;
+            
+            if (!idUsuario) {
+                setMensaje("Error: No se pudo obtener el ID del usuario");
                 return;
             }
 
-            if (!idUsuarioActual) {
-                console.log("⏳ Esperando ID de usuario...");
-                setLoading(false);
-                return;
+            const data = await actividadesService.getAsignadasAMi(token, idUsuario);
+            
+            const actividadesProcesadas = (data.body || data).map(act => {
+            const subtareasRaw = act.tarea;
+            const textos = subtareasRaw ? subtareasRaw.split(" | ").filter(t => t.trim()) : [];
+            
+            const estadoGuardado = localStorage.getItem(`subtareas_${act.id_Actividad}`);
+            let estadoSubtareas = [];
+            
+            if (estadoGuardado) {
+                try {
+                    estadoSubtareas = JSON.parse(estadoGuardado);
+                } catch (e) {
+                    estadoSubtareas = [];
+                }
             }
-
-            console.log("=== CARGANDO ACTIVIDADES ===");
-            console.log("🆔 ID Usuario actual:", idUsuarioActual);
             
-            // Obtener todas las actividades
-            const data = await actividadesService.getAll(token);
-            const todasActividades = data.body || data;
-            
-            console.log("📦 Total actividades en API:", todasActividades.length);
-
-            // Mostrar todos los IDs asignados
-            console.log("📋 IDs asignados en actividades:");
-            todasActividades.forEach((act, index) => {
-                const idAsignado = act.Asignado_a_idUsuario || act.asignado_a;
-                console.log(`  Actividad ${index + 1}: "${act.asunto || act.actividad?.asunto}" → asignado_a: ${idAsignado}`);
-            });
-
-            // Filtrar solo las actividades asignadas al usuario actual
-            const actividadesDelUsuario = todasActividades.filter(act => {
-                const idAsignado = act.Asignado_a_idUsuario || act.asignado_a;
-                const coincide = idAsignado == idUsuarioActual;
-                
-                console.log(`🔍 Comparando: ${idAsignado} == ${idUsuarioActual} → ${coincide}`);
-                
-                return coincide;
-            });
-
-            console.log("✅ Actividades filtradas:", actividadesDelUsuario.length);
-
-            // Mapear las actividades al formato que necesita el componente
-            const actividadesMapeadas = actividadesDelUsuario.map(act => {
-                const actData = act.actividad || act;
-                const tareaData = act.tarea || {};
-                
-                // Extraer subtareas del formato "subtarea1 | subtarea2 | subtarea3"
-                const subtareasTexto = typeof tareaData === 'string' ? tareaData : tareaData.titulo || '';
-                const subtareasArray = subtareasTexto
-                    .split(' | ')
-                    .filter(t => t.trim())
-                    .map(texto => ({
-                        texto: texto.trim(),
-                        completada: false
-                    }));
-
+            const subtareas = textos.map((texto, index) => {
+                const estadoPrevio = estadoSubtareas.find(s => s.texto === texto);
                 return {
-                    id: actData.id_Actividad || act.id_Actividad,
-                    de: act.nombre_asignador || "Administrador",
-                    asunto: actData.asunto || act.asunto || "Sin asunto",
-                    fecha: actData.fecha_vencimiento || act.fecha_vencimiento 
-                        ? (actData.fecha_vencimiento || act.fecha_vencimiento).split('T')[0] 
-                        : "Sin fecha",
-                    prioridad: (actData.prioridad || act.prioridad || "media").toLowerCase(),
-                    subtareas: subtareasArray,
-                    descripcion: actData.descripcion || act.descripcion || "Sin descripción"
+                    texto,
+                    completada: estadoPrevio ? estadoPrevio.completada : false
                 };
             });
 
-            console.log("🎯 Actividades finales a mostrar:", actividadesMapeadas.length);
-            setActividades(actividadesMapeadas);
+                return {
+                    id: act.id_Actividad,
+                    de: act.nombre_asignador || "Administrador",
+                    asunto: act.asunto || "",
+                    fecha: act.fecha_vencimiento 
+                        ? (act.fecha_vencimiento.includes("T") 
+                            ? act.fecha_vencimiento.split("T")[0] 
+                            : act.fecha_vencimiento.split(" ")[0])
+                        : "Sin fecha",
+                    prioridad: (act.prioridad || "media").toLowerCase(),
+                    subtareas: subtareas,
+                    descripcion: act.descripcion || "Sin descripción",
+                    estado_actual: act.estado_actual || "Pendiente",
+                    id_Actividad: act.id_Actividad
+                };
+            });
 
+            setActividades(actividadesProcesadas);
         } catch (error) {
-            console.error("❌ Error completo:", error);
             setMensaje("❌ Error al cargar actividades");
+            console.error(error);
         } finally {
             setLoading(false);
         }
     };
 
     const calcularProgreso = (subtareas) => {
-        if (subtareas.length === 0) return 0;
-        const completadas = subtareas.filter((s) => s.completada).length;
+        if (!subtareas || subtareas.length === 0) return 0;
+        const completadas = subtareas.filter(s => s.completada).length;
         return Math.round((completadas / subtareas.length) * 100);
     };
 
-    const toggleSubtarea = (actividadId, subtareaIndex) => {
+    const toggleSubtarea = async (actividad, subtareaIndex) => {
+        // Actualizar estado local 
+        const nuevasSubtareas = [...actividad.subtareas];
+        nuevasSubtareas[subtareaIndex].completada = !nuevasSubtareas[subtareaIndex].completada;
+        
+        const progreso = calcularProgreso(nuevasSubtareas);
+        
+        // Guardar en localStorage
+        localStorage.setItem(
+            `subtareas_${actividad.id_Actividad}`,
+            JSON.stringify(nuevasSubtareas)
+        );
+
+        // Actualizar en el estado local
         setActividades(actividades.map(act => {
-            if (act.id === actividadId) {
-                const nuevasSubtareas = [...act.subtareas];
-                nuevasSubtareas[subtareaIndex].completada = !nuevasSubtareas[subtareaIndex].completada;
-                return { ...act, subtareas: nuevasSubtareas };
+            if (act.id_Actividad === actividad.id_Actividad) {
+                return { 
+                    ...act, 
+                    subtareas: nuevasSubtareas
+                };
             }
             return act;
         }));
+
+        // Si completó todas (100%), ENTONCES llamar al backend
+        if (progreso === 100) {
+            try {
+                setLoading(true);
+                await actividadesService.completarActividad(token, actividad.id_Actividad);
+                
+                // Actualizar el estado en el frontend
+                setActividades(prevActividades => prevActividades.map(act => {
+                    if (act.id_Actividad === actividad.id_Actividad) {
+                        const fechaVenc = new Date(actividad.fecha);
+                        const hoy = new Date();
+                        const nuevoEstado = hoy > fechaVenc ? "Entregado con retraso" : "Completado";
+                        
+                        return { 
+                            ...act, 
+                            estado_actual: nuevoEstado
+                        };
+                    }
+                    return act;
+                }));
+                
+                setMensaje("✅ ¡Actividad completada!");
+                setTimeout(() => setMensaje(""), 3000);
+            } catch (error) {
+                setMensaje("❌ Error al completar actividad");
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
+    const getEstadoColor = (estado) => {
+        const colores = {
+            "Pendiente": "#f7a840",
+            "Completado": "#4caf50",
+            "Entregado con retraso": "#ff5252"
+        };
+        return colores[estado] || "#999";
     };
 
     return (
         <div className="contenedor-principal">
+            {mensaje && (
+                <div className={`mensaje-notificacion ${mensaje.includes("✅") ? "exito" : "error"}`}>
+                    <span className="mensaje-texto">{mensaje}</span>
+                    <button className="mensaje-cerrar" onClick={() => setMensaje("")}>×</button>
+                </div>
+            )}
+
             <h1 className="titulo-principal">Mis Actividades</h1>
 
-            {loading ? (
-                <div className="loading-container">
-                    <p>Cargando actividades...</p>
-                </div>
+            {loading && actividades.length === 0 ? (
+                <p style={{ textAlign: "center", marginTop: "2rem" }}>Cargando...</p>
             ) : actividades.length === 0 ? (
-                <div className="empty-container">
-                    <p>No tienes actividades asignadas</p>
-                </div>
+                <p style={{ textAlign: "center", marginTop: "2rem" }}>No tienes actividades asignadas</p>
             ) : (
                 actividades.map((act) => {
                     const progreso = calcularProgreso(act.subtareas);
 
                     return (
                         <div key={act.id} className="contenedor-actividad">
-                            
                             <div className="header-actividad">
                                 <h3 className="asunto">{act.asunto}</h3>
                                 <span className={`prioridad ${act.prioridad}`}>
                                     {act.prioridad.toUpperCase()}
                                 </span>
                             </div>
-                            
+
                             <div className="detalle-actividad">
                                 <span><strong>De:</strong> {act.de}</span>
                                 <span><strong>Vence:</strong> {act.fecha}</span>
+                                <span>
+                                    <strong>Estado:</strong>{" "}
+                                    <span style={{ 
+                                        color: getEstadoColor(act.estado_actual),
+                                        fontWeight: "600" 
+                                    }}>
+                                        {act.estado_actual}
+                                    </span>
+                                </span>
                             </div>
-                            
+
                             {act.subtareas.length > 0 && (
                                 <div className="seccion-subtareas">
                                     <h4 className="titulo-subtareas">Subtareas:</h4>
                                     <ul className="lista-subtareas">
                                         {act.subtareas.map((sub, i) => (
                                             <li key={i} className="item-subtarea">
-                                                <input 
-                                                    type="checkbox" 
+                                                <input
+                                                    type="checkbox"
                                                     checked={sub.completada}
-                                                    onChange={() => toggleSubtarea(act.id, i)}
+                                                    onChange={() => toggleSubtarea(act, i)}
                                                     className="checkbox-subtarea"
+                                                    disabled={act.estado_actual === "Completado" || act.estado_actual === "Entregado con retraso"}
                                                 />
                                                 <span className={`texto-subtarea ${sub.completada ? "completada" : ""}`}>
                                                     {sub.texto}
@@ -219,13 +212,12 @@ export default function Actividades() {
                                     </ul>
                                 </div>
                             )}
-                            
+
                             <p className="descripcion">{act.descripcion}</p>
-                            
-                            {/* Barra de progreso */}
+
                             <div className="barra-contenedor">
                                 <div className="barra-fondo">
-                                    <div 
+                                    <div
                                         className={`barra-relleno ${progreso === 100 ? "completo" : ""}`}
                                         style={{ width: `${progreso}%` }}
                                     ></div>

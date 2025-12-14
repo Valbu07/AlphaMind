@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
 
   const login = (token, user) => {
 
-    console.log('🔐 [AuthContext] Guardando token y usuario...');
+    console.log(' [AuthContext] Guardando token y usuario...');
     console.log('Token a guardar:', token);
     console.log('Usuario a guardar:', user);
     
@@ -53,12 +53,12 @@ export function AuthProvider({ children }) {
 
     setAuth({ token, user });
     
-    console.log('✅ [AuthContext] Token y usuario guardados exitosamente');
+    console.log(' [AuthContext] Token y usuario guardados exitosamente');
   };
 
   const logout = () => {
 
-    console.log('🚪 [AuthContext] Cerrando sesión...');
+    console.log(' [AuthContext] Cerrando sesión...');
     localStorage.clear();
 
     localStorage.removeItem("token");
