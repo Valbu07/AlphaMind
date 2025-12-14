@@ -51,9 +51,7 @@ router.get(  "/cargo/todos", verificarToken, autorizaciondeRoles(["Funcionario",
 
 /*****************/ // Agregar Funcionario con su Usuario//**************** */
 
-router.post("/agregar",
-
-
+router.post("/agregar", verificarToken, autorizaciondeRoles(["Administrador"]),
   async (req, res) => {
     try {
       const data = await controlador.agregar(req.body);
