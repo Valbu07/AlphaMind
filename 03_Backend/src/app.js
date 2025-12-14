@@ -4,6 +4,7 @@ const funcionarios = require('./routes/funcionarioRoutes'); // Importamos las ru
 const login =  require('./routes/authRoutes');
 const tareas = require('./routes/tareaRoutes');
 const reportes = require('./routes/reportes');
+const chat = require('./routes/chatRoutes');
 const cors = require ('cors')
 require('dotenv').config(); // Cargar variables de entorno
 
@@ -26,5 +27,6 @@ app.use('/funcionarios' , funcionarios);
 app.use('/auth', login)
 app.use('/tareas', tareas)
 app.use('/reportes', reportes)
+app.use('/chat', chat);
 
 module.exports = app;
