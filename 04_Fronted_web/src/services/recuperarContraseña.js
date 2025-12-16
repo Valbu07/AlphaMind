@@ -1,7 +1,7 @@
 // services/funcionarioService.js
 
 // URL base de tu API
-const API_URL = 'http://localhost:3000/recuperar';
+const API_URL = '/recuperar';
 export const recuperarContrasena = async (numDocumento) => {
   console.log('📤 Enviando petición a:', `${API_URL}/contraseña`);
   console.log('📦 Con datos:', { num_documento: numDocumento });

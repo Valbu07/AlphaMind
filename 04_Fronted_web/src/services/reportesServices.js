@@ -1,7 +1,7 @@
 // src/services/reportesServices.js
 import axios from "axios";
 
-const API = "http://localhost:3000/reportes";
+const API = "/reportes";
 
 export const getReportes = async (num_documento) => {
   try {

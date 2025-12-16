@@ -1,16 +1,10 @@
 // src/services/authService.js
 import axios from 'axios';
 
-const API = 'http://localhost:3000/auth';
+const API = '/auth';
 
 export const authService = {
-  /**
-   * Realiza el login del usuario
-   * @param {Object} credentials - Credenciales del usuario
-   * @param {string} credentials.num_documento - Número de documento
-   * @param {string} credentials.contraseña - Contraseña
-   * @returns {Promise<Object>} - Respuesta del servidor con token y datos del usuario
-   */
+ 
   login: async ({ num_documento, contraseña }) => {
     try {
       console.log('📤 Enviando credenciales:', { num_documento });
