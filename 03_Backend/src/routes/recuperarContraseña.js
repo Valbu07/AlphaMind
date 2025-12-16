@@ -34,4 +34,35 @@ router.post("/contrasena", async (req, res) => {
   }
 });
 
+/* SWAGGER */
+/**
+ * @swagger
+ * tags:
+ *   name: Recuperación
+ *   description: Recuperación de contraseña
+*/
+
+/**
+ * @swagger
+ * /recuperar/contrasena:
+ *   post:
+ *     summary: Recuperar contraseña por número de documento
+ *     tags: [Recuperación]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               num_documento:
+ *                 type: string
+ *                 example: "123456"
+ *     responses:
+ *       200:
+ *         description: Correo enviado exitosamente
+ *       404:
+ *         description: Funcionario no encontrado
+*/
+
 module.exports = router;

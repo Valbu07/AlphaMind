@@ -18,5 +18,46 @@ router.post('/login', async (req, res) => {
   }
 });
 
+/* SWAGGER */
+
+/**
+ * @swagger
+ * tags:
+ *   name: Autenticación
+ *   description: Inicio de sesión y autenticación
+ */
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Iniciar sesión en el sistema
+ *     tags: [Autenticación]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               funcionario:
+ *                 type: object
+ *                 properties:
+ *                   num_documento:
+ *                     type: string
+ *                     example: "123456"
+ *               usuario:
+ *                 type: object
+ *                 properties:
+ *                   contraseña:
+ *                     type: string
+ *                     example: "1234"
+ *     responses:
+ *       200:
+ *         description: Login exitoso, retorna token
+ *       500:
+ *         description: Error con las credenciales
+*/
+
 
 module.exports = router;

@@ -8,6 +8,41 @@ const recuperarContraseña = require('./routes/recuperarContraseña');
 const cors = require ('cors')
 require('dotenv').config(); // Cargar variables de entorno
 
+/*Incio Swagger*/
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "APIs AlphaMind",
+      version: "1.0.0",
+      description: "Documentación de las APIs del sistema AlphaMind",
+    },
+
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./src/routes/*.js"], // LLama todas la rutas
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+/*Fin swagger */
+
 const app = express(); // Creamos la app de express
 
 // Configuración del puerto
@@ -28,5 +63,8 @@ app.use('/auth', login)
 app.use('/tareas', tareas)
 app.use('/reportes', reportes)
 app.use('/recuperar', recuperarContraseña)
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 module.exports = app;
