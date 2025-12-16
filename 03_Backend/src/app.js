@@ -4,6 +4,7 @@ const funcionarios = require('./routes/funcionarioRoutes');
 const login = require('./routes/authRoutes');
 const tareas = require('./routes/tareaRoutes');
 const reportes = require('./routes/reportes');
+const chat = require('./routes/chatRoutes');
 const recuperarContraseña = require('./routes/recuperarContraseña');
 const cors = require('cors');
 const path = require('path');
@@ -76,6 +77,7 @@ app.get('/', (req, res) => {
 
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 
 module.exports = app;
