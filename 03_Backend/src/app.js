@@ -1,12 +1,17 @@
-const express = require('express');   // importamos express
-const config = require('./config/config');   // Importamos la configuracion
-const funcionarios = require('./routes/funcionarioRoutes'); // Importamos las rutas de funcionarios
-const login =  require('./routes/authRoutes');
+const express = require('express');
+const config = require('./config/config');
+const funcionarios = require('./routes/funcionarioRoutes');
+const login = require('./routes/authRoutes');
 const tareas = require('./routes/tareaRoutes');
 const reportes = require('./routes/reportes');
+const chat = require('./routes/chatRoutes');
 const recuperarContraseña = require('./routes/recuperarContraseña');
-const cors = require ('cors')
-require('dotenv').config(); // Cargar variables de entorno
+const cors = require('cors');
+const path = require('path');
+require('dotenv').config();
+
+
+const app = express();
 
 /*Incio Swagger*/
 const swaggerUi = require("swagger-ui-express");
@@ -42,29 +47,37 @@ const swaggerOptions = {
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 /*Fin swagger */
+// Puerto
+app.set('port', config.app.port || 3000);
 
-const app = express(); // Creamos la app de express
-
-// Configuración del puerto
-app.set('port', config.app.port) || 3306;
-
-// Middlewares
+// CORS (permitir ngrok)
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: true,
   credentials: true
 }));
 
-app.use(express.json()); 
+// Middlewares
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rutas
-app.use('/funcionarios' , funcionarios);
-app.use('/auth', login)
-app.use('/tareas', tareas)
-app.use('/reportes', reportes)
-app.use('/recuperar', recuperarContraseña)
+// API routes
+app.use('/funcionarios', funcionarios);
+app.use('/auth', login);
+app.use('/tareas', tareas);
+app.use('/reportes', reportes);
+app.use('/recuperar', recuperarContraseña);
+
+
+// Frontend
+app.use(express.static(path.join(__dirname, '../dist')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 
 module.exports = app;
