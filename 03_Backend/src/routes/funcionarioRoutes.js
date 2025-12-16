@@ -98,4 +98,108 @@ router.delete( "/:num_documento", verificarToken, autorizaciondeRoles(["Administ
   }
 );
 
+/* SWAGGER */
+/**
+ * @swagger
+ * tags:
+ *   name: Funcionarios
+ *   description: Gestión de funcionarios
+*/
+
+/**
+ * @swagger
+ * /funcionarios:
+ *   get:
+ *     summary: Obtener todos los funcionarios
+ *     tags: [Funcionarios]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de funcionarios
+*/
+
+/**
+ * @swagger
+ * /funcionarios/{num_documento}:
+ *   get:
+ *     summary: Obtener un funcionario por número de documento
+ *     tags: [Funcionarios]
+ *     parameters:
+ *       - in: path
+ *         name: num_documento
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Funcionario encontrado
+ *       404:
+ *         description: Funcionario no existe
+*/
+
+/**
+ * @swagger
+ * /funcionarios/cargo/todos:
+ *   get:
+ *     summary: Obtener funcionarios con su cargo
+ *     tags: [Funcionarios]
+ *     responses:
+ *       200:
+ *         description: Lista de funcionarios con cargo
+*/
+
+/**
+ * @swagger
+ * /funcionarios/agregar:
+ *   post:
+ *     summary: Agregar un nuevo funcionario
+ *     tags: [Funcionarios]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Funcionario creado correctamente
+*/
+
+/**
+ * @swagger
+ * /funcionarios/actualizar/{num_documento}:
+ *   put:
+ *     summary: Actualizar un funcionario
+ *     tags: [Funcionarios]
+ *     parameters:
+ *       - in: path
+ *         name: num_documento
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Funcionario actualizado
+*/
+
+/**
+ * @swagger
+ * /funcionarios/{num_documento}:
+ *   delete:
+ *     summary: Eliminar funcionario
+ *     tags: [Funcionarios]
+ *     parameters:
+ *       - in: path
+ *         name: num_documento
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Funcionario eliminado
+*/
+
+
+
 module.exports = router;

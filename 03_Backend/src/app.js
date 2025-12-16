@@ -9,8 +9,43 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+
 const app = express();
 
+/*Incio Swagger*/
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsdoc = require("swagger-jsdoc");
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "APIs AlphaMind",
+      version: "1.0.0",
+      description: "Documentación de las APIs del sistema AlphaMind",
+    },
+
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
+    },
+    
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./src/routes/*.js"], // LLama todas la rutas
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+/*Fin swagger */
 // Puerto
 app.set('port', config.app.port || 3000);
 
@@ -38,6 +73,9 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
+
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 module.exports = app;

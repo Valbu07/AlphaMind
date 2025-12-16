@@ -71,4 +71,87 @@ router.get('/:num_documento', async (req, res) => {
     }
 });
 
+/* SWAGGER */
+/**
+ * @swagger
+ * tags:
+ *   name: Tareas
+ *   description: Gestión de tareas
+*/
+
+/**
+ * @swagger
+ * /tareas:
+ *   get:
+ *     summary: Obtener todas las tareas
+ *     tags: [Tareas]
+ *     responses:
+ *       200:
+ *         description: Lista de tareas
+*/
+
+/**
+ * @swagger
+ * /tareas/asignadas-a-mi/{id_usuario}:
+ *   get:
+ *     summary: Obtener tareas asignadas a un usuario
+ *     tags: [Tareas]
+ *     parameters:
+ *       - in: path
+ *         name: id_usuario
+ *         required: true
+ *         schema:
+ *           type: number
+*/
+
+/**
+ * @swagger
+ * /tareas/crearTarea:
+ *   post:
+ *     summary: Crear una nueva tarea
+ *     tags: [Tareas]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+*/
+
+/**
+ * @swagger
+ * /tareas/editarTarea/{id_actividad}:
+ *   put:
+ *     summary: Editar una tarea
+ *     tags: [Tareas]
+ *     parameters:
+ *       - in: path
+ *         name: id_actividad
+ *         required: true
+*/
+
+/**
+ * @swagger
+ * /tareas/completar/{id_actividad}:
+ *   put:
+ *     summary: Completar una tarea
+ *     tags: [Tareas]
+*/
+
+/**
+ * @swagger
+ * /tareas/{id_actividad}:
+ *   delete:
+ *     summary: Eliminar una tarea
+ *     tags: [Tareas]
+*/
+
+/**
+ * @swagger
+ * /tareas/{num_documento}:
+ *   get:
+ *     summary: Obtener tareas por funcionario
+ *     tags: [Tareas]
+*/
+
 module.exports = router;
