@@ -84,7 +84,7 @@ async function enviarContrasena(destinatario, primer_nombre, contraseña) {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🔐 Recuperación de Contraseña</h1>
+            <h1> Recuperación de Contraseña</h1>
           </div>
           
           <div class="content">
@@ -97,7 +97,7 @@ async function enviarContrasena(destinatario, primer_nombre, contraseña) {
             </div>
 
             <div class="warning">
-              <strong>⚠️ Recomendación de Seguridad:</strong><br>
+              <strong> Recomendación de Seguridad:</strong><br>
               Por tu seguridad, te recomendamos cambiar esta contraseña después de iniciar sesión.
             </div>
 
@@ -117,10 +117,10 @@ async function enviarContrasena(destinatario, primer_nombre, contraseña) {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Correo enviado:', info.messageId);
+    console.log(' Correo enviado:', info.messageId);
     return { success: true };
   } catch (error) {
-    console.error('❌ Error al enviar correo:', error);
+    console.error(' Error al enviar correo:', error);
     throw new Error('No se pudo enviar el correo');
   }
 }

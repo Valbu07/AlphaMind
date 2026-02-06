@@ -50,11 +50,11 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 // Puerto
 app.set('port', config.app.port || 3000);
 
-// CORS (permitir ngrok)
 app.use(cors({
-  origin: true,
+  origin: 'http://localhost:5173',
   credentials: true
 }));
+
 
 // Middlewares
 app.use(express.json());
@@ -66,15 +66,6 @@ app.use('/auth', login);
 app.use('/tareas', tareas);
 app.use('/reportes', reportes);
 app.use('/recuperar', recuperarContraseña);
-
-
-// Frontend
-app.use(express.static(path.join(__dirname, '../dist')));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
-
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

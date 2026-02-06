@@ -30,7 +30,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expirado o inválido
-      console.error('❌ Token inválido o expirado');
+      console.error('Token inválido o expirado');
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.location.href = '/'; // Redirigir al login

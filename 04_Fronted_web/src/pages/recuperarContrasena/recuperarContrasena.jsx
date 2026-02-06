@@ -19,10 +19,10 @@ const RecuperarContrasena = () => {
       // Llamar al servicio
       const data = await recuperarContrasena(numDocumento);
       
-      setMensaje(`✅ ${data.body.mensaje}. Revisa tu bandeja de entrada.`);
+      setMensaje(` ${data.body.mensaje}. Revisa tu bandeja de entrada.`);
       setNumDocumento('');
     } catch (err) {
-      setError(err.message || '❌ No se pudo conectar con el servidor.');
+      setError(err.message || ' No se pudo conectar con el servidor.');
     } finally {
       setLoading(false);
     }
@@ -109,7 +109,7 @@ const RecuperarContrasena = () => {
                     className="btn btn-primary"
                     disabled={loading}
                   >
-                    {loading ? '⏳ Enviando...' : '📧 Enviar Contraseña'}
+                    {loading ? ' Enviando...' : 'Enviar Contraseña'}
                   </button>
                 </div>
               </form>

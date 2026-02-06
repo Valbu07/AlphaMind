@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = '/funcionarios';
+const API = 'http://localhost:3000/funcionarios';
 
 // obtener headers con token
 const getHeaders = (token) => ({
