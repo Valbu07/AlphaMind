@@ -1,13 +1,10 @@
 // src/services/reportesServices.js
 import axios from "axios";
 
-const API = "/reportes";
+const API = "http://localhost:3000/reportes";
 
 export const getReportes = async (num_documento) => {
   try {
-    console.log("📡 [SERVICE] Iniciando petición...");
-    console.log("   📄 Documento:", num_documento);
-
     // Obtener token de localStorage
     const token = localStorage.getItem('token');
     
@@ -15,8 +12,8 @@ export const getReportes = async (num_documento) => {
       throw new Error("No hay sesión activa. Inicia sesión nuevamente.");
     }
 
-    console.log("   🔑 Token:", token.substring(0, 20) + '...');
-    console.log("   🌐 URL:", `${API}/${num_documento}`);
+    console.log("  Token:", token.substring(0, 20) + '...');
+    console.log("  URL:", `${API}/${num_documento}`);
 
     const res = await axios.get(`${API}/${num_documento}`, {
       headers: {
@@ -25,8 +22,8 @@ export const getReportes = async (num_documento) => {
       }
     });
 
-    console.log("✅ [SERVICE] Respuesta recibida:", res.status);
-    console.log("   📦 Data completa:", res.data);
+    console.log(" [SERVICE] Respuesta recibida:", res.status);
+    console.log("  Data completa:", res.data);
 
     // Validar respuesta
     if (!res.data?.success) {
@@ -35,7 +32,7 @@ export const getReportes = async (num_documento) => {
 
     // Si no hay datos, retornar estructura vacía
     if (!res.data?.data) {
-      console.warn("⚠️ [SERVICE] Backend respondió exitoso pero sin datos");
+      console.warn(" [SERVICE] Backend respondió exitoso pero sin datos");
       return {
         estadisticas: {
           tareasTotales: 0,
@@ -54,13 +51,13 @@ export const getReportes = async (num_documento) => {
     return res.data.data;
 
   } catch (error) {
-    console.error("❌ [SERVICE] Error capturado:");
+    console.error("[SERVICE] Error capturado:");
     console.error("   Status:", error.response?.status);
     console.error("   Message:", error.message);
 
     // Error 500 del backend
     if (error.response?.status === 500) {
-      console.error("🔥 [SERVICE] Error 500 del backend - Revisa la consola del servidor");
+      console.error(" [SERVICE] Error 500 del backend - Revisa la consola del servidor");
       
       // Retornar datos vacíos temporalmente
       return {

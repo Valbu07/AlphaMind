@@ -29,8 +29,8 @@ const Chat = () => {
       const idUsuario = decoded?.id_usuario || decoded?.Id_Usuario || decoded?.id || decoded?.ID;
       
       console.log("=== CHAT: DEBUG ===");
-      console.log("🔑 Token decodificado:", decoded);
-      console.log("🆔 ID Usuario extraído:", idUsuario);
+      console.log(" Token decodificado:", decoded);
+      console.log(" ID Usuario extraído:", idUsuario);
       
       if (idUsuario) {
         setIdUsuarioActual(idUsuario);
@@ -107,7 +107,7 @@ const Chat = () => {
       setError(null);
       const response = await chatService.obtenerUsuarios();
       
-      console.log("📋 Respuesta usuarios:", response);
+      console.log(" Respuesta usuarios:", response);
       
       if (response.success) {
         const usuariosFiltrados = response.data.filter(
@@ -117,11 +117,11 @@ const Chat = () => {
           }
         );
         
-        console.log("✅ Usuarios cargados (sin usuario actual):", usuariosFiltrados.length);
+        console.log(" Usuarios cargados (sin usuario actual):", usuariosFiltrados.length);
         setUsuarios(usuariosFiltrados);
       }
     } catch (error) {
-      console.error('❌ Error al cargar usuarios:', error);
+      console.error(' Error al cargar usuarios:', error);
       setError('No se pudieron cargar los usuarios');
     } finally {
       setLoading(false);
@@ -137,8 +137,8 @@ const Chat = () => {
         usuarioSeleccionado.id_usuario || usuarioSeleccionado.Id_Usuario
       );
       
-      console.log("💬 Respuesta mensajes:", response);
-      console.log("🔄 Entre usuarios:", idUsuarioActual, "y", usuarioSeleccionado.id_usuario);
+      console.log(" Respuesta mensajes:", response);
+      console.log(" Entre usuarios:", idUsuarioActual, "y", usuarioSeleccionado.id_usuario);
       
       if (response.success && Array.isArray(response.data)) {
         const mensajesFiltrados = response.data.filter(mensaje => {
@@ -152,13 +152,13 @@ const Chat = () => {
           return esDelRemitente || esDelDestinatario;
         });
         
-        console.log("✅ Mensajes filtrados:", mensajesFiltrados.length);
+        console.log(" Mensajes filtrados:", mensajesFiltrados.length);
         setMensajes(mensajesFiltrados);
       } else {
         setMensajes([]);
       }
     } catch (error) {
-      console.error('❌ Error al cargar mensajes:', error);
+      console.error(' Error al cargar mensajes:', error);
       setMensajes([]);
     }
   };
@@ -171,7 +171,7 @@ const Chat = () => {
     try {
       const destinatarioId = usuarioSeleccionado.id_usuario || usuarioSeleccionado.Id_Usuario;
       
-      console.log("📤 Enviando mensaje:");
+      console.log(" Enviando mensaje:");
       console.log("  De:", idUsuarioActual);
       console.log("  Para:", destinatarioId);
       console.log("  Texto:", nuevoMensaje);
@@ -182,7 +182,7 @@ const Chat = () => {
         nuevoMensaje
       );
       
-      console.log("✅ Respuesta envío:", response);
+      console.log(" Respuesta envío:", response);
       
       if (response.success) {
         setNuevoMensaje('');
@@ -191,13 +191,13 @@ const Chat = () => {
         }, 100);
       }
     } catch (error) {
-      console.error('❌ Error al enviar mensaje:', error);
+      console.error(' Error al enviar mensaje:', error);
       alert('Error al enviar el mensaje. Por favor, intenta de nuevo.');
     }
   };
 
   const seleccionarUsuario = (usuario) => {
-    console.log("👤 Usuario seleccionado:", usuario);
+    console.log(" Usuario seleccionado:", usuario);
     setUsuarioSeleccionado(usuario);
     setMensajes([]);
     cerrarMenu();

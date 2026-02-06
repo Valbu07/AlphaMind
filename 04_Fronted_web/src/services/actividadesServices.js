@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = '/tareas';
+const API = 'http://localhost:3000/tareas';
 
 export const actividadesService = {
   // Obtener todas las actividades

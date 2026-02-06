@@ -1,24 +1,24 @@
 // src/services/authService.js
 import axios from 'axios';
 
-const API = '/auth';
+const API = 'http://localhost:3000/auth';
 
 export const authService = {
  
   login: async ({ num_documento, contraseña }) => {
     try {
-      console.log('📤 Enviando credenciales:', { num_documento });
+      console.log(' Enviando credenciales:', { num_documento });
       
       const { data } = await axios.post(`${API}/login`, {
         funcionario: { num_documento },
         usuario: { contraseña }
       });
 
-      console.log('📥 Respuesta completa del servidor:', data);
+      console.log(' Respuesta completa del servidor:', data);
       
       return data;
     } catch (error) {
-      console.error('❌ Error en authService.login:', error);
+      console.error(' Error en authService.login:', error);
       throw error;
     }
   },

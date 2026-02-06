@@ -28,7 +28,7 @@ export default function Login() {
     setMensaje("");
 
     try {
-      console.log('🔐 Intentando login con documento:', num_documento);
+      console.log(' Intentando login con documento:', num_documento);
       
       // Llamar al servicio de autenticación
       const data = await authService.login({
@@ -36,18 +36,18 @@ export default function Login() {
         contraseña
       });
 
-      console.log("📥 Respuesta del backend:", data);
+      console.log(" Respuesta del backend:", data);
 
       // Verificar que la respuesta tenga la estructura correcta
       if (!data.body || !data.body.token) {
-        console.error('❌ Respuesta sin token:', data);
+        console.error(' Respuesta sin token:', data);
         throw new Error("No se recibió el token del servidor");
       }
 
       const token = data.body.token;
       const user = data.body.user || { num_documento };
 
-      console.log('✅ Token extraído:', token);
+      console.log(' Token extraído:', token);
       console.log('👤 Usuario extraído:', user);
 
       // Guardar usando el contexto
@@ -56,29 +56,29 @@ export default function Login() {
       // Verificar que se guardó
       const tokenVerificado = localStorage.getItem('token');
       const userVerificado = localStorage.getItem('user');
-      console.log('🔍 Token guardado en localStorage:', tokenVerificado ? '✅ Sí' : '❌ No');
-      console.log('🔍 User guardado en localStorage:', userVerificado ? '✅ Sí' : '❌ No');
+      console.log(' Token guardado en localStorage:', tokenVerificado ? ' Sí' : ' No');
+      console.log(' User guardado en localStorage:', userVerificado ? ' Sí' : ' No');
       
-      setMensaje("✅ Bienvenido!");
+      setMensaje("Bienvenido!");
       
       // Redirigir después de medio segundo
       setTimeout(() => {
-        console.log('🚀 Redirigiendo a /actividades...');
+        console.log(' Redirigiendo a /actividades...');
         navigate("/actividades");
       }, 500);
       
     } catch (error) {
-      console.error("❌ Error completo en login:", error);
+      console.error(" Error completo en login:", error);
       
       if (error.response) {
         console.error('Response error:', error.response.data);
-        setMensaje(`❌ ${error.response.data.body || error.response.data.message || "Credenciales incorrectas"}`);
+        setMensaje(` ${error.response.data.body || error.response.data.message || "Credenciales incorrectas"}`);
       } else if (error.request) {
         console.error('Request error:', error.request);
-        setMensaje("❌ No se pudo conectar con el servidor");
+        setMensaje(" No se pudo conectar con el servidor");
       } else {
         console.error('Error message:', error.message);
-        setMensaje(`❌ ${error.message || "Error inesperado"}`);
+        setMensaje(` ${error.message || "Error inesperado"}`);
       }
     } finally {
       setCargando(false);

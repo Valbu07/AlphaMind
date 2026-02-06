@@ -31,12 +31,12 @@ const ReporteDashboard = () => {
 
   useEffect(() => {
     if (cargandoAuth) {
-      console.log('⏳ [REPORTES] Esperando contexto...');
+      console.log(' [REPORTES] Esperando contexto...');
       return;
     }
 
     if (!usuario) {
-      console.error('❌ [REPORTES] No hay usuario');
+      console.error(' [REPORTES] No hay usuario');
       setError('No hay sesión activa. Por favor inicia sesión.');
       setCargando(false);
       return;
@@ -45,13 +45,13 @@ const ReporteDashboard = () => {
     const documento = usuario.num_documento || usuario.documento || usuario.cedula;
 
     if (!documento) {
-      console.error('❌ [REPORTES] Usuario sin documento');
+      console.error(' [REPORTES] Usuario sin documento');
       setError('El usuario no tiene número de documento registrado.');
       setCargando(false);
       return;
     }
 
-    console.log('✅ [REPORTES] Cargando datos para:', documento);
+    console.log('[REPORTES] Cargando datos para:', documento);
     cargarDatosIniciales(documento);
 
   }, [usuario, cargandoAuth]);
@@ -65,7 +65,7 @@ const ReporteDashboard = () => {
       
       const datosReporte = await getReportes(documento);
       
-      console.log('✅ [REPORTES] Datos recibidos:', datosReporte);
+      console.log(' [REPORTES] Datos recibidos:', datosReporte);
 
       if (!datosReporte?.estadisticas || !datosReporte?.graficos) {
         throw new Error('Formato de datos inválido');
@@ -85,7 +85,7 @@ const ReporteDashboard = () => {
       });
 
     } catch (error) {
-      console.error('❌ [REPORTES] Error:', error);
+      console.error(' [REPORTES] Error:', error);
       setError(error.message);
     } finally {
       setCargando(false);
@@ -117,14 +117,14 @@ const ReporteDashboard = () => {
     return (
       <div className="container-fluid p-4">
         <div className="alert alert-danger">
-          <h4>⚠️ Error al cargar reportes</h4>
+          <h4> Error al cargar reportes</h4>
           <p>{error}</p>
           {usuario?.num_documento && (
             <button 
               className="btn btn-primary" 
               onClick={() => cargarDatosIniciales(usuario.num_documento)}
             >
-              🔄 Reintentar
+               Reintentar
             </button>
           )}
         </div>
