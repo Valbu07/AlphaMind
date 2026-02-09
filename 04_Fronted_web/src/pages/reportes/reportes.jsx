@@ -6,6 +6,7 @@ import { getReportes } from '../../services/reportesServices';
 import { AuthContext } from '../../context/AuthContext';
 import KPICard from '../../components/reportes/KPICard';
 import ChartCard from '../../components/reportes/ChartCard';
+import { pdfService } from '../../services/pdfService';
 
 
 const ReporteDashboard = () => {
@@ -102,8 +103,36 @@ function ListaUsuarios() {
   };
 
   const handleGenerarPDF = () => {
-    console.log('Generar PDF');
-  };
+  if (!usuario) {
+    alert('No hay usuario para generar el reporte');
+    return;
+  }
+
+  if (!metricas || !dataGraficos) {
+    alert('No hay datos para generar el PDF');
+    return;
+  }
+
+  console.log('Generando PDF con:', {
+    metricas,
+    dataGraficos,
+    usuario
+  });
+
+  const resultado = pdfService.generarReporte(
+    metricas,
+    dataGraficos,
+    {
+      num_documento: usuario.num_documento,
+      nombre: usuario.nombre
+    }
+  );
+
+  if (!resultado?.success) {
+    alert('Ocurrió un error al generar el PDF');
+  }
+};
+
 
   const handleCambiarUsuario = () => {
     console.log('Cambiar usuario');
