@@ -39,10 +39,6 @@ export function AuthProvider({ children }) {
 
 
   const login = (token, user) => {
-
-    console.log(' [AuthContext] Guardando token y usuario...');
-    console.log('Token a guardar:', token);
-    console.log('Usuario a guardar:', user);
     
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));

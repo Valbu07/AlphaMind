@@ -1,7 +1,7 @@
 // src/components/KPICard.jsx
 import React from 'react';
 
-const KPICard = ({ title, value, loading = false }) => {
+const KPICard = ({ title, value, color, valueColor,loading = false }) => {
   return (
     <div className="card kpi-card shadow-sm mb-3 p-3">
       <span className="kpi-title">{title}</span>
@@ -10,7 +10,7 @@ const KPICard = ({ title, value, loading = false }) => {
           <span className="visually-hidden">Cargando...</span>
         </div>
       ) : (
-        <span className="kpi-value">{value}</span>
+        <span className="kpi-value" style={{ color: valueColor || color }} >{value}</span>
       )}
     </div>
   );

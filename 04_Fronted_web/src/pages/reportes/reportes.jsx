@@ -7,6 +7,7 @@ import { AuthContext } from '../../context/AuthContext';
 import KPICard from '../../components/reportes/KPICard';
 import ChartCard from '../../components/reportes/ChartCard';
 
+
 const ReporteDashboard = () => {
   const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
 
@@ -56,13 +57,21 @@ const ReporteDashboard = () => {
 
   }, [usuario, cargandoAuth]);
 
+function ListaUsuarios() {
+  const [usuarios, setUsuarios] = useState([]);
+
+  useEffect(() => {
+    getUsuarios().then(setUsuarios);
+  }, []);
+}
+
+
+  
   const cargarDatosIniciales = async (documento) => {
     try {
       setCargando(true);
       setError(null);
 
-      console.log('📡 [REPORTES] Solicitando reporte...');
-      
       const datosReporte = await getReportes(documento);
       
       console.log(' [REPORTES] Datos recibidos:', datosReporte);
@@ -102,7 +111,7 @@ const ReporteDashboard = () => {
 
   if (cargandoAuth || cargando) {
     return (
-      <div className="container-fluid p-4">
+      <div className="container-fluid p-4 cargando">
         <div className="text-center">
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Cargando...</span>
@@ -149,132 +158,150 @@ const ReporteDashboard = () => {
 
  
   return (
-  <div className="container-fluid p-4">
-    <div className="row g-4">
-      
-      {/* Panel izquierdo - KPIs */}
-      <div className="col-12 col-md-3">
-        <div className="card p-3 shadow-sm panel-left">
-          <h4 className="mb-3 fw-bold">Total</h4>
+  <div className="container-fluid p-4 pt-5">
 
-          <KPICard title="Tareas Totales" value={metricas.tareasTotales} loading={false} />
-          <KPICard title="Completadas" value={metricas.completadas} loading={false} />
-          <KPICard title="Pendientes" value={metricas.pendientes} loading={false} />
-          <KPICard title="Atrasadas" value={metricas.atrasadas} loading={false} />
-        </div>
-      </div>
-
-      {/* Panel derecho CENTRADO */}
-      <div className="col-12 col-md-9 d-flex flex-column align-items-center">
-
-        {/* Header centrado */}
-        <div className="reportes-header text-center">
-          <h2 className="reportes-titulo">Reporte del Usuario</h2>
-
-          <div className="reportes-botones">
+    {/* ============================================
+        HEADER DEL REPORTE
+    ============================================ */}
+    <div className="reportes-header mb-4 ">
+      <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 ">
+        <h2 className="reportes-titulo mb-0">Reporte del Usuario</h2>
+        
+        <div className=" row justify-content-end reportes-botones">
+        <div className="col-12 col-md-auto  gap-2">
             <button className="btn btn-primary" onClick={handleCambiarUsuario}>
-              Usuario: {usuario?.num_documento}
-            </button>
+            Usuario: {usuario?.num_documento}
+          </button>
 
-            <button className="btn btn-secondary" onClick={handleGenerarPDF}>
-              Generar PDF
-            </button>
-          </div>
+          <button className="btn btn-secondary mt-4" onClick={handleGenerarPDF}>
+            Generar PDF
+          </button>
         </div>
-
-        {/* Gráficos centrados */}
-        <div className="row g-4 justify-content-center text-center w-100 max-content">
-
-          {/* Gráfico 1 */}
-          <div className="col-md-6 d-flex justify-content-center">
-            <ChartCard title="Tareas Completadas Por Mes" loading={false}>
-              {dataMeses.length > 0 ? (
-                <ResponsiveContainer width="100%" height={240}>
-                  <BarChart data={dataMeses}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="mes" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="total" fill="#1E3A8A" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="chart-placeholder">Sin datos</div>
-              )}
-            </ChartCard>
-          </div>
-
-          {/* Gráfico 2 */}
-          <div className="col-md-6 d-flex justify-content-center">
-            <ChartCard title="Tareas Por Categoría" loading={false}>
-              {dataCategorias.length > 0 ? (
-                <ResponsiveContainer width="100%" height={240}>
-                  <PieChart>
-                    <Pie
-                      data={dataCategorias}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      dataKey="value"
-                    >
-                      {dataCategorias.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="chart-placeholder">Sin datos</div>
-              )}
-            </ChartCard>
-          </div>
-
-          {/* Gráfico 3 */}
-          <div className="col-md-6 d-flex justify-content-center">
-            <ChartCard title="Estado Actual de las Tareas" loading={false}>
-              {dataEstados.length > 0 ? (
-                <ResponsiveContainer width="100%" height={240}>
-                  <PieChart>
-                    <Pie
-                      data={dataEstados}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value }) => `${name}: ${value}`}
-                      outerRadius={80}
-                      dataKey="value"
-                    >
-                      {dataEstados.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="chart-placeholder">Sin datos</div>
-              )}
-            </ChartCard>
-          </div>
-
-          {/* Gráfico 4 */}
-          <div className="col-md-6 d-flex justify-content-center">
-            <ChartCard title="NUEVA SECCION" loading={false}>
-              <div className="chart-placeholder">Próximamente</div>
-            </ChartCard>
-          </div>
-
         </div>
       </div>
     </div>
+
+
+
+    {/* ============================================
+        FILA DE KPIs
+    ============================================ */}
+    <div className="row g-4 mb-4 pt-2">
+      
+      <div className="col-6 col-lg-3 mb-4">
+        <KPICard title="Tareas Totales" value={metricas.tareasTotales} loading={false} color="blue"/>
+      </div>
+
+      <div className="col-6 col-lg-3 mb-4">
+        <KPICard className="Completadas" title="Completadas" value={metricas.completadas}  color="green"
+  valueColor="#10b948" loading={false} />
+      </div>
+
+      <div className="col-6 col-lg-3 mb-4">
+        <KPICard title="Pendientes" value={metricas.pendientes} color="orange" loading={false} />
+      </div>
+
+      <div className="col-6 col-lg-3 mb-4">
+        <KPICard title="Atrasadas" value={metricas.atrasadas} color="red" valueColor="#e94c4c" loading={false} />
+      </div>
+
+    </div>
+
+    
+    {/* ============================================
+        GRID DE GRÁFICOS -
+    ============================================ */}
+    <div className="row g-4">
+
+      {/* Gráfico 1 */}
+      <div className="col-12 col-xl-6 mb-4">
+        <ChartCard title="Tareas Completadas Por Mes" loading={false}>
+          {dataMeses.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={dataMeses}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="mes" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="total" fill="#1E3A8A" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="chart-placeholder">Sin datos</div>
+          )}
+        </ChartCard>
+      </div>
+
+      {/* Gráfico 2 */}
+      <div className="col-12 col-xl-6 mb-4">
+        <ChartCard title="Tareas Por Categoría" loading={false}>
+          {dataCategorias.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={dataCategorias}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={90}
+                  dataKey="value"
+                >
+                  {dataCategorias.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="chart-placeholder">Sin datos</div>
+          )}
+        </ChartCard>
+      </div>
+
+      {/* Gráfico 3 */}
+      <div className="col-12 col-xl-6 mb-4">
+        <ChartCard title="Estado Actual de las Tareas" loading={false}>
+          {dataEstados.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={dataEstados}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: ${value}`}
+                  outerRadius={90}
+                  dataKey="value"
+                >
+                  {dataEstados.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="chart-placeholder">Sin datos</div>
+          )}
+        </ChartCard>
+      </div>
+
+      {/* Gráfico 4 */}
+      <div className="col-12 col-xl-6 mb-4">
+        <ChartCard title="Rendimiento Semanal" loading={false}>
+          <div className="chart-placeholder">Próximamente</div>
+        </ChartCard>
+      </div>
+
+    </div>
+
   </div>
 );
-
 };
 
 export default ReporteDashboard;

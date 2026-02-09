@@ -14,7 +14,7 @@ function todos(table) {
     conexion.query(sql, [table], (err, results) => {
       if (err) {
         return reject(err);
-      }
+      } 
       resolve(results);
     });
   });
