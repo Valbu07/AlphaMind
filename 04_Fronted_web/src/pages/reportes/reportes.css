@@ -88,9 +88,14 @@
 
 
 .btn-primary {
-    background-color: var(--azul-medio) !important;
-    border-color: var(--azul-medio) !important;
-    color: var(--azul-oscuro) !important;
+    background-color: rgb(15, 15, 102)!important;
+    color: rgb(255, 255, 255) !important;
+    padding: 10px 24px !important;
+    border-radius: 10px !important;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    margin-right: 8px;
+    box-shadow: 0 0 0 0;
 }
 
 .btn-primary:hover {
