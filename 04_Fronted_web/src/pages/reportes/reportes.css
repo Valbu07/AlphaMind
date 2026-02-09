@@ -124,6 +124,7 @@
     font-weight: 600;
     transition: all 0.2s ease;
     margin-right: 8px;
+    box-shadow: 0 0 0 0;
 }
 
 .btn-primary:hover {
