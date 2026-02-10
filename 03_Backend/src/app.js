@@ -66,6 +66,7 @@ app.use('/auth', login);
 app.use('/tareas', tareas);
 app.use('/reportes', reportes);
 app.use('/recuperar', recuperarContraseña);
+app.use('/chat', chat);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

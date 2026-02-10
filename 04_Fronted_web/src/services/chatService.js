@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:3000/chat';
 
 const chatService = {
   // Obtener todos los usuarios
-  async obtenerUsuarios() {
+  async obtenerTodosLosUsuarios() {
     try {
       const response = await axios.get(`${API_URL}/usuarios`);
       return response.data;

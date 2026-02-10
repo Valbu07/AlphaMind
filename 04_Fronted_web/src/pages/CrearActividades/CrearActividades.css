@@ -77,7 +77,7 @@
   border-width: 1px 0px 1px; 
 }
 
-.btn {
+.botones-principales .btn {
   padding: 13px 28px;
   font-size: 20px;
   font-weight: bold;
@@ -88,12 +88,12 @@
   transition: all 0.3s ease;
 }
 
-.btn:hover {
+.botones-principales .btn:hover {
   background-color: #faca77;
   color: #ffffff;
 }
 
-.btn:hover {
+.botones-principales .btn:hover {
   background-color: #f7a840;
   color: #ffffff;
   transform: translateY(-2px);

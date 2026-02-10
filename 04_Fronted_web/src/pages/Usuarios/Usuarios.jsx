@@ -296,12 +296,12 @@ const Usuarios = () => {
       </div>
 
       {/* Contenedor de secciones */}
-      <div className="contenido">
+      <div className="contenido ">
         {/* Sección: Crear Usuario */}
         {seccionActiva === "crear" && (
           <div className="seccion">
             <h2>{modoEdicion ? "Editar Usuario" : "Crear Usuario"}</h2>
-            <form className="formulario" onSubmit={handleSubmit}>
+            <form className="formulario mt-4" onSubmit={handleSubmit}>
               <select 
                 name="tipo_documento" 
                 value={formData.tipo_documento}
@@ -430,22 +430,21 @@ const Usuarios = () => {
 
         {/* Sección: Consultar Usuarios */}
         {seccionActiva === "consultar" && (
-          <div className="seccion">
+          <div className="seccion ">
             <h2>Consultar Usuarios</h2>
             {loading ? (
               <p style={{ textAlign: 'center' }}>Cargando usuarios...</p>
             ) : (
-              <div className="tarjetas-usuarios">
+              <div className="card mt-4">
                 {usuarios.length > 0 ? (
                   usuarios.map((usuario) => (
-                    <div className="tarjeta" key={usuario.Num_Documento || usuario.num_documento}>
+                    <div className=" m-4 tarjeta d-flex justify-content-around" key={usuario.Num_Documento || usuario.num_documento}>
                       <h3>
                         {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
                       </h3>
-                      <p><strong>Documento:</strong> {usuario.Num_Documento || usuario.num_documento}</p>
-                      <p><strong>Correo:</strong> {usuario.Correo_Electronico || usuario.correo_electronico}</p>
-                      <p><strong>Teléfono:</strong> {usuario.Numero_telefonico || usuario.numero_telefonico}</p>
+                      <button type="button" class="btn btn-primary btn-sm">Small button</button>
                     </div>
+                    
                   ))
                 ) : (
                   <p style={{ textAlign: 'center', width: '100%' }}>No hay usuarios registrados</p>
@@ -462,7 +461,7 @@ const Usuarios = () => {
             {loading ? (
               <p style={{ textAlign: 'center' }}>Cargando usuarios...</p>
             ) : (
-              <table className="tabla-usuarios">
+              <table className="tabla-usuarios  mt-4">
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -513,7 +512,7 @@ const Usuarios = () => {
             {loading ? (
               <p style={{ textAlign: 'center' }}>Cargando usuarios...</p>
             ) : (
-              <table className="tabla-usuarios">
+              <table className="tabla-usuarios mt-4">
                 <thead>
                   <tr>
                     <th>Nombre</th>
