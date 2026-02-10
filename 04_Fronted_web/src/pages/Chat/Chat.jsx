@@ -105,7 +105,7 @@ const Chat = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await chatService.obtenerUsuarios();
+      const response = await chatService.obtenerTodosLosUsuarios();
       
       console.log(" Respuesta usuarios:", response);
       

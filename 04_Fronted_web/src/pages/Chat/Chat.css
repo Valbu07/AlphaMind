@@ -54,6 +54,7 @@ body {
   align-items: flex-start;
   padding: var(--spacing-lg);
   background: linear-gradient(135deg, #f5f7fb 0%, #e2eafc 100%);
+  margin-top: 5em;
 }
 
 /* ===============================
