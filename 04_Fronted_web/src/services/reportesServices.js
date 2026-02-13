@@ -3,7 +3,7 @@ import axios from "axios";
 
 const API = "http://localhost:3000/reportes";
 
-export const getReportes = async (num_documento) => {
+const getReportes = async (num_documento) => {
   try {
     // Obtener token de localStorage
     const token = localStorage.getItem('token');
@@ -17,13 +17,10 @@ export const getReportes = async (num_documento) => {
 
     const res = await axios.get(`${API}/${num_documento}`, {
       headers: {
-        'Authorization': token, // Ya incluye "Bearer"
+        'Authorization': token, 
         'Content-Type': 'application/json'
       }
     });
-
-    console.log(" [SERVICE] Respuesta recibida:", res.status);
-    console.log("  Data completa:", res.data);
 
     // Validar respuesta
     if (!res.data?.success) {
@@ -44,6 +41,10 @@ export const getReportes = async (num_documento) => {
           completadasMes: [],
           categorias: [],
           estados: []
+        },
+        funcionario: {
+          primer_nombre: "",
+          primer_apellido: ""
         }
       };
     }
@@ -71,6 +72,10 @@ export const getReportes = async (num_documento) => {
           completadasMes: [],
           categorias: [],
           estados: []
+        },
+        funcionario: {
+          primer_nombre: "",
+          primer_apellido: ""
         }
       };
     }
@@ -98,3 +103,48 @@ export const getReportes = async (num_documento) => {
     );
   }
 };
+
+const obtenerFuncionarios = async () => {
+  try {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      throw new Error("No hay sesión activa.");
+    }
+
+    const res = await axios.get(`${API}/funcionarios`, {
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json"
+      }
+    });
+
+    console.log("📥 Respuesta recibida:", res.data);
+
+    if (!res.data?.success) {
+      throw new Error(res.data?.message || "Error al obtener funcionarios");
+    }
+
+    return res.data.data || [];
+
+  } catch (error) {
+
+
+    if (error.response?.status === 401) {
+      throw new Error("Sesión expirada.");
+    }
+
+    if (error.code === "ERR_NETWORK") {
+      throw new Error("No se pudo conectar con el servidor.");
+    }
+
+    throw new Error(
+      error.response?.data?.message ||
+      error.message ||
+      "Error al obtener funcionarios"
+    );
+  }
+};
+
+
+export { getReportes, obtenerFuncionarios };

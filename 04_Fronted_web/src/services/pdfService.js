@@ -36,7 +36,7 @@ class PDFService {
     this.doc.setFontSize(16);
     this.doc.setTextColor(100, 100, 100);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Reporte de Desempeño de Usuario', this.pageWidth / 2, 28, { align: 'center' });
+    this.doc.text('Reporte de Desempeño', this.pageWidth / 2, 28, { align: 'center' });
 
     // Línea separadora
     this.doc.setDrawColor(30, 58, 138);
