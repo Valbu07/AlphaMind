@@ -440,12 +440,15 @@ const Usuarios = () => {
               <div className="card mt-4">
                 {usuarios.length > 0 ? (
                   usuarios.map((usuario) => (
-                    <div className=" m-4 tarjeta d-flex justify-content-between align-items-center" key={usuario.Num_Documento || usuario.num_documento}>
-                      <img src={Foto} className="foto-usuario" alt="Foto usuario" />
+                    <div className=" m-2 tarjeta d-flex justify-content-between align-items-center" key={usuario.Num_Documento || usuario.num_documento}>
+                     <div className="d-flex align-items-center  ">
+                       <img src={Foto} className="foto-usuario" alt="Foto usuario" />
                       <h3>
                         {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
                       </h3>
-                      <button type="button" class="btn btn-primary btn-sm">Consultar</button>
+                     
+                     </div>
+                      <button type="button" class="btn-consultar btn btn-primary btn-sm">Consultar</button>
                     </div>
                     
                   ))

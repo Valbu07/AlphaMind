@@ -202,24 +202,26 @@
 
 .tarjetas-usuarios {
   display: grid;
+
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 15px;
 }
 
 .tarjeta {
-    background-color: rgb(217, 219, 243);
+    background-color:#bbd2f55e;
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-    transition: 0.3s ease; /* Suaviza el cambio */
+    transition: 0.2s ease; /* Suaviza el cambio */
 }
 
 .tarjeta:hover {
-    border: 1px solid #335a75; /* Este es el borde brillante */
-    box-shadow: 0 0 20px rgba(30, 41, 161, 0.6); /* Desde aqui modifico el brillo */
+    
+    box-shadow: 0 0 4px rgba(7, 13, 80, 0.6); /* Desde aqui modifico el brillo */
 }
 
-
+.btn-consultar{
+  width: auto;
+}
 .foto-usuario {
   width: 45px;
   height: 45px;
@@ -229,7 +231,8 @@
 }
 
 .card h3 {
-    font-size: 19px; /*Tama;o de la letra*/
+    
+    font-size: 19px; /*Tamaño de la letra*/
     height: 22px;       /*Alinea todo por decirlo asi*/
     overflow: hidden; /*Dado caso de que el nombre sea muy largo, se oculta el texto sobrante */
     text-overflow: ellipsis;/* Agrega puntos suspensivos al final del texto si es demasiado largo */
