@@ -3,6 +3,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useAuth } from "../../hooks/useAuth";
 import { funcionariosService } from "../../services/FuncionariosService";
 import "./usuarios.css";
+import Foto from "../../assets/Recursos/Foto.jpg";
+
 
 const Usuarios = () => {
   const { token } = useAuth();
@@ -438,11 +440,12 @@ const Usuarios = () => {
               <div className="card mt-4">
                 {usuarios.length > 0 ? (
                   usuarios.map((usuario) => (
-                    <div className=" m-4 tarjeta d-flex justify-content-around" key={usuario.Num_Documento || usuario.num_documento}>
+                    <div className=" m-4 tarjeta d-flex justify-content-between align-items-center" key={usuario.Num_Documento || usuario.num_documento}>
+                      <img src={Foto} className="foto-usuario" alt="Foto usuario" />
                       <h3>
                         {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
                       </h3>
-                      <button type="button" class="btn btn-primary btn-sm">Small button</button>
+                      <button type="button" class="btn btn-primary btn-sm">Consultar</button>
                     </div>
                     
                   ))
