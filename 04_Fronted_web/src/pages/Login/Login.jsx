@@ -162,7 +162,7 @@ export default function Login() {
                   </a>
                   <button 
                     type="submit" 
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-primary-login"
                     disabled={cargando}
                   >
                     {cargando ? "Ingresando..." : "Ingresar"}

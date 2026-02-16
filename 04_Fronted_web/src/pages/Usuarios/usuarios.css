@@ -220,7 +220,13 @@
 }
 
 .btn-consultar{
-  width: auto;
+  width: 17%;
+  height: 40px;
+  background-color: rgb(247, 168, 64);
+  border: none;
+  border-radius: 9px;
+
+
 }
 .foto-usuario {
   width: 45px;
@@ -328,6 +334,9 @@
     display: block;
     overflow-x: auto;
   }
+
+
+
 }
 
 @media (max-width: 767px) {
@@ -339,6 +348,13 @@
     width: 35%;
   }
 
+    .btn-consultar{
+  width: auto !important;
+  background-color: rgb(247, 168, 64);
+  border: none;
+  border-radius: 9px;
+}
+
   .fila {
      flex-wrap: wrap;
   }
@@ -348,6 +364,7 @@
   .menu button {
     width: 100%;
   }
+
 }
 
 /*Estos son los estilos de los modales*/

@@ -198,7 +198,7 @@ function ListaUsuarios() {
         
         <div className=" row justify-content-end reportes-botones">
         <div className="col-12 col-md-auto  gap-2">
-            <button className="btn btn-primary" onClick={handleCambiarUsuario}>
+            <button className="btn btn-primary btn-cambiarU" onClick={handleCambiarUsuario}>
             Usuario: {usuario?.num_documento}
           </button>
 
