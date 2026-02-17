@@ -1,7 +1,5 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 
-// Configurar el transportador de correo
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -10,118 +8,84 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-/**
- * Envía la contraseña actual al correo del funcionario
- */
-async function enviarContrasena(destinatario, primer_nombre, contraseña) {
-  const mailOptions = {
-    from: `"AlphaMind Soporte" <${process.env.EMAIL_USER}>`,
-    to: destinatario,
-    subject: 'Recuperación de Contraseña - AlphaMind',
-    html: `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <style>
-          body { 
-            font-family: Arial, sans-serif; 
-            background-color: #f4f4f4; 
-            padding: 20px; 
-          }
-          .container { 
-            max-width: 600px; 
-            margin: 0 auto; 
-            background: white; 
-            border-radius: 10px; 
-            overflow: hidden; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-          }
-          .header { 
-            background: linear-gradient(135deg, #374e9f, #5a7bc9); 
-            color: white; 
-            padding: 30px; 
-            text-align: center; 
-          }
-          .header h1 { 
-            margin: 0; 
-            font-size: 24px; 
-          }
-          .content { 
-            padding: 30px; 
-            color: #333; 
-          }
-          .password-box { 
-            background: #f9f9f9; 
-            border-left: 4px solid #fc9222; 
-            padding: 20px; 
-            margin: 20px 0; 
-            border-radius: 5px; 
-          }
-          .password { 
-            font-size: 24px; 
-            font-weight: bold; 
-            color: #374e9f; 
-            text-align: center; 
-            letter-spacing: 2px; 
-          }
-          .footer { 
-            background: #f9f9f9; 
-            padding: 20px; 
-            text-align: center; 
-            color: #666; 
-            font-size: 12px; 
-          }
-          .warning {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            padding: 15px;
-            border-radius: 5px;
-            margin: 20px 0;
-            color: #856404;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1> Recuperación de Contraseña</h1>
-          </div>
-          
-          <div class="content">
-            <h2>Hola ${primer_nombre},</h2>
-            <p>Has solicitado recuperar tu contraseña de AlphaMind.</p>
-            <p>Tu contraseña actual es:</p>
-            
-            <div class="password-box">
-              <div class="password">${contraseña}</div>
-            </div>
+async function enviarContrasena(correoDestino, nombre, contrasenaTemporal) {
 
-            <div class="warning">
-              <strong> Recomendación de Seguridad:</strong><br>
-              Por tu seguridad, te recomendamos cambiar esta contraseña después de iniciar sesión.
-            </div>
-
-            <p>Si no solicitaste esta información, por favor ignora este correo.</p>
-          </div>
-
-          <div class="footer">
-            <p><strong>AlphaMind</strong> - Sistema de Gestión</p>
-            <p>&copy; 2024 Todos los derechos reservados</p>
-            <p>Este es un correo automático, no respondas a este mensaje.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `
-  };
-
+  
   try {
+    const mailOptions = {
+      from: `"AlphaMind - Sistema de Gestión" <${process.env.EMAIL_USER}>`,
+      to: correoDestino,
+      subject: '🔑 Recuperación de Contraseña - AlphaMind',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #374e9f 0%, #5a7bc7 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .password-box { background: white; border: 2px solid #fc9222; border-radius: 8px; padding: 20px; margin: 20px 0; text-align: center; }
+            .password { font-size: 28px; color: #374e9f; font-weight: bold; letter-spacing: 3px; }
+            .warning { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; }
+            .footer { text-align: center; color: #666; font-size: 12px; margin-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🔐 Recuperación de Contraseña</h1>
+            </div>
+            <div class="content">
+              <h2>Hola ${nombre},</h2>
+              <p>Has solicitado recuperar tu contraseña en el sistema AlphaMind.</p>
+              
+              <div class="password-box">
+                <p style="margin: 0; color: #666;">Tu contraseña temporal es:</p>
+                <p class="password">${contrasenaTemporal}</p>
+              </div>
+              
+              <div class="warning">
+                <strong>⚠️ Importante:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>Esta es una contraseña temporal</li>
+                  <li>Úsala para iniciar sesión</li>
+                  <li><strong>Cámbiala inmediatamente</strong> después de ingresar</li>
+                  <li>No compartas esta contraseña con nadie</li>
+                </ul>
+              </div>
+              
+              <p>Si no solicitaste este cambio, contacta inmediatamente al administrador del sistema.</p>
+              
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="http://localhost:5173" style="background: #fc9222; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                  Ir a Iniciar Sesión
+                </a>
+              </div>
+            </div>
+            <div class="footer">
+              <p>Este es un correo automático, por favor no responder.</p>
+              <p>© 2025 AlphaMind - Sistema de Gestión de Tareas</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+
+
     const info = await transporter.sendMail(mailOptions);
-    console.log(' Correo enviado:', info.messageId);
-    return { success: true };
+    
+
+    
+    return {
+      success: true,
+      messageId: info.messageId
+    };
+    
   } catch (error) {
-    console.error(' Error al enviar correo:', error);
-    throw new Error('No se pudo enviar el correo');
+    console.error('❌ Error detallado al enviar correo:', error);
+    throw new Error('No se pudo enviar el correo: ' + error.message);
   }
 }
 

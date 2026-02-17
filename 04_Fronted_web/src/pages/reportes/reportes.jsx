@@ -7,6 +7,7 @@ import { AuthContext } from '../../context/AuthContext';
 import KPICard from '../../components/reportes/KPICard';
 import ChartCard from '../../components/reportes/ChartCard';
 import { pdfService } from '../../services/pdfService';
+import ModalSeleccionUsuario from '../../components/reportes/ModalSeleccionUsuario';
 
 
 const ReporteDashboard = () => {
@@ -31,6 +32,7 @@ const ReporteDashboard = () => {
   });
 
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
@@ -152,31 +154,19 @@ const ReporteDashboard = () => {
   };
 
 
-  const handleCambiarUsuario = async () => {
+  const   handleCambiarUsuario = () => {
     if (listaFuncionarios.length === 0) {
       alert('No hay usuarios disponibles');
       return;
     }
+    setMostrarModal(true);
+  };
 
-    // Crear lista de opciones para mostrar
-    let mensaje = 'Seleccione un usuario (ingrese el número):\n\n';
-    listaFuncionarios.forEach((func, index) => {
-      mensaje += `${index + 1}. ${func.primer_nombre} ${func.primer_apellido} - Doc: ${func.num_documento}\n`;
-    });
-
-    const seleccion = prompt(mensaje);
-
-    if (!seleccion) return; // Usuario canceló
-
-    const numeroSeleccionado = parseInt(seleccion);
-
-    if (isNaN(numeroSeleccionado) || numeroSeleccionado < 1 || numeroSeleccionado > listaFuncionarios.length) {
-      alert('Selección inválida. Por favor ingrese un número válido.');
-      return;
+  const handleSeleccionarUsuario = async (usuarioSeleccionado) => {
+    setMostrarModal(false);
+    if (usuarioSeleccionado) {
+      await cargarDatosIniciales(usuarioSeleccionado.num_documento);
     }
-
-    const usuarioSeleccionado = listaFuncionarios[numeroSeleccionado - 1];
-    await cargarDatosIniciales(usuarioSeleccionado.num_documento);
   };
 
 
@@ -373,6 +363,14 @@ const ReporteDashboard = () => {
         </div>
 
       </div>
+
+      {/* Modal de selección de usuario */}
+      <ModalSeleccionUsuario 
+        mostrar={mostrarModal}
+        funcionarios={listaFuncionarios}
+        onSeleccionar={handleSeleccionarUsuario}
+        onCerrar={() => setMostrarModal(false)}
+      />
 
     </div>
   );

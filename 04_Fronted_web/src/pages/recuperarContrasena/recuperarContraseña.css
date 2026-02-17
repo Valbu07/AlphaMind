@@ -1,17 +1,20 @@
+.recuperar-contrasena {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #a59f9f27 0%, #e8e8e8 100%);
+
+}
 
 .recuperar-contrasena * {
     box-sizing: border-box;
 }
 
-
-body {
-    background: linear-gradient(135deg, #a59f9f27 0%, #e8e8e8 100%);
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 .recuperar-contrasena .header {
-    padding: 2rem 0 1rem;
+    width: 100%;
+    max-width: 1200px;
 }
 
 .recuperar-contrasena .Titulo {
@@ -28,32 +31,38 @@ body {
 .recuperar-contrasena hr {
     border: none;
     border-top: 2px solid #160468;
-    margin: 1.5rem auto;
+    margin-top : auto;
     opacity: 0.3;
-    max-width: 80%;
+    width: 100%;
 }
 
-
 .recuperar-contrasena .container {
+    width: 100%;
+    max-width: 1200px;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem 1rem;
+    padding: 0;
+    margin: 0;
 }
 
 .recuperar-contrasena .row {
     width: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
 }
 
 .recuperar-contrasena .col-12 {
     display: flex;
     justify-content: center;
+    padding: 0;
 }
 
 .recuperar-contrasena .Validacion {
     width: 100%;
     max-width: 32rem;
-    padding: 2.5rem 2rem;
+    padding: 0 2em 2em;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     border: 1px solid #d4d4d4;
@@ -62,17 +71,16 @@ body {
     animation: slideUp 0.5s ease-out;
 }
 
-
 .recuperar-contrasena .icono {
     display: flex;
     justify-content: center;
-    margin-bottom: 1.5rem;
+
 }
 
 .recuperar-contrasena .bi-person-fill-lock {
     font-size: 7em;
     color: #374e9f;
-    filter: drop-shadow(0 4px 8px rgba(55, 78, 159, 0.3));
+    filter: drop-shadow(0 8px 2px rgba(55, 78, 159, 0.3));
     animation: fadeInScale 0.6s ease-out;
 }
 
@@ -81,9 +89,7 @@ body {
     color: #374e9f;
 }
 
-/* ===========================
-   Tipografía
-   =========================== */
+/* Tipografía */
 .recuperar-contrasena h3 {
     text-align: center;
     font-size: 1.75rem;
@@ -100,14 +106,21 @@ body {
     font-size: 0.95rem;
 }
 
-/* ===========================
-   Formulario
-   =========================== */
+/* Formulario */
 .recuperar-contrasena .input-group {
     margin: 1.5rem 0;
 }
 
-
+.recuperar-contrasena .input-group-text {
+    background-color: #f8f9fa;
+    border: 2px solid #d4d4d4;
+    border-right: none;
+    border-radius: 0.5rem 0 0 0.5rem;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .recuperar-contrasena .form-floating {
     flex: 1;
@@ -135,6 +148,11 @@ body {
     outline: none;
 }
 
+.recuperar-contrasena .form-control:hover + .input-group-text,
+.recuperar-contrasena .input-group:focus-within .input-group-text {
+    border-color: #374e9f;
+}
+
 .recuperar-contrasena .form-floating label {
     padding-left: 1rem;
     color: #666;
@@ -148,12 +166,6 @@ body {
     margin-top: 2rem;
 }
 
-.recuperar-contrasena .boton a {
-    text-decoration: none;
-    width: 100%;
-    max-width: 12rem;
-}
-
 .recuperar-contrasena .btn-primary {
     color: #0d0d0e;
     background: linear-gradient(135deg, #fc9222 0%, #ffb347 100%);
@@ -163,24 +175,30 @@ body {
     font-size: 1rem;
     font-weight: 600;
     width: 100%;
+    max-width: 16rem;
     transition: all 0.3s ease;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(252, 146, 34, 0.3);
 }
 
-.recuperar-contrasena .btn-primary:hover {
+.recuperar-contrasena .btn-primary:hover:not(:disabled) {
     background: linear-gradient(135deg, #ffb347 0%, #ffd699 100%);
     border-color: #ffffff;
     box-shadow: 0 6px 25px rgba(252, 146, 34, 0.5);
     transform: translateY(-2px);
 }
 
-.recuperar-contrasena .btn-primary:active {
+.recuperar-contrasena .btn-primary:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: 0 2px 10px rgba(252, 146, 34, 0.4);
 }
 
+.recuperar-contrasena .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
+/* Animaciones */
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -203,12 +221,18 @@ body {
     }
 }
 
+/* Responsive */
 @media (max-width: 768px) {
-    .recuperar-contrasena .Validacion {
-        border: none;
-        box-shadow: none;
-        background: transparent;
+    .recuperar-contrasena {
         padding: 1.5rem 1rem;
+    }
+
+    .recuperar-contrasena .header {
+        padding: 0 0 1.5rem;
+    }
+
+    .recuperar-contrasena .Validacion {
+        padding: 2rem 1.5rem;
     }
 
     .recuperar-contrasena .Titulo h1 {
@@ -224,13 +248,18 @@ body {
     }
 
     .recuperar-contrasena hr {
-        max-width: 90%;
+        max-width: 150px;
     }
 }
 
 @media (max-width: 480px) {
-    .recuperar-contrasena .Validacion {
+    .recuperar-contrasena {
         padding: 1rem 0.5rem;
+    }
+
+    .recuperar-contrasena .Validacion {
+        padding: 1.5rem 1rem;
+        border-radius: 1rem;
     }
 
     .recuperar-contrasena .Titulo h1 {
@@ -252,13 +281,23 @@ body {
     .recuperar-contrasena .form-control {
         padding: 0.625rem 0.875rem;
         font-size: 0.95rem;
+        height: 3.2rem;
     }
 
-    .recuperar-contrasena .boton a {
-        max-width: 100%;
+    .recuperar-contrasena .input-group-text {
+        padding: 0 0.75rem;
+    }
+
+    .recuperar-contrasena .bi-badge-cc-fill {
+        font-size: 1.5em;
     }
 
     .recuperar-contrasena .btn-primary {
-        width: 100%;
+        max-width: 100%;
+        padding: 0.75rem 1.5rem;
+    }
+
+    .recuperar-contrasena hr {
+        max-width: 120px;
     }
 }

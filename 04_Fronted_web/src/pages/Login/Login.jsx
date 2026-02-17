@@ -1,5 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 import "./Login.css";
 
 import logoCediplus from "../../assets/Recursos/logoCediplus.svg";
@@ -10,8 +12,8 @@ import Trabajador2 from "../../assets/Recursos/Login/Trabajador2.png";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth"; 
-import { authService } from "../../services/authService"; 
+import { useAuth } from "../../hooks/useAuth";
+import { authService } from "../../services/authService";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -28,48 +30,43 @@ export default function Login() {
     setMensaje("");
 
     try {
-      console.log(' Intentando login con documento:', num_documento);
-      
-      // Llamar al servicio de autenticación
+      console.log('Intentando login con documento:', num_documento);
+
       const data = await authService.login({
         num_documento,
         contraseña
       });
 
-      console.log(" Respuesta del backend:", data);
+      console.log("Respuesta del backend:", data);
 
-      // Verificar que la respuesta tenga la estructura correcta
       if (!data.body || !data.body.token) {
-        console.error(' Respuesta sin token:', data);
+        console.error('Respuesta sin token:', data);
         throw new Error("No se recibió el token del servidor");
       }
 
       const token = data.body.token;
       const user = data.body.user || { num_documento };
 
-      console.log(' Token extraído:', token);
-      console.log('👤 Usuario extraído:', user);
+      console.log('Token extraído:', token);
+      console.log('Usuario extraído:', user);
 
-      // Guardar usando el contexto
       login(token, user);
-      
-      // Verificar que se guardó
+
       const tokenVerificado = localStorage.getItem('token');
       const userVerificado = localStorage.getItem('user');
-      console.log(' Token guardado en localStorage:', tokenVerificado ? ' Sí' : ' No');
-      console.log(' User guardado en localStorage:', userVerificado ? ' Sí' : ' No');
-      
-      setMensaje("Bienvenido!");
-      
-      // Redirigir después de medio segundo
+      console.log('Token guardado en localStorage:', tokenVerificado ? 'Sí' : 'No');
+      console.log('User guardado en localStorage:', userVerificado ? 'Sí' : 'No');
+
+      setMensaje(" Bienvenido!");
+
       setTimeout(() => {
-        console.log(' Redirigiendo a /actividades...');
+        console.log('Redirigiendo a /actividades...');
         navigate("/actividades");
       }, 500);
-      
+
     } catch (error) {
-      console.error(" Error completo en login:", error);
-      
+      console.error("Error completo en login:", error);
+
       if (error.response) {
         console.error('Response error:', error.response.data);
         setMensaje(` ${error.response.data.body || error.response.data.message || "Credenciales incorrectas"}`);
@@ -93,29 +90,48 @@ export default function Login() {
       <hr />
       <div className="container">
         <div className="row">
-          {/* CARRUSEL */}
           <div className="col-md-6 carrusel-login">
-            <div id="carouselExampleIndicators" className="carousel slide">
+            <div
+              id="carouselLogin"
+              className="carousel slide carousel-fade"
+              data-bs-ride="carousel"
+              data-bs-interval="3000"
+              data-bs-pause="false"
+            >
+              <div className="carousel-indicators">
+                <button type="button" data-bs-target="#carouselLogin" data-bs-slide-to="0" className="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselLogin" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselLogin" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselLogin" data-bs-slide-to="3" aria-label="Slide 4"></button>
+              </div>
+
               <div className="carousel-inner">
                 <div className="carousel-item active">
-                  <img src={Admin1} className="d-block w-100" alt="Admin1" />
+                  <img src={Admin1} className="d-block w-100 img-carrusel" alt="Admin1" />
                 </div>
                 <div className="carousel-item">
-                  <img src={Trabajador1} className="d-block w-100" alt="Trabajador1" />
+                  <img src={Trabajador1} className="d-block w-100 img-carrusel" alt="Trabajador1" />
                 </div>
                 <div className="carousel-item">
-                  <img src={Admin2} className="d-block w-100" alt="Admin2" />
+                  <img src={Admin2} className="d-block w-100 img-carrusel" alt="Admin2" />
                 </div>
                 <div className="carousel-item">
-                  <img src={Trabajador2} className="d-block w-100" alt="Trabajador2" />
+                  <img src={Trabajador2} className="d-block w-100 img-carrusel" alt="Trabajador2" />
                 </div>
               </div>
+
+              <button className="carousel-control-prev" type="button" data-bs-target="#carouselLogin" data-bs-slide="prev">
+                <span className="carousel-control-prev-icon"></span>
+              </button>
+              <button className="carousel-control-next" type="button" data-bs-target="#carouselLogin" data-bs-slide="next">
+                <span className="carousel-control-next-icon"></span>
+              </button>
             </div>
           </div>
 
           <div className="col-12 col-md-6">
             <div className="Validacion">
-              <form onSubmit={handleSubmit} className="formulario-login">
+              <form onSubmit={handleSubmit} className="formulario-login mt-5">
                 <h2>Bienvenido</h2>
 
                 <div className="input-group has-validation mb-3">
@@ -160,8 +176,8 @@ export default function Login() {
                   <a href="./recuperar" className="contraseña-login">
                     ¿Olvidó su Contraseña?
                   </a>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="btn btn-primary"
                     disabled={cargando}
                   >
@@ -170,7 +186,7 @@ export default function Login() {
                 </div>
 
                 {mensaje && (
-                  <div className={`alert mt-3 ${mensaje.includes("✅") ? "alert-success" : "alert-danger"}`}>
+                  <div className={`alert mt-3 ${mensaje.includes("Bienvenido") ? "alert-success" : "alert-danger"}`}>
                     {mensaje}
                   </div>
                 )}

@@ -49,11 +49,10 @@ class PDFService {
     this.doc.setFont('helvetica', 'normal');
     
     const yPos = 40;
-    this.doc.text(`Usuario: ${usuario.num_documento}`, this.margin, yPos);
     this.doc.text(`Fecha: ${fechaGeneracion}`, this.pageWidth - this.margin - 79, yPos);
     
     if (usuario.nombre) {
-      this.doc.text(`Nombre: ${usuario.nombre}`, this.margin, yPos + 6);
+      this.doc.text(`Nombre: ${usuario.nombre}`, this.margin, yPos);
     }
 
     return yPos + 15; // Retorna posición Y para continuar
