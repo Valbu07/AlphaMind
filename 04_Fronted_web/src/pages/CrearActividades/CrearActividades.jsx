@@ -35,7 +35,7 @@ export default function CrearActividades() {
         try {
             if (!token) return;
             const data = await funcionariosService.getAll(token);
-            setFuncionarios(data.body || data);
+            setFuncionarios(Array.isArray(data) ? data : data.body);
             setFuncionariosCargados(true);
         } catch (error) {
             setMensaje("Error al cargar funcionarios");
@@ -124,6 +124,7 @@ export default function CrearActividades() {
 
    const asignar = async (e) => {
     e.preventDefault();
+    
     setLoading(true);
     setMensaje("");
 
