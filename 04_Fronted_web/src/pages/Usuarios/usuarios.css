@@ -202,20 +202,50 @@
 
 .tarjetas-usuarios {
   display: grid;
+
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 15px;
 }
 
 .tarjeta {
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color:#bbd2f55e;
+    padding: 15px;
+    border-radius: 8px;
+    transition: 0.2s ease; /* Suaviza el cambio */
 }
 
 .tarjeta:hover {
-  background-color: #faca77;
+    
+    box-shadow: 0 0 4px rgba(7, 13, 80, 0.6); /* Desde aqui modifico el brillo */
 }
+
+.btn-consultar{
+  width: 17%;
+  height: 40px;
+  background-color: rgb(247, 168, 64);
+  border: none;
+  border-radius: 9px;
+
+
+}
+.foto-usuario {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.card h3 {
+    
+    font-size: 19px; /*Tamaño de la letra*/
+    height: 22px;       /*Alinea todo por decirlo asi*/
+    overflow: hidden; /*Dado caso de que el nombre sea muy largo, se oculta el texto sobrante */
+    text-overflow: ellipsis;/* Agrega puntos suspensivos al final del texto si es demasiado largo */
+    white-space: nowrap;  /* Evita que el texto se divida en varias líneas */
+}
+
+
 
 .tabla-usuarios {
   width: 100%;
@@ -304,6 +334,9 @@
     display: block;
     overflow-x: auto;
   }
+
+
+
 }
 
 @media (max-width: 767px) {
@@ -315,6 +348,13 @@
     width: 35%;
   }
 
+    .btn-consultar{
+  width: auto !important;
+  background-color: rgb(247, 168, 64);
+  border: none;
+  border-radius: 9px;
+}
+
   .fila {
      flex-wrap: wrap;
   }
@@ -324,4 +364,61 @@
   .menu button {
     width: 100%;
   }
+
 }
+
+/*Estos son los estilos de los modales*/
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+
+
+
+
+/* Fondo oscuro detrás del modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999; /* MUY IMPORTANTE */
+}
+
+/* Caja del modal */
+.modal-contenido {
+  background: white;
+  width: 400px;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: left;
+  animation: aparecer 0.3s ease;
+  z-index: 1000;
+}
+
+/* Botón cerrar */
+.modal-contenido button {
+  margin-top: 20px;
+  background-color: #f56c6c;
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+

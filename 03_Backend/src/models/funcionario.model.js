@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 function todos(table) {
 
   return new Promise((resolve, reject) => {
-    const sql = "SELECT * FROM ??";  
+    const sql = "select funcionario.id_usuario, num_documento,primer_nombre, segundo_nombre,primer_apellido,segundo_apellido, correo_electronico, numero_telefonico ,tipo_de_rol from funcionario inner join usuario on funcionario.id_usuario = usuario.id_usuario";  
     conexion.query(sql, [table], (err, results) => {
       if (err) {
         return reject(err);

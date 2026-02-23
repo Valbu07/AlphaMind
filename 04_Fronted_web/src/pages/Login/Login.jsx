@@ -176,9 +176,9 @@ export default function Login() {
                   <a href="./recuperar" className="contraseña-login">
                     ¿Olvidó su Contraseña?
                   </a>
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary btn-primary-login"
                     disabled={cargando}
                   >
                     {cargando ? "Ingresando..." : "Ingresar"}

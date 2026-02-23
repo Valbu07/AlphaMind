@@ -1,20 +1,29 @@
 import { useState, useEffect } from "react";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";//Son los iconos del ojito , para mostra/ocultar
 import { useAuth } from "../../hooks/useAuth";
-import { funcionariosService } from "../../services/FuncionariosService";
+import { funcionariosService } from "../../services/FuncionariosService";//Este archivo conecta con el backend
 import "./usuarios.css";
+import Foto from "../../assets/Recursos/Foto.jpg";
 
-const Usuarios = () => {
-  const { token } = useAuth();
+
+const Usuarios = () => { //Creo mi componente llamado Usuarios
+  const { token } = useAuth();//Saco el token del login
   
   // Estados
-  const [showPassword, setShowPassword] = useState(false);
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [mensaje, setMensaje] = useState("");
-  const [seccionActiva, setSeccionActiva] = useState("crear");
+  const [showPassword, setShowPassword] = useState(false);//Mostrar contrase;a
+  const [usuarios, setUsuarios] = useState([]);//Lista de usuarios 
+  const [loading, setLoading] = useState(false);//Sirve para mostrar (cargando..)
 
-  const [formData, setFormData] = useState({
+  // Para edición
+  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);//Es el que almacena el usuario seleccionado , para mostrarlo
+  const [mostrarModal, setMostrarModal] = useState(false);
+
+  
+  //Mensajes
+  const [mensaje, setMensaje] = useState("");//Error o exito
+  const [seccionActiva, setSeccionActiva] = useState("crear");//Controla que pantalla se ve
+
+  const [formData, setFormData] = useState({//Aqui se guarda lo que escribe el usuario
     tipo_documento: "",
     num_documento: "",
     primer_nombre: "",
@@ -27,20 +36,20 @@ const Usuarios = () => {
     contraseña: ""
   });
 
-  
+  //Modo de edicion 
   const [modoEdicion, setModoEdicion] = useState(false); // Indica si se está en modo edición
-  const [usuarioEditando, setUsuarioEditando] = useState(null); //Almacena la cedula
+  const [usuarioEditando, setUsuarioEditando] = useState(null); //Guarda la cedula del usuario que se edita 
 
   // Cargar usuarios automáticamente cuando cambia de sección
   useEffect(() => {
     if (seccionActiva === "consultar" || seccionActiva === "eliminar" || seccionActiva === "editar") {
       cargarUsuarios();
     }
-  }, [seccionActiva]);
+  }, [seccionActiva]);//Cada vez que se cambia de sección, se ejecuta el useEffect y carga los usuarios si la sección es consultar, eliminar o editar
 
   // Función para cambiar de sección
-  const mostrarSeccion = (seccion) => {
-    setSeccionActiva(seccion);
+  const mostrarSeccion = (seccion) => {//Esta funcion cambia de pantalla
+    setSeccionActiva(seccion);//Cambia de seccion activa 
     setMensaje("");
     // Limpiar 
     setModoEdicion(false);
@@ -59,10 +68,10 @@ const Usuarios = () => {
         return;
       }
 
-      const data = await funcionariosService.getAll(token);
+      const data = await funcionariosService.getAll(token);//Llama al servicio para obtener todos los usuarios y le pasa el token para autenticarse
       console.log("Usuarios cargados:", data);
       
-      setUsuarios(data.body || data);
+      setUsuarios(data.body || data);//Guarda los usuarios
       
     } catch (error) {
       console.error("Error al cargar usuarios:", error);
@@ -83,9 +92,15 @@ const Usuarios = () => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value//El input se guarda automaticamente
     });
   };
+
+  //Consultar informacion del usuario 
+  const handleConsultarUsuario = (usuario) => {
+  setUsuarioSeleccionado(usuario);
+  setMostrarModal(true);//Guarda el usuario y abre el modal
+};
 
   // Manejar click en editar usuario
   const handleEditarClick = (usuario) => {
@@ -247,6 +262,33 @@ const Usuarios = () => {
 
   return (
     <>
+
+     {mostrarModal && usuarioSeleccionado && (
+      <div className="modal-overlay">
+        <div className="modal-contenido">
+        <h2>Información del Usuario</h2>
+
+        <p><strong>Documento:</strong> {usuarioSeleccionado.num_documento || usuarioSeleccionado.Num_Documento}</p>
+
+        <p><strong>Nombre:</strong>
+          {usuarioSeleccionado.primer_nombre || usuarioSeleccionado.Primer_Nombre}{" "}
+          {usuarioSeleccionado.segundo_nombre || usuarioSeleccionado.Segundo_Nombre || ""}{" "}
+          {usuarioSeleccionado.primer_apellido || usuarioSeleccionado.Primer_Apellido}{" "}
+          {usuarioSeleccionado.segundo_apellido || usuarioSeleccionado.Segundo_Apellido || ""}
+        </p>
+
+         <p><strong>Correo:</strong> {usuarioSeleccionado.correo_electronico || usuarioSeleccionado.Correo_Electronico}</p>
+
+        <p><strong>Teléfono:</strong> {usuarioSeleccionado.numero_telefonico || usuarioSeleccionado.Numero_telefonico}</p>
+
+        <p><strong>Rol:</strong> {usuarioSeleccionado.tipo_de_rol || usuarioSeleccionado.Tipo_de_Rol}</p>
+
+      <button onClick={() => setMostrarModal(false)}>Cerrar</button>
+    </div>
+  </div>
+)}
+
+
       {/* Mensaje global */}
       {mensaje && (
         <div className={`mensaje ${mensaje.includes('✅') ? "exito" : "error"}`}>
@@ -438,11 +480,22 @@ const Usuarios = () => {
               <div className="card mt-4">
                 {usuarios.length > 0 ? (
                   usuarios.map((usuario) => (
-                    <div className=" m-4 tarjeta d-flex justify-content-around" key={usuario.Num_Documento || usuario.num_documento}>
+                    <div className=" m-2 tarjeta d-flex justify-content-between align-items-center" key={usuario.Num_Documento || usuario.num_documento}>
+                     <div className="d-flex align-items-center  ">
+                       <img src={Foto} className="foto-usuario" alt="Foto usuario" />
                       <h3>
                         {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
                       </h3>
-                      <button type="button" class="btn btn-primary btn-sm">Small button</button>
+                     
+                     </div>
+                      <button 
+                        type="button"
+                        className="btn-consultar btn btn-primary btn-sm"
+                        onClick={() => handleConsultarUsuario(usuario)}
+                      >
+                         Consultar
+                      </button>
+
                     </div>
                     
                   ))
