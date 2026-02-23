@@ -18,7 +18,6 @@ function todos(table) {
       resolve(results);
     });
   });
-  
 }
 
 
@@ -45,7 +44,7 @@ function cargo(table, tableCargo) {
 
 function uno(table, num_documento){
     return new Promise ((resolve, reject)=>{
-        const sql = "SELECT * FROM ?? WHERE num_documento = ?"
+        const sql = "SELECT * FROM ?? WHERE num_documento = ? "
         conexion.query(sql, [table, num_documento], (err,result)=> {
              if(result.length === 0){
              reject({

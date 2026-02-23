@@ -8,6 +8,7 @@ const chat = require('./routes/chatRoutes');
 const recuperarContraseña = require('./routes/recuperarContraseña');
 const cors = require('cors');
 const path = require('path');
+
 require('dotenv').config();
 
 
@@ -54,6 +55,7 @@ app.use(cors({
   origin: 'http://localhost:5173',
   credentials: true
 }));
+
 
 
 // Middlewares
