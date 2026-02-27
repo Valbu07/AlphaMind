@@ -246,7 +246,7 @@ const Chat = () => {
         ></div>
       )}
 
-      <div className="principal">
+      <div className="principal p-3">
         <div className="row">
           {/* PANEL IZQUIERDO - SOLO DESKTOP/TABLET */}
           <div className="col-lg-3 col-md-4 d-none d-md-block">
@@ -300,8 +300,8 @@ const Chat = () => {
           </div>
 
           {/* PANEL DERECHO */}
-          <div className="col-lg-9 col-md-8 col-12">
-            <div className="panel-chat">
+          <div className="col-lg-9 col-md-8">
+            <div className="panel-chat ">
               {usuarioSeleccionado ? (
                 <>
                   <div className="chat-header">
@@ -313,7 +313,7 @@ const Chat = () => {
                         onClick={toggleMenu}
                         aria-label="Abrir menú de chats"
                       >
-                        ☰
+                        ☰ 
                       </button>
                     )}
                     
