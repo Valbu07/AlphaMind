@@ -300,7 +300,7 @@ const Chat = () => {
           </div>
 
           {/* PANEL DERECHO */}
-          <div className="col-lg-9 col-md-12">
+          <div className="col-lg-9 col-md-8">
             <div className="panel-chat ">
               {usuarioSeleccionado ? (
                 <>
@@ -313,7 +313,7 @@ const Chat = () => {
                         onClick={toggleMenu}
                         aria-label="Abrir menú de chats"
                       >
-                        ☰
+                        ☰ 
                       </button>
                     )}
                     
