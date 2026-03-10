@@ -67,8 +67,8 @@
   }
 }
 
-.modal-contenido {
-  background: white;
+.modal-contenido-reportes {
+  background: white ;
   border-radius: 12px;
   width: 90%;
   max-width: 500px;
@@ -213,7 +213,7 @@
 
 /* Responsive */
 @media (max-width: 576px) {
-  .modal-contenido {
+  .modal-contenido-reportes {
     width: 95%;
     max-height: 90vh;
   }

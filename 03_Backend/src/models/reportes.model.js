@@ -14,7 +14,11 @@ async function obtenerFuncionarios() {
       f.primer_nombre,
       f.primer_apellido
     FROM funcionario f
-    ORDER BY f.primer_nombre ASC
+    INNER JOIN usuario u 
+ON f.id_usuario = u.id_usuario
+WHERE f.estado = 'activo'
+AND u.estado = 'activo'
+ORDER BY f.primer_nombre ASC
   `;
 
   console.log(sql);
