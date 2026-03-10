@@ -24,7 +24,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
   const [seccionActiva, setSeccionActiva] = useState("crear");//Controla que pantalla se ve
 
   const [formData, setFormData] = useState({//Aqui se guarda lo que escribe el usuario
-    tipo_documento: "",
+    documento:"",
     num_documento: "",
     primer_nombre: "",
     segundo_nombre: "",
@@ -32,6 +32,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
     segundo_apellido: "",
     correo_electronico: "",
     numero_telefonico: "",
+    cargo: "",
     tipo_de_rol: "",
     contraseña: ""
   });
@@ -105,7 +106,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
   // Manejar click en editar usuario
   const handleEditarClick = (usuario) => {
     setFormData({
-      tipo_documento: "",
+      documento: usuario.Documento || usuario.documento || "",
       num_documento: usuario.Num_Documento || usuario.num_documento,
       primer_nombre: usuario.Primer_Nombre || usuario.primer_nombre,
       segundo_nombre: usuario.Segundo_Nombre || usuario.segundo_nombre || "",
@@ -114,6 +115,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
       correo_electronico: usuario.Correo_Electronico || usuario.correo_electronico,
       numero_telefonico: usuario.Numero_telefonico || usuario.numero_telefonico,
       tipo_de_rol: usuario.Tipo_de_Rol || usuario.tipo_de_rol || "",
+      cargo: usuario.cargo || usuario.Cargo || "",
       contraseña: ""
     });
     
@@ -128,7 +130,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
     setModoEdicion(false);
     setUsuarioEditando(null);
     setFormData({
-      tipo_documento: "",
+      documento: "",
       num_documento: "",
       primer_nombre: "",
       segundo_nombre: "",
@@ -137,6 +139,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
       correo_electronico: "",
       numero_telefonico: "",
       tipo_de_rol: "",
+      cargo: "",
       contraseña: ""
     });
     setMensaje("");
@@ -157,12 +160,14 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
 
       const requestBody = {
         funcionario: {
+          documento: formData.documento,
           num_documento: formData.num_documento,
           primer_nombre: formData.primer_nombre,
           segundo_nombre: formData.segundo_nombre || "",
           primer_apellido: formData.primer_apellido,
           segundo_apellido: formData.segundo_apellido || "",
           correo_electronico: formData.correo_electronico,
+          cargo: formData.cargo,
           numero_telefonico: formData.numero_telefonico
         },
         usuario: {
@@ -185,7 +190,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
 
       // Limpiar formulario
       setFormData({
-        tipo_documento: "",
+        documento: "",
         num_documento: "",
         primer_nombre: "",
         segundo_nombre: "",
@@ -193,6 +198,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
         segundo_apellido: "",
         correo_electronico: "",
         numero_telefonico: "",
+        cargo: "",
         tipo_de_rol: "",
         contraseña: ""
       });
@@ -281,6 +287,9 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
 
         <p><strong>Teléfono:</strong> {usuarioSeleccionado.numero_telefonico || usuarioSeleccionado.Numero_telefonico}</p>
 
+        <p><strong>Cargo:</strong> {usuarioSeleccionado.cargo || usuarioSeleccionado.Cargo}</p>
+
+
         <p><strong>Rol:</strong> {usuarioSeleccionado.tipo_de_rol || usuarioSeleccionado.Tipo_de_Rol}</p>
 
       <button onClick={() => setMostrarModal(false)}>Cerrar</button>
@@ -345,13 +354,13 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
             <h2>{modoEdicion ? "Editar Usuario" : "Crear Usuario"}</h2>
             <form className="formulario mt-4" onSubmit={handleSubmit}>
               <select 
-                name="tipo_documento" 
-                value={formData.tipo_documento}
+                name="documento" 
+                value={formData.documento}
                 onChange={handleChange}
                 required
               >
                 <option value="">Seleccione tipo de documento</option>
-                <option value="CC">Cédula de ciudadanía</option>
+                <option value="CC">Cedula de ciudadanía</option>
                 <option value="TI">Tarjeta de identidad</option>
                 <option value="CE">Cédula de extranjería</option>
               </select>
@@ -411,7 +420,14 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
                 onChange={handleChange}
                 required
               />
-
+               <input 
+                type="text" 
+                name="cargo"
+                placeholder="Cargo"
+                value={formData.cargo}
+                onChange={handleChange}
+                required
+              />
               <input 
                 type="text" 
                 name="numero_telefonico"

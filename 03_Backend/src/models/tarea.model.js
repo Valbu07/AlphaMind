@@ -11,6 +11,7 @@ function todas(table) {
     FROM actividad a
     LEFT JOIN tarea t ON t.actividad_id_Actividad = a.id_Actividad
     LEFT JOIN asignacion_actividad aa ON aa.actividad_idActividad = a.id_Actividad
+
     ORDER BY a.fecha_creacion DESC`;
     
     conexion.query(sql, (err, results) => {

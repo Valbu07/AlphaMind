@@ -15,6 +15,7 @@ const ChatModel = {
         f.numero_telefonico
       FROM usuario u
       INNER JOIN funcionario f ON u.id_usuario = f.id_usuario
+      WHERE f.estado = 'activo' AND u.estado = 'activo'
       ORDER BY f.primer_nombre, f.primer_apellido
     `;
     
