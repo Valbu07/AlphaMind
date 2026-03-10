@@ -1,6 +1,3 @@
-import React from 'react';
-
-
 const ModalSeleccionUsuario = ({ mostrar, funcionarios, onSeleccionar, onCerrar }) => {
   if (!mostrar) return null;
 
@@ -10,7 +7,7 @@ const ModalSeleccionUsuario = ({ mostrar, funcionarios, onSeleccionar, onCerrar 
 
   return (
     <div className="modal-overlay" onClick={onCerrar}>
-      <div className="modal-contenido" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-contenido-reportes" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h3>Seleccione un Usuario</h3>
           <button className="btn-cerrar" onClick={onCerrar}>
