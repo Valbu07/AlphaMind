@@ -24,63 +24,48 @@ export default function Login() {
   const [mensaje, setMensaje] = useState("");
   const [cargando, setCargando] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setCargando(true);
-    setMensaje("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setCargando(true);
+  setMensaje("");
 
-    try {
-      console.log('Intentando login con documento:', num_documento);
+  try {
+    console.log('Intentando login con documento:', num_documento);
 
-      const data = await authService.login({
-        num_documento,
-        contraseña
-      });
+    const data = await authService.login({ num_documento, contraseña });
 
-      console.log("Respuesta del backend:", data);
+    console.log("Respuesta del backend:", data);
 
-      if (!data.body || !data.body.token) {
-        console.error('Respuesta sin token:', data);
-        throw new Error("No se recibió el token del servidor");
-      }
-
-      const token = data.body.token;
-      const user = data.body.user || { num_documento };
-
-      console.log('Token extraído:', token);
-      console.log('Usuario extraído:', user);
-
-      login(token, user);
-
-      const tokenVerificado = localStorage.getItem('token');
-      const userVerificado = localStorage.getItem('user');
-      console.log('Token guardado en localStorage:', tokenVerificado ? 'Sí' : 'No');
-      console.log('User guardado en localStorage:', userVerificado ? 'Sí' : 'No');
-
-      setMensaje(" Bienvenido!");
-
-      setTimeout(() => {
-        console.log('Redirigiendo a /actividades...');
-        navigate("/actividades");
-      }, 500);
-
-    } catch (error) {
-      console.error("Error completo en login:", error);
-
-      if (error.response) {
-        console.error('Response error:', error.response.data);
-        setMensaje(` ${error.response.data.body || error.response.data.message || "Credenciales incorrectas"}`);
-      } else if (error.request) {
-        console.error('Request error:', error.request);
-        setMensaje(" No se pudo conectar con el servidor");
-      } else {
-        console.error('Error message:', error.message);
-        setMensaje(` ${error.message || "Error inesperado"}`);
-      }
-    } finally {
-      setCargando(false);
+    // data.body = { token: "Bearer xxx", usuario: { id_usuario, foto_perfil, ... } }
+    if (!data.body || !data.body.token) {
+      throw new Error("No se recibió el token del servidor");
     }
-  };
+
+    const token = data.body.token;
+    const usuario = data.body.usuario || { num_documento };
+
+    console.log('Token:', token);
+    console.log('Usuario:', usuario);
+
+    login(token, usuario); // guarda token Y usuario con foto_perfil en context
+
+    setMensaje("Bienvenido!");
+    setTimeout(() => navigate("/actividades"), 500);
+
+  } catch (error) {
+    console.error("Error completo en login:", error);
+
+    if (error.response) {
+      setMensaje(error.response.data.body || error.response.data.message || "Credenciales incorrectas");
+    } else if (error.request) {
+      setMensaje("No se pudo conectar con el servidor");
+    } else {
+      setMensaje(error.message || "Error inesperado");
+    }
+  } finally {
+    setCargando(false);
+  }
+};
 
   return (
     <div className="login-page">
