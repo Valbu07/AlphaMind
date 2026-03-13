@@ -15,7 +15,6 @@ export const authService = {
 
       console.log('Respuesta completa del servidor:', data);
 
-      // data = { error: false, body: { token: "Bearer xxx", usuario: {...} } }
       return data;
 
     } catch (error) {

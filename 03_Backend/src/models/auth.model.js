@@ -5,6 +5,8 @@ function login(num_documento) {
     const sql = `
       SELECT 
         f.num_documento,
+        f.primer_nombre,
+        f.primer_apellido,
         u.contraseña,
         u.id_usuario,
         u.tipo_de_rol,

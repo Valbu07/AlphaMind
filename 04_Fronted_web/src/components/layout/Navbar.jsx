@@ -187,7 +187,7 @@ finally {
             <li className="dropdown-header text-center">
               <h2 className="nombre">
                 {usuario?.primer_nombre
-                  ? `${usuario.data.primer_nombre} ${usuario.primer_apellido || ""}`
+                  ? `${usuario.primer_nombre} ${usuario.primer_apellido}`
                   : "Usuario"}
               </h2>
             </li>
