@@ -65,7 +65,7 @@ router.post("/agregar", verificarToken, autorizaciondeRoles(["Administrador"]),
 
 // Actualizar o editar
 
-router.put("/actualizar/:num_documento", // verificarToken, autorizaciondeRoles(["Administrador"]),verificarToken, autorizaciondeRoles(["Administrador"]),
+router.put("/actualizar/:num_documento", verificarToken, autorizaciondeRoles(["Administrador"]),verificarToken, autorizaciondeRoles(["Administrador"]),
   async (req, res) => {
     try {
       const data = {
