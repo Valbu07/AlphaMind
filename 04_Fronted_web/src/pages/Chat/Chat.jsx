@@ -171,7 +171,7 @@ const Chat = () => {
         ></div>
       )}
 
-      <div className="principal">
+      <div className="principal p-3">
         <div className="row">
 
           <div className="col-lg-3 col-md-4">
@@ -210,8 +210,8 @@ const Chat = () => {
           </div>
 
           {/* PANEL DERECHO */}
-          <div className="col-lg-9 col-md-8 col-12">
-            <div className="panel-chat">
+          <div className="col-lg-9 col-md-8">
+            <div className="panel-chat ">
               {usuarioSeleccionado ? (
 
                 <>
@@ -224,7 +224,7 @@ const Chat = () => {
                         onClick={toggleMenu}
                         aria-label="Abrir menú de chats"
                       >
-                        ☰
+                        ☰ 
                       </button>
                     )}
                     

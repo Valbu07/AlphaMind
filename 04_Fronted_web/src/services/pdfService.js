@@ -36,7 +36,7 @@ class PDFService {
     this.doc.setFontSize(16);
     this.doc.setTextColor(100, 100, 100);
     this.doc.setFont('helvetica', 'normal');
-    this.doc.text('Reporte de Desempeño de Usuario', this.pageWidth / 2, 28, { align: 'center' });
+    this.doc.text('Reporte de Desempeño', this.pageWidth / 2, 28, { align: 'center' });
 
     // Línea separadora
     this.doc.setDrawColor(30, 58, 138);
@@ -49,11 +49,10 @@ class PDFService {
     this.doc.setFont('helvetica', 'normal');
     
     const yPos = 40;
-    this.doc.text(`Usuario: ${usuario.num_documento}`, this.margin, yPos);
     this.doc.text(`Fecha: ${fechaGeneracion}`, this.pageWidth - this.margin - 79, yPos);
     
     if (usuario.nombre) {
-      this.doc.text(`Nombre: ${usuario.nombre}`, this.margin, yPos + 6);
+      this.doc.text(`Nombre: ${usuario.nombre}`, this.margin, yPos);
     }
 
     return yPos + 15; // Retorna posición Y para continuar

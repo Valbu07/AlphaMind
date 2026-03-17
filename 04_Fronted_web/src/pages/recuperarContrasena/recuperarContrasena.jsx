@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { recuperarContrasena } from '../../services/recuperarContraseña';
 import './recuperarContraseña.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const RecuperarContrasena = () => {
   const [numDocumento, setNumDocumento] = useState('');
@@ -29,31 +31,29 @@ const RecuperarContrasena = () => {
   };
 
   return (
-    <div className="recuperar-contrasena">
+    <div className="recuperar-contrasena d-flex flex-column flex-items-center justify-content-center">
       <div className="header">
         <div className="row">
           <div className="col-12">
             <div className="Titulo">
               <h1>Recuperar Contraseña</h1>
+              <hr />
             </div>
           </div>
         </div>
       </div>
-
-      <hr />
       
       <div className="container">
         <div className="row">
-          <div className="col-12">
+          <div className="col-12 ">
             <div className="Validacion">
-              <div className="icono">
+              <div className="icono ">
                 <i className="bi bi-person-fill-lock"></i>
               </div>
               
               <h3>¿Olvidaste tu contraseña?</h3>
               <p>Ingresa tu número de documento y te enviaremos tu contraseña al correo registrado.</p>
-              
-              <hr />
+            
 
               {mensaje && (
                 <div style={{

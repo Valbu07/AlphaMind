@@ -7,21 +7,47 @@ const tableActividad = "actividad";
 const tableAsignacion = "asignacion_actividad";
 const tableTarea = "tarea";
 
+async function obtenerFuncionarios() {
+  const sql = `
+    SELECT 
+      f.num_documento,
+      f.primer_nombre,
+      f.primer_apellido
+    FROM funcionario f
+    INNER JOIN usuario u 
+ON f.id_usuario = u.id_usuario
+WHERE f.estado = 'activo'
+AND u.estado = 'activo'
+ORDER BY f.primer_nombre ASC
+  `;
+
+  console.log(sql);
+  return await db.queryPromise(sql);
+}
+
+
 
 async function obtenerReporteFuncionario(num_documento) {
   try {
 
 
+
+
     const usuario = await db.queryPromise(
+
       `
-      SELECT u.id_usuario 
-      FROM ${tableUsuarios} u
-      INNER JOIN ${tableFuncionario} f 
-        ON f.id_usuario = u.id_usuario
-      WHERE f.num_documento = ?
-      `,
+  SELECT 
+    u.id_usuario,
+    f.primer_nombre, 
+    f.primer_apellido
+  FROM ${tableUsuarios} u
+  INNER JOIN ${tableFuncionario} f 
+    ON f.id_usuario = u.id_usuario
+  WHERE f.num_documento = ?
+  `,
       [num_documento]
     );
+
 
     // Validar que el usuario exista
     if (!usuario || usuario.length === 0) {
@@ -112,14 +138,15 @@ async function obtenerReporteFuncionario(num_documento) {
         completadasMes: completadasMes || [],
         categorias: categorias || [],
         estados: estados || []
+      },
+      funcionario: {
+        primer_nombre: usuario?.[0]?.primer_nombre || "",
+        primer_apellido: usuario?.[0]?.primer_apellido || ""
       }
+
     };
 
-    console.log('[MODEL] Reporte generado exitosamente:', {
-      tareasTotales: resultado.estadisticas.tareasTotales,
-      completadas: resultado.estadisticas.completadas
-    });
-
+    console.log(resultado)
     return resultado;
 
   } catch (error) {
@@ -133,5 +160,6 @@ async function obtenerReporteFuncionario(num_documento) {
 }
 
 module.exports = {
-  obtenerReporteFuncionario
+  obtenerReporteFuncionario,
+  obtenerFuncionarios
 };

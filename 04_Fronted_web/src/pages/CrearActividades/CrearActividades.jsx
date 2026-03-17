@@ -35,7 +35,7 @@ export default function CrearActividades() {
         try {
             if (!token) return;
             const data = await funcionariosService.getAll(token);
-            setFuncionarios(data.body || data);
+            setFuncionarios(Array.isArray(data) ? data : data.body);
             setFuncionariosCargados(true);
         } catch (error) {
             setMensaje("Error al cargar funcionarios");
@@ -50,7 +50,7 @@ export default function CrearActividades() {
     };
 
     const obtenerNombreFuncionario = (idAsignado) => {
-        if (!idAsignado) return "Sin asignar";
+        if (!idAsignado) return "Usuario Inactivo";
         const func = funcionarios.find(
             (f) => (f.id_usuario || f.Id_Usuario) == idAsignado
         );
@@ -58,7 +58,7 @@ export default function CrearActividades() {
             ? `${func.Primer_Nombre || func.primer_nombre} ${
                   func.Primer_Apellido || func.primer_apellido
               }`.trim()
-            : "Sin asignar";
+            : "Usuario Inactivo";
     };
 
     const cargarActividades = async () => {
@@ -124,6 +124,7 @@ export default function CrearActividades() {
 
    const asignar = async (e) => {
     e.preventDefault();
+    
     setLoading(true);
     setMensaje("");
 
@@ -457,7 +458,7 @@ export default function CrearActividades() {
                             >
                                 <div className="header-actividad">
                                     <h3 className="asignado">
-                                        {act.nombre_asignado}
+                                        {act.nombre_asignado || "Usuario Eliminado"}
                                     </h3>
                                     <span
                                         className={`prioridad ${(
