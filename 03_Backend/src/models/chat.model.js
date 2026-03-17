@@ -12,7 +12,8 @@ const ChatModel = {
         f.primer_apellido,
         f.segundo_apellido,
         f.correo_electronico,
-        f.numero_telefonico
+        f.numero_telefonico,
+        foto_perfil
       FROM usuario u
       INNER JOIN funcionario f ON u.id_usuario = f.id_usuario
       WHERE f.estado = 'activo' AND u.estado = 'activo'

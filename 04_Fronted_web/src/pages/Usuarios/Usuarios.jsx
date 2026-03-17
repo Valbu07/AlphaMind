@@ -3,7 +3,8 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";//Son los i
 import { useAuth } from "../../hooks/useAuth";
 import { funcionariosService } from "../../services/FuncionariosService";//Este archivo conecta con el backend
 import "./usuarios.css";
-import Foto from "../../assets/Recursos/Foto.jpg";
+import Avatar from "../../components/Avatar";
+
 
 
 const Usuarios = () => { //Creo mi componente llamado Usuarios
@@ -497,13 +498,15 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
                 {usuarios.length > 0 ? (
                   usuarios.map((usuario) => (
                     <div className=" m-2 tarjeta d-flex justify-content-between align-items-center" key={usuario.Num_Documento || usuario.num_documento}>
-                     <div className="d-flex align-items-center  ">
-                       <img src={Foto} className="foto-usuario" alt="Foto usuario" />
-                      <h3>
-                        {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
-                      </h3>
-                     
-                     </div>
+                      <div className="d-flex align-items-center  ">
+                        <Avatar
+                        size={40}
+                        src={usuario.foto_perfil || usuario.Foto_Perfil || null}
+                        />
+                        <h3>
+                          {`${usuario.Primer_Nombre || usuario.primer_nombre} ${usuario.Primer_Apellido || usuario.primer_apellido}`}
+                        </h3>
+                      </div>
                       <button 
                         type="button"
                         className="btn-consultar btn btn-primary btn-sm"

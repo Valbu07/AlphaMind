@@ -23,6 +23,7 @@ function todos() {
       numero_telefonico,
       documento,
       cargo,
+      foto_perfil,
       tipo_de_rol
       FROM funcionario
       INNER JOIN usuario 
