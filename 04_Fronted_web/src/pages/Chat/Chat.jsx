@@ -233,21 +233,66 @@ const Chat = () => {
                   </div>
 
                   <div className="chat-mensaje" ref={mensajesRef}>
+{mensajes.map((mensaje, index) => {
+  const esMensajePropio =
+    parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
 
-                    {mensajes.map((mensaje, index) => {
+  const BASE_URL = 'http://localhost:3000';
 
-                      const esMensajePropio =
-                        parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
+  return (
+    <div
+      key={index}
+      className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}
+    >
+      {/* Texto del mensaje */}
+      {mensaje.txt_mensaje && (
+        <p style={{ margin: 0 }}>{mensaje.txt_mensaje}</p>
+      )}
 
-                      return (
-                        <div
-                          key={index}
-                          className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}
-                        >
-                          {mensaje.txt_mensaje}
-                        </div>
-                      );
-                    })}
+      {/* Archivo adjunto */}
+      {mensaje.url_archivo && (() => {
+        const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
+        const tipo = mensaje.tipo_de_archivo || '';
+
+        // Imagen
+        if (tipo.startsWith('image/')) {
+          return (
+            <div>
+              <img
+                src={urlCompleta}
+                alt="imagen"
+                style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '5px' }}
+              />
+              <br />
+              <a href={urlCompleta} download target="_blank" rel="noreferrer"
+                style={{ fontSize: '11px' }}>
+                Descargar imagen
+              </a>
+            </div>
+          );
+        }
+
+        // PDF
+        if (tipo === 'application/pdf') {
+          return (
+            <a href={urlCompleta} download target="_blank" rel="noreferrer"
+              style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+               Descargar PDF
+            </a>
+          );
+        }
+
+        // Cualquier otro archivo
+        return (
+          <a href={urlCompleta} download target="_blank" rel="noreferrer"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+            Descargar archivo
+          </a>
+        );
+      })()}
+    </div>
+  );
+})}
 
                   </div>
 

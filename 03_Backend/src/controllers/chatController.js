@@ -60,7 +60,7 @@ enviarArchivo: (req, res) => {
 const url = `uploads/${archivo.filename}`;
   const tipo = archivo.mimetype;
 
-  // 1️⃣ Crear mensaje vacío
+
   ChatModel.crearMensaje("", (err, resultMensaje) => {
 
     if (err) {
@@ -73,7 +73,6 @@ const url = `uploads/${archivo.filename}`;
 
     const mensajeId = resultMensaje.insertId;
 
-    // 2️⃣ Crear conversación
     ChatModel.crearConversacion(mensajeId, remitente_id, destinatario_id, (err2) => {
 
       if (err2) {
@@ -84,7 +83,6 @@ const url = `uploads/${archivo.filename}`;
         });
       }
 
-      // 3️⃣ Guardar archivo
       ChatModel.guardarArchivo(url, tipo, (err3, resultArchivo) => {
 
         if (err3) {
@@ -97,7 +95,6 @@ const url = `uploads/${archivo.filename}`;
 
         const archivoId = resultArchivo.insertId;
 
-        // 4️⃣ Relacionar archivo con mensaje
         ChatModel.adjuntarArchivoAMensaje(mensajeId, archivoId, (err4) => {
 
           if (err4) {
@@ -128,7 +125,7 @@ const url = `uploads/${archivo.filename}`;
 
 },
 
-  // Enviar un nuevo mensaje
+
   enviarMensaje: (req, res) => {
     const { remitente_id, destinatario_id, texto } = req.body;
     

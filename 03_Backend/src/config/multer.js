@@ -3,7 +3,7 @@ const path = require('path');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // ✅ Sube un nivel desde /config hacia /src/uploads
+
     cb(null, path.join(__dirname, '../uploads'));
   },
   filename: (req, file, cb) => {
