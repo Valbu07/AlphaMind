@@ -1,0 +1,247 @@
+
+/* =====================
+   PÁGINA DE PERFIL
+   ===================== */
+
+
+.perfil-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.card-perfil {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(250, 202, 119, 0.4);
+  border-radius: 24px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 0px 80px rgba(250, 202, 119, 0.25),
+              0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  padding: 3rem 2.5rem;
+  width: 100%;
+  height: 100%;
+  animation: fadeUp 0.6s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.bienvenido-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #000000;
+  background: rgba(250, 202, 119, 0.3);
+  border: 1px solid rgba(250, 202, 119, 0.6);
+  border-radius: 999px;
+  padding: 0.3rem 1rem;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.titulo-bienvenido {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.2;
+  margin-bottom: 0.3rem;
+}
+
+.subtitulo {
+  font-size: 0.85rem;
+  color: rgba(0, 0, 0, 0.5);
+  margin-bottom: 2rem;
+}
+
+.avatar-ring {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #faca77, #f59e0b);
+  padding: 3px;
+  margin: 0 auto 1rem;
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar-ring img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #fef2d6;
+  display: block;
+  object-fit: cover;
+}
+
+.avatar-overlay {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: rgba(250, 202, 119, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.avatar-ring:hover .avatar-overlay {
+  opacity: 1;
+}
+
+.nombre-usuario {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 0.15rem;
+}
+
+.rol-usuario {
+  font-size: 0.78rem;
+  color: rgba(0, 0, 0, 0.45);
+  margin-bottom: 2rem;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid rgba(250, 202, 119, 0.4);
+  margin: 0 -0.5rem 2rem;
+}
+
+.btn-cambiar {
+  background: linear-gradient(135deg, #faca77, #f59e0b);
+  border: none;
+  border-radius: 12px;
+  color: #000000;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  width: 100%;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  letter-spacing: 0.03em;
+  box-shadow: 0 8px 24px rgba(250, 202, 119, 0.5);
+}
+
+.btn-cambiar:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-cambiar:active {
+  transform: translateY(0);
+}
+
+.form-panel {
+  animation: slideDown 0.35s ease both;
+  margin-top: 1.5rem;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.form-label-custom {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(120, 53, 15, 0.6);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.input-custom {
+  background: rgba(250, 202, 119, 0.1) !important;
+  border: 1px solid rgba(250, 202, 119, 0.5) !important;
+  border-radius: 10px !important;
+  color: #78350f !important;
+  font-family: 'Sora', sans-serif !important;
+  font-size: 0.88rem !important;
+  padding: 0.65rem 1rem !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-custom::placeholder {
+  color: rgba(180, 83, 9, 0.35) !important;
+}
+
+.input-custom:focus {
+  border-color: rgba(245, 158, 11, 0.7) !important;
+  box-shadow: 0 0 0 3px rgba(250, 202, 119, 0.25) !important;
+  outline: none !important;
+  background: rgba(250, 202, 119, 0.15) !important;
+}
+
+.error-text {
+  font-size: 0.73rem;
+  color: #dc2626;
+  margin-top: 0.3rem;
+}
+
+.btn-guardar {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.65rem;
+  width: 100%;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+}
+
+.btn-guardar:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-cancelar {
+  background: rgba(250, 202, 119, 0.15);
+  border: 1px solid rgba(250, 202, 119, 0.4);
+  border-radius: 10px;
+  color: rgba(120, 53, 15, 0.6);
+  font-family: 'Sora', sans-serif;
+  font-size: 0.85rem;
+  padding: 0.65rem;
+  width: 100%;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-cancelar:hover {
+  background: rgba(250, 202, 119, 0.3);
+  color: #78350f;
+}
+
+.success-pill {
+  background: rgba(250, 202, 119, 0.2);
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  border-radius: 10px;
+  color: #b45309;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.65rem;
+  text-align: center;
+  animation: fadeUp 0.3s ease;
+}
+
+.glow-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #f59e0b;
+  box-shadow: 0 0 6px #f59e0b;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}

@@ -1,9 +1,9 @@
-import { useRef, useState, useContext } from "react";
+import { useRef, useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { subirFotoPerfil, eliminarFotoPerfil } from "../services/perfilService";
 import { BsCameraFill } from "react-icons/bs";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3000/foto_perfil";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3000"; // 
 const DEFAULT_AVATAR = "/default-avatar.png";
 
 export default function AvatarUpload() {
@@ -17,6 +17,15 @@ export default function AvatarUpload() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const inputRef = useRef();
+
+  
+  useEffect(() => {
+    if (!loading) {
+      setPreview(
+        usuario?.foto_perfil ? `${API}${usuario.foto_perfil}` : DEFAULT_AVATAR
+      );
+    }
+  }, [usuario?.foto_perfil]);
 
   const handleCambio = async (e) => {
     const file = e.target.files[0];
@@ -33,11 +42,10 @@ export default function AvatarUpload() {
 
     try {
       const resultado = await subirFotoPerfil(file, token);
-      // resultado = { success: true, foto_perfil: "/fotos_Perfil/avatar-1-..." }
       updateAvatar(resultado.foto_perfil);
     } catch {
       setError("No se pudo subir la imagen, intenta de nuevo");
-      setPreview(fotoActual);
+      setPreview(fotoActual); // revierte al original si falla
     } finally {
       setLoading(false);
     }
@@ -46,6 +54,7 @@ export default function AvatarUpload() {
   const handleEliminar = async () => {
     if (!window.confirm("¿Eliminar foto de perfil?")) return;
     setLoading(true);
+    setError(null);
     try {
       await eliminarFotoPerfil(token);
       updateAvatar(null);
@@ -59,19 +68,22 @@ export default function AvatarUpload() {
 
   return (
     <div style={{ display: "inline-flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-      
+
       <div
-        style={{ position: "relative", width: 110, height: 110, cursor: "pointer" }}
+        style={{ position: "relative", width: 110, height: 110, cursor: loading ? "not-allowed" : "pointer" }}
         onClick={() => !loading && inputRef.current.click()}
       >
         <img
           src={preview}
           alt="Foto de perfil"
           style={{
-            width: 110, height: 110,
+            width: 110,
+            height: 110,
             borderRadius: "50%",
             objectFit: "cover",
             border: "3px solid #dee2e6",
+            opacity: loading ? 0.6 : 1,
+            transition: "opacity 0.2s",
           }}
           onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
         />
@@ -99,7 +111,7 @@ export default function AvatarUpload() {
         )}
       </div>
 
-      {usuario?.foto_perfil && (
+      {usuario?.foto_perfil && !loading && (
         <button
           onClick={handleEliminar}
           disabled={loading}

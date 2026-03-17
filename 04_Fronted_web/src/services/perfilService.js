@@ -21,4 +21,4 @@ export const eliminarFotoPerfil = async (token) => {
     headers: { Authorization: token },
   });
   return data.body;
-};
+}; 
