@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Chat.css';
-import foto from '../../assets/Recursos/Foto.jpg';
 import chatService from '../../services/chatService';
 import { useAuth } from '../../hooks/useAuth';
 import { decodeToken } from '../../utils/jwtUtilis';
-
+import Avatar from "../../components/Avatar";
 const Chat = () => {
   const { token } = useAuth();
   
@@ -284,14 +283,18 @@ const Chat = () => {
                 
                 return (
                   <div 
-                    key={userId}
-                    className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
-                    onClick={() => seleccionarUsuario(usuario)}
-                  >
-                    <img src={foto} alt="Foto" />
-                    <div>
-                      <strong>{obtenerNombreCompleto(usuario)}</strong>
-                      <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
+                     key={userId}
+  className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
+  onClick={() => seleccionarUsuario(usuario)}
+>
+
+  <Avatar
+    size={40}
+    src={usuario.foto_perfil || usuario.Foto_Perfil || null}
+  />
+  <div>
+    <strong>{obtenerNombreCompleto(usuario)}</strong>
+    <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
                     </div>
                   </div>
                 );
@@ -304,22 +307,22 @@ const Chat = () => {
             <div className="panel-chat ">
               {usuarioSeleccionado ? (
                 <>
-                  <div className="chat-header">
-                    {/* Botón hamburguesa - visible solo en móvil */}
-                    {isMobile && (
-                      <button 
-                        type="button"
-                        className="btn-toggle-funcionarios" 
-                        onClick={toggleMenu}
-                        aria-label="Abrir menú de chats"
-                      >
-                        ☰ 
-                      </button>
-                    )}
-                    
-                    <img src={foto} alt="Foto" />
-                    <h5>{obtenerNombreCompleto(usuarioSeleccionado)}</h5>
-                  </div>
+                <div className="chat-header">
+  {isMobile && (
+    <button
+      type="button"
+      className="btn-toggle-funcionarios"
+      onClick={toggleMenu}
+      aria-label="Abrir menú de chats"
+    >
+      ☰
+    </button>
+  )}
+
+  {/* ✅ foto del usuario seleccionado en el header */}
+  <Avatar size={45} src={usuarioSeleccionado?.foto_perfil || usuarioSeleccionado?.Foto_Perfil || null} />
+  <h5>{obtenerNombreCompleto(usuarioSeleccionado)}</h5>
+</div>
 
                   <div className="chat-mensaje" ref={mensajesRef}>
                     {mensajes.length === 0 ? (
@@ -426,26 +429,27 @@ const Chat = () => {
           </div>
         )}
         
-        <div className="usuarios-list-mobile">
-          {usuariosFiltrados.map((usuario) => {
-            const userId = usuario.id_usuario || usuario.Id_Usuario;
-            const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
-            
-            return (
-              <div 
-                key={userId}
-                className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
-                onClick={() => seleccionarUsuario(usuario)}
-              >
-                <img src={foto} alt="Foto" />
-                <div>
-                  <strong>{obtenerNombreCompleto(usuario)}</strong>
-                  <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
-                </div>
-              </div>
-            );
-          })}
+ <div className="usuarios-list-mobile">
+  {usuariosFiltrados.map((usuario) => {
+    const userId = usuario.id_usuario || usuario.Id_Usuario;
+    const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
+
+    return (
+      <div
+        key={userId}
+        className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
+        onClick={() => seleccionarUsuario(usuario)}
+      >
+        {/* ✅ antes tenías <img src={foto}> aquí */}
+        <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
+        <div>
+          <strong>{obtenerNombreCompleto(usuario)}</strong>
+          <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
         </div>
+      </div>
+    );
+  })}
+</div>
       </div>
     </div>
   );
