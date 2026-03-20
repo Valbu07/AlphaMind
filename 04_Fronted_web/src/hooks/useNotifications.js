@@ -13,21 +13,19 @@ export function useNotifications(token) {
       ? token.slice(7)
       : token;
 
-    console.log("🔑 Token limpio:", tokenLimpio);
 
     socket = io("http://localhost:3000", {
       auth: { token: tokenLimpio }, 
     });
 
     socket.on("connect", () => {
-      console.log("🔌 Socket conectado:", socket.id);
     });
 
     socket.on("nueva_tarea", (data) => {
       toast.success(
         ` Nueva tarea: ${data.titulo}\nPrioridad: ${data.prioridad}`,
         {
-          duration: 6000,
+          duration: 10000,
           position: "top-right",
           style: {
             borderLeft: "4px solid #4f46e5",
