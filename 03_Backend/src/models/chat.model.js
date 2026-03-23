@@ -217,7 +217,7 @@ const ChatModel = {
         AND (
           (c1.Usuario_id_Usuario = ? AND m.id_Mensaje IN (
             SELECT c2.mensaje_idMensaje 
-            FROM chat c2 
+            FROM chat c2
             WHERE c2.Usuario_id_Usuario = ?
           ))
           OR

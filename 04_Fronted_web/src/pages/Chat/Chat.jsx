@@ -23,14 +23,20 @@ const Chat = () => {
   const mensajesRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  const cerrarMenu = () => setMenuAbierto(false);
+  // ✅ FIX 1: Funciones toggleMenu y cerrarMenu definidas
   const toggleMenu = () => setMenuAbierto(prev => !prev);
+  const cerrarMenu = () => setMenuAbierto(false);
+
+  // ✅ FIX 2: seleccionadoId definido antes del return
+  const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
 
   useEffect(() => {
     if (token) {
       const decoded = decodeToken(token);
       const idUsuario = decoded?.id_usuario || decoded?.Id_Usuario || decoded?.id || decoded?.ID;
-      if (idUsuario) setIdUsuarioActual(idUsuario);
+      if (idUsuario) {
+        setIdUsuarioActual(idUsuario);
+      }
     }
   }, [token]);
 
@@ -66,7 +72,7 @@ const Chat = () => {
         const filtrados = response.data.filter(
           user => (user.id_usuario || user.Id_Usuario) != idUsuarioActual
         );
-        setUsuarios(filtrados);
+        setUsuarios(usuariosFiltrados);
       }
     } catch (error) {
       setError('No se pudieron cargar los usuarios');
@@ -87,7 +93,7 @@ const Chat = () => {
       } else {
         setMensajes([]);
       }
-    } catch {
+    } catch (error) {
       setMensajes([]);
     }
   };
@@ -98,7 +104,9 @@ const Chat = () => {
 
   const manejarArchivo = (e) => {
     const file = e.target.files[0];
-    if (file) setArchivo(file);
+    if (file) {
+      setArchivo(file);
+    }
   };
 
   const enviarMensaje = async (e) => {
@@ -125,7 +133,7 @@ const Chat = () => {
   const seleccionarUsuario = (usuario) => {
     setUsuarioSeleccionado(usuario);
     setMensajes([]);
-    if (isMobile) cerrarMenu();
+    cerrarMenu();
   };
 
   const obtenerNombreCompleto = (usuario) => {
@@ -146,9 +154,12 @@ const Chat = () => {
   return (
     <div className="chat-wrapper">
 
-      {/* Overlay móvil */}
+      {/* ✅ Overlay para cerrar menú en móvil */}
       {menuAbierto && (
-        <div className="overlay-mobile activo" onClick={cerrarMenu}></div>
+        <div
+          className="overlay-mobile activo"
+          onClick={cerrarMenu}
+        ></div>
       )}
 
       {/* Panel de usuarios MÓVIL (slide-in) */}
@@ -209,8 +220,8 @@ const Chat = () => {
       <div className="principal p-3">
         <div className="row">
 
-          {/* PANEL IZQUIERDO - solo visible en desktop */}
-          <div className="col-lg-3 col-md-4 d-none d-md-block">
+          {/* PANEL IZQUIERDO - Lista de usuarios (escritorio) */}
+          <div className="col-lg-3 col-md-4">
             <div className="panel-usuarios">
               <h6 className="titulo-panel">Chats</h6>
 
@@ -222,16 +233,36 @@ const Chat = () => {
                 onChange={(e) => setBusqueda(e.target.value)}
               />
 
+              {loading && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
+                  Cargando usuarios...
+                </div>
+              )}
+
+              {error && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>
+                  {error}
+                </div>
+              )}
+
+              {!loading && usuariosFiltrados.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
+                  No se encontraron usuarios
+                </div>
+              )}
+
               {usuariosFiltrados.map((usuario) => {
                 const userId = usuario.id_usuario || usuario.Id_Usuario;
-                const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
                 return (
                   <div
                     key={userId}
                     className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
                     onClick={() => seleccionarUsuario(usuario)}
                   >
-                    <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
+                    <Avatar
+                      size={40}
+                      src={usuario.foto_perfil || usuario.Foto_Perfil || null}
+                    />
                     <div>
                       <strong>{obtenerNombreCompleto(usuario)}</strong>
                       <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
@@ -243,9 +274,8 @@ const Chat = () => {
           </div>
 
           {/* PANEL DERECHO - Chat */}
-          <div className="col-lg-9 col-md-8 col-12">
+          <div className="col-lg-9 col-md-8">
             <div className="panel-chat">
-
               {usuarioSeleccionado ? (
                 <>
                   {/* Header del chat */}
@@ -267,7 +297,7 @@ const Chat = () => {
                     <h5>{obtenerNombreCompleto(usuarioSeleccionado)}</h5>
                   </div>
 
-                  {/* Mensajes */}
+                  {/* Área de mensajes */}
                   <div className="chat-mensaje" ref={mensajesRef}>
                     {mensajes.map((mensaje, index) => {
                       const esMensajePropio =
@@ -325,9 +355,13 @@ const Chat = () => {
                     })}
                   </div>
 
-                  {/* Formulario enviar */}
+                  {/* ✅ FIX 3: Form correctamente cerrado con botón submit */}
                   <form className="chat-enviar" onSubmit={enviarMensaje}>
-                    <button type="button" className="btn-archivo" onClick={abrirSelectorArchivo}>
+                    <button
+                      type="button"
+                      className="btn-archivo"
+                      onClick={abrirSelectorArchivo}
+                    >
                       📎
                     </button>
 
@@ -345,21 +379,71 @@ const Chat = () => {
                       onChange={(e) => setNuevoMensaje(e.target.value)}
                     />
 
-                    <button type="submit" className="btn-enviar">➤</button>
+                    {/* ✅ FIX 4: Botón de envío que antes faltaba */}
+                    <button type="submit" className="btn-enviar">
+                      Enviar
+                    </button>
                   </form>
 
-                  {archivo && (
-                    <div style={{ padding: "6px 15px", fontSize: "12px" }}>
-                      📎 {archivo.name}
+                  {/* ✅ FIX 5: Panel mobile FUERA del form */}
+                  <div className={`panel-usuarios-mobile ${menuAbierto ? 'mostrar-mobile' : ''}`}>
+                    <div className="panel-mobile-header">
+                      <h6 className="titulo-panel">Chats</h6>
+                      <button className="btn-cerrar-mobile" onClick={cerrarMenu}>✕</button>
                     </div>
-                  )}
+
+                    <input
+                      type="text"
+                      className="buscador"
+                      placeholder="Buscar..."
+                      value={busqueda}
+                      onChange={(e) => setBusqueda(e.target.value)}
+                    />
+
+                    {loading && (
+                      <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
+                        Cargando usuarios...
+                      </div>
+                    )}
+
+                    {error && (
+                      <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>
+                        {error}
+                      </div>
+                    )}
+
+                    {!loading && usuariosFiltrados.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
+                        No se encontraron usuarios
+                      </div>
+                    )}
+
+                    <div className="usuarios-list-mobile">
+                      {usuariosFiltrados.map((usuario) => {
+                        const userId = usuario.id_usuario || usuario.Id_Usuario;
+                        return (
+                          <div
+                            key={userId}
+                            className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
+                            onClick={() => seleccionarUsuario(usuario)}
+                          >
+                            <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
+                            <div>
+                              <strong>{obtenerNombreCompleto(usuario)}</strong>
+                              <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </>
               ) : (
-                <div className="chat-empty">
-                  Selecciona un usuario
+                // ✅ Estado vacío cuando no hay usuario seleccionado
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
+                  <p>Selecciona un usuario para comenzar a chatear</p>
                 </div>
               )}
-
             </div>
           </div>
 
