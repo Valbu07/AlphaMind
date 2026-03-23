@@ -8,7 +8,9 @@ import Calendario from "../pages/Calendario/Calendario";
 import ReporteDashboard from "../pages/reportes/reportes.jsx";
 import Chat from "../pages/Chat/Chat";
 import RecuperarContrasena from "../pages/recuperarContrasena/recuperarContrasena";
+import Configuracion from "../pages/Configuracion/configuracion.jsx";
 import Navbar from "../components/layout/Navbar";
+
 
 export default function AppRouter() {
   return (
@@ -16,7 +18,7 @@ export default function AppRouter() {
       <Routes>
         {/* ruta pública */}
         <Route path="/" element={<Login />} />
-       <Route path="/recuperar" element={<RecuperarContrasena />} />
+        <Route path="/recuperar" element={<RecuperarContrasena />} />
 
 
         {/* rutas protegidas */}
@@ -27,6 +29,7 @@ export default function AppRouter() {
           <Route path="/calendario" element={<NavbarWrapper><Calendario /></NavbarWrapper>} />
           <Route path="/reportes" element={<NavbarWrapper><ReporteDashboard/></NavbarWrapper>} />
           <Route path="/chat" element={<NavbarWrapper><Chat /></NavbarWrapper>} />
+          <Route path="/configuracion" element={<NavbarWrapper><Configuracion /></NavbarWrapper>} />
 
           <Route path="/reportes" element={<><Navbar /><ReporteDashboard /></>} />
         </Route>

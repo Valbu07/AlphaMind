@@ -6,6 +6,7 @@ const tareas = require('./routes/tareaRoutes');
 const reportes = require('./routes/reportes');
 const chat = require('./routes/chatRoutes');
 const recuperarContraseña = require('./routes/recuperarContraseña');
+const fotoPerfilRoutes = require("./routes/fotoPerfilRoutes");
 const cors = require('cors');
 const path = require('path');
 
@@ -62,6 +63,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Servir fotos_Perfil como carpeta estática
+app.use("/fotos_Perfil", express.static(path.join(__dirname, "../fotos_Perfil")));
+
 // API routes
 app.use('/funcionarios', funcionarios);
 app.use('/auth', login);
@@ -69,6 +73,8 @@ app.use('/tareas', tareas);
 app.use('/reportes', reportes);
 app.use('/recuperar', recuperarContraseña);
 app.use('/chat', chat);
+app.use("/foto-perfil", fotoPerfilRoutes);
+
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
