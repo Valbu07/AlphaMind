@@ -29,11 +29,11 @@ function initSocket(server) {
 
   io.on("connection", (socket) => {
     connectedUsers.set(String(socket.userId), socket.id);
-    console.log(`✅ Usuario ${socket.userId} conectado — socket: ${socket.id}`);
+    console.log(` Usuario ${socket.userId} conectado — socket: ${socket.id}`);
 
     socket.on("disconnect", () => {
       connectedUsers.delete(String(socket.userId));
-      console.log(`❌ Usuario ${socket.userId} desconectado`);
+      console.log(`Usuario ${socket.userId} desconectado`);
     });
   });
 
