@@ -78,17 +78,63 @@
 }
 
 /* ─── HEADER BUTTONS ─── */
-.reportes-botones .btn,
-.reportes-botones button {
+.reportes-botones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reportes-botones .btn {
   font-family: 'DM Sans', sans-serif;
   font-weight: 700;
   font-size: 14px;
-  padding: 11px 22px;
+  padding: 10px 22px;
   border-radius: 100px;
   border: none;
   cursor: pointer;
   transition: var(--transition);
-  display: inline-block;
+  margin: 0 !important;        /* ← elimina cualquier mt/mb de Bootstrap */
+  white-space: nowrap;
+}
+
+.btn.btn-primary {
+  background: var(--blue-pale) !important;
+  color: var(--blue) !important;
+  border: 1.5px solid var(--blue) !important;
+  box-shadow: none !important;
+}
+
+.btn.btn-primary:hover {
+  background: var(--blue) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(59,130,246,0.3) !important;
+}
+
+.btn.btn-secondary {
+  background: var(--amber-pale) !important;
+  color: var(--amber) !important;
+  border: 1.5px solid var(--amber) !important;
+  box-shadow: none !important;
+}
+
+.btn.btn-secondary:hover {
+  background: var(--amber) !important;
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(247,168,64,0.3) !important;
+}
+
+@media (max-width: 768px) {
+  .reportes-botones {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .reportes-botones .btn {
+    width: 100%;
+  }
 }
 
 .btn.btn-primary {
@@ -114,6 +160,32 @@
   margin-right: 0 !important;
 }
 
+ /* ─── FILTRO MES ─── */
+.filtro-mes {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 16px;
+  min-width: 160px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filtro-mes:hover,
+.filtro-mes:focus {
+  border-color: var(--blue);
+  color: var(--blue);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+@media (max-width: 768px) {
+  .filtro-mes { width: 100%; }
+}
 .btn.btn-secondary:hover {
   background: var(--amber) !important;
   color: #fff !important;
