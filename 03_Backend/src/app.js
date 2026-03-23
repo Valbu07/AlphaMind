@@ -78,6 +78,7 @@ app.use("/foto-perfil", fotoPerfilRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 module.exports = app;

@@ -39,7 +39,93 @@ const chatController = {
     });
   },
 
-  // Enviar un nuevo mensaje
+  // Enviar archivo
+enviarArchivo: (req, res) => {
+
+  const { remitente_id, destinatario_id } = req.body;
+  const archivo = req.file;
+  console.log("Archivo recibido:", req.file);
+
+  console.log('=== BACKEND: Enviando archivo ===');
+  console.log('De:', remitente_id);
+  console.log('Para:', destinatario_id);
+
+  if (!archivo) {
+    return res.status(400).json({
+      success: false,
+      message: "No se envió ningún archivo"
+    });
+  }
+
+const url = `uploads/${archivo.filename}`;
+  const tipo = archivo.mimetype;
+
+
+  ChatModel.crearMensaje("", (err, resultMensaje) => {
+
+    if (err) {
+      console.error("Error creando mensaje:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Error al crear mensaje"
+      });
+    }
+
+    const mensajeId = resultMensaje.insertId;
+
+    ChatModel.crearConversacion(mensajeId, remitente_id, destinatario_id, (err2) => {
+
+      if (err2) {
+        console.error("Error creando conversación:", err2);
+        return res.status(500).json({
+          success: false,
+          message: "Error al registrar chat"
+        });
+      }
+
+      ChatModel.guardarArchivo(url, tipo, (err3, resultArchivo) => {
+
+        if (err3) {
+          console.error("Error guardando archivo:", err3);
+          return res.status(500).json({
+            success: false,
+            message: "Error al guardar archivo"
+          });
+        }
+
+        const archivoId = resultArchivo.insertId;
+
+        ChatModel.adjuntarArchivoAMensaje(mensajeId, archivoId, (err4) => {
+
+          if (err4) {
+            console.error("Error adjuntando archivo:", err4);
+            return res.status(500).json({
+              success: false,
+              message: "Error al adjuntar archivo"
+            });
+          }
+
+          res.json({
+            success: true,
+            message: "Archivo enviado correctamente",
+            data: {
+              mensajeId,
+              archivo: url,
+              tipo
+            }
+          });
+
+        });
+
+      });
+
+    });
+
+  });
+
+},
+
+
   enviarMensaje: (req, res) => {
     const { remitente_id, destinatario_id, texto } = req.body;
     
