@@ -12,7 +12,8 @@ CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT PRIMARY KEY,
     contraseña VARCHAR(200) NOT NULL,
     tipo_de_rol ENUM("Funcionario","Administrador") NOT NULL,
-    estado ENUM('activo','inactivo') DEFAULT 'activo'
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    foto_perfil varchar(255)
 );
 
 -- =========================

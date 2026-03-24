@@ -9,62 +9,99 @@ import ChartCard from '../../components/reportes/ChartCard';
 import { pdfService } from '../../services/pdfService';
 import ModalSeleccionUsuario from '../../components/reportes/ModalSeleccionUsuario';
 
+// ── Helpers visuales ─────────────────────────────────────────────────────────
+
+/** Trunca una cadena a `max` caracteres y agrega "…" si se recortó */
+const truncarNombre = (nombre, max = 18) =>
+  nombre?.length > max ? `${nombre.slice(0, max)}…` : nombre;
+
+/**
+ * Toma un array { name, value } y:
+ *  1. Ordena de mayor a menor.
+ *  2. Conserva las primeras `max` entradas.
+ *  3. Agrupa el resto en "Otros".
+ *  4. Trunca los nombres largos.
+ */
+const prepararDatosPie = (data, max = 5) => {
+  if (!data?.length) return [];
+
+  const ordenado = [...data].sort((a, b) => b.value - a.value);
+  const top      = ordenado.slice(0, max);
+  const resto    = ordenado.slice(max);
+
+  const resultado = top.map(d => ({ ...d, name: truncarNombre(d.name) }));
+
+  if (resto.length > 0) {
+    const totalOtros = resto.reduce((acc, d) => acc + d.value, 0);
+    resultado.push({ name: 'Otros', value: totalOtros });
+  }
+
+  return resultado;
+};
+
+/** Tooltip personalizado: muestra "X tareas" en lugar del número seco */
+const TooltipPie = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const { name, value } = payload[0];
+  return (
+    <div style={{
+      background: '#fff',
+      border: '1px solid #e2e8f0',
+      borderRadius: 8,
+      padding: '8px 14px',
+      fontSize: 13,
+      boxShadow: '0 2px 8px rgba(0,0,0,.10)'
+    }}>
+      <span style={{ fontWeight: 600 }}>{name}</span>
+      <br />
+      <span style={{ color: '#555' }}>{value} {value === 1 ? 'tarea' : 'tareas'}</span>
+    </div>
+  );
+};
+
+// ── Componente principal ─────────────────────────────────────────────────────
 
 const ReporteDashboard = () => {
   const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
 
   const [metricas, setMetricas] = useState({
-    tareasTotales: 0,
-    completadas: 0,
-    pendientes: 0,
-    atrasadas: 0
+    tareasTotales: 0, completadas: 0, pendientes: 0, atrasadas: 0
   });
 
   const [dataGraficos, setDataGraficos] = useState({
-    completadasMes: [],
-    categorias: [],
-    estados: []
+    completadasMes: [], categorias: [], estados: [], mesesDisponibles: []
   });
 
   const [funcionario, setFuncionario] = useState({
-    primer_nombre: '',
-    primer_apellido: ''
+    primer_nombre: '', primer_apellido: ''
   });
 
+  const [documentoActivo, setDocumentoActivo] = useState(null);
+  const [mesFiltro, setMesFiltro]             = useState('todos');
   const [listaFuncionarios, setListaFuncionarios] = useState([]);
-  const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModal, setMostrarModal]       = useState(false);
+  const [cargando, setCargando]               = useState(true);
+  const [error, setError]                     = useState(null);
 
-  const [cargando, setCargando] = useState(true);
-  const [error, setError] = useState(null);
+  const COLORS = ['#faca77', '#1E3A8A', '#60A5FA', '#FCD34D', '#A78BFA', '#94A3B8'];
+  //                                                                       ^Otros
 
-  const COLORS = ['#faca77', '#1E3A8A', '#60A5FA', '#FCD34D', '#A78BFA'];
-
-
+  // ── Carga inicial ──────────────────────────────────────────────────────────
   useEffect(() => {
-    if (cargandoAuth) {
-      console.log(' [REPORTES] Esperando contexto...');
-      return;
-    }
-
+    if (cargandoAuth) return;
     if (!usuario) {
-      console.error(' [REPORTES] No hay usuario');
       setError('No hay sesión activa. Por favor inicia sesión.');
       setCargando(false);
       return;
     }
-
     const documento = usuario.num_documento || usuario.documento || usuario.cedula;
-
     if (!documento) {
-      console.error(' [REPORTES] Usuario sin documento');
       setError('El usuario no tiene número de documento registrado.');
       setCargando(false);
       return;
     }
-
-    console.log('[REPORTES] Cargando datos para:', documento);
-    cargarDatosIniciales(documento);
-
+    setDocumentoActivo(documento);
+    cargarDatosIniciales(documento, 'todos');
   }, [usuario, cargandoAuth]);
 
   useEffect(() => {
@@ -72,104 +109,79 @@ const ReporteDashboard = () => {
       try {
         const lista = await obtenerFuncionarios();
         setListaFuncionarios(lista);
-      } catch (error) {
-        console.error("Error cargando funcionarios:", error.message);
+      } catch (err) {
+        console.error("Error cargando funcionarios:", err.message);
       }
     };
-
     cargarFuncionarios();
   }, []);
 
-
-  
-  const cargarDatosIniciales = async (documento) => {
+  const cargarDatosIniciales = async (documento, mes = 'todos') => {
     try {
       setCargando(true);
       setError(null);
-
-      const datosReporte = await getReportes(documento);
-      
-      console.log(' [REPORTES] Datos recibidos:', datosReporte);
-
+      const datosReporte = await getReportes(documento, mes);
       if (!datosReporte?.estadisticas || !datosReporte?.graficos) {
         throw new Error('Formato de datos inválido');
       }
-
       setMetricas({
         tareasTotales: datosReporte.estadisticas.tareasTotales || 0,
-        completadas: datosReporte.estadisticas.completadas || 0,
-        pendientes: datosReporte.estadisticas.pendientes || 0,
-        atrasadas: datosReporte.estadisticas.atrasadas || 0
+        completadas:   datosReporte.estadisticas.completadas   || 0,
+        pendientes:    datosReporte.estadisticas.pendientes     || 0,
+        atrasadas:     datosReporte.estadisticas.atrasadas      || 0
       });
-
       setDataGraficos({
-        completadasMes: datosReporte.graficos.completadasMes || [],
-        categorias: datosReporte.graficos.categorias || [],
-        estados: datosReporte.graficos.estados || []
+        completadasMes:   datosReporte.graficos.completadasMes   || [],
+        categorias:       datosReporte.graficos.categorias       || [],
+        estados:          datosReporte.graficos.estados           || [],
+        mesesDisponibles: datosReporte.graficos.mesesDisponibles || []
       });
-
-      
       setFuncionario({
-        primer_nombre: datosReporte.funcionario?.primer_nombre || '',
+        primer_nombre:   datosReporte.funcionario?.primer_nombre   || '',
         primer_apellido: datosReporte.funcionario?.primer_apellido || ''
       });
-
-    } catch (error) {
-      console.error(' [REPORTES] Error:', error);
-      setError(error.message);
+    } catch (err) {
+      console.error('[REPORTES] Error:', err);
+      setError(err.message);
     } finally {
       setCargando(false);
     }
   };
 
-  const handleGenerarPDF = () => {
-    if (!usuario) {
-      alert('No hay usuario para generar el reporte');
-      return;
-    }
-
-    if (!metricas || !dataGraficos) {
-      alert('No hay datos para generar el PDF');
-      return;
-    }
-
-    console.log('Generando PDF con:', {
-      metricas,
-      dataGraficos,
-      usuario
-    });
-
-    const resultado = pdfService.generarReporte(
-      metricas,
-      dataGraficos,
-      {
-        num_documento: usuario.num_documento,
-        nombre: funcionario.primer_nombre + " " + funcionario.primer_apellido
-      }
-    );
-
-    if (!resultado?.success) {
-      alert('Ocurrió un error al generar el PDF');
-    }
+  // ── Handlers ───────────────────────────────────────────────────────────────
+  const handleCambiarMes = (e) => {
+    const mes = e.target.value;
+    setMesFiltro(mes);
+    if (documentoActivo) cargarDatosIniciales(documentoActivo, mes);
   };
 
-
-  const   handleCambiarUsuario = () => {
-    if (listaFuncionarios.length === 0) {
-      alert('No hay usuarios disponibles');
-      return;
-    }
+  const handleCambiarUsuario = () => {
+    if (listaFuncionarios.length === 0) { alert('No hay usuarios disponibles'); return; }
     setMostrarModal(true);
   };
 
   const handleSeleccionarUsuario = async (usuarioSeleccionado) => {
     setMostrarModal(false);
     if (usuarioSeleccionado) {
-      await cargarDatosIniciales(usuarioSeleccionado.num_documento);
+      const doc = usuarioSeleccionado.num_documento;
+      setDocumentoActivo(doc);
+      setMesFiltro('todos');
+      await cargarDatosIniciales(doc, 'todos');
     }
   };
 
+  const handleGenerarPDF = () => {
+    if (!usuario || !metricas || !dataGraficos) { alert('No hay datos para generar el PDF'); return; }
+    const resultado = pdfService.generarReporte(
+      metricas, dataGraficos,
+      { num_documento: usuario.num_documento,
+        nombre: `${funcionario.primer_nombre} ${funcionario.primer_apellido}`,
+        mes: mesFiltro !== 'todos' ? mesFiltro : null }
+    );
+    if (!resultado?.success) alert('Ocurrió un error al generar el PDF');
+  };
 
+  // ── Estados de carga / error ───────────────────────────────────────────────
   if (cargandoAuth || cargando) {
     return (
       <div className="container-fluid p-4 cargando">
@@ -187,14 +199,11 @@ const ReporteDashboard = () => {
     return (
       <div className="container-fluid p-4">
         <div className="alert alert-danger">
-          <h4> Error al cargar reportes</h4>
+          <h4>Error al cargar reportes</h4>
           <p>{error}</p>
-          {usuario?.num_documento && (
-            <button 
-              className="btn btn-primary" 
-              onClick={() => cargarDatosIniciales(usuario.num_documento)}
-            >
-               Reintentar
+          {documentoActivo && (
+            <button className="btn btn-primary" onClick={() => cargarDatosIniciales(documentoActivo, mesFiltro)}>
+              Reintentar
             </button>
           )}
         </div>
@@ -202,82 +211,70 @@ const ReporteDashboard = () => {
     );
   }
 
+  // ── Transformación de datos ────────────────────────────────────────────────
   const dataMeses = dataGraficos.completadasMes.map(item => ({
-    mes: item.nombreMes,
-    total: item.total
+    mes: item.nombreMes, total: item.total
   }));
 
-  const dataCategorias = dataGraficos.categorias.map(item => ({
-    name: item.categoria,
-    value: item.total
-  }));
+  // Pie charts procesados con agrupación + truncado
+  const dataCategorias = prepararDatosPie(
+    dataGraficos.categorias.map(i => ({ name: i.categoria, value: i.total }))
+  );
 
-  const dataEstados = dataGraficos.estados.map(item => ({
-    name: item.estado,
-    value: item.total
-  }));
+  const dataEstados = prepararDatosPie(
+    dataGraficos.estados.map(i => ({ name: i.estado, value: i.total }))
+  );
 
- 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="container-fluid p-4 pt-5">
 
-      {/* ============================================
-          HEADER DEL REPORTE
-      ============================================ */}
-      <div className="reportes-header mb-4 ">
-        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 ">
-          <div className='d-flex flex-column align-items-center'>
-            <h2 className="reportes-titulo mb-0">Reporte del Usuario <hr /> </h2>
-            <h5>{funcionario?.primer_nombre || 'Desconocido'} {funcionario?.primer_apellido || ''}</h5>
+      {/* HEADER */}
+      <div className="reportes-header mb-4">
+        <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div className="d-flex flex-column">
+            <h2 className="reportes-titulo mb-0">Reporte del Usuario</h2>
+            <h5 className="mb-0 mt-1">
+              {funcionario?.primer_nombre || 'Desconocido'} {funcionario?.primer_apellido || ''}
+            </h5>
           </div>
-          
-          <div className=" row justify-content-end reportes-botones">
-            <div className="col-12 col-md-auto  gap-2">
-              <button className="btn btn-primary" onClick={handleCambiarUsuario}>
-                Cambiar Usuario
-              </button>
-
-              <button className="btn btn-secondary mt-4" onClick={handleGenerarPDF}>
-                Generar PDF
-              </button>
-            </div>
+          <div className="d-flex align-items-center gap-2 flex-wrap reportes-botones">
+            <select
+              className="form-select form-select-sm filtro-mes"
+              value={mesFiltro}
+              onChange={handleCambiarMes}
+            >
+              <option value="todos">Todos los meses</option>
+              {dataGraficos.mesesDisponibles.map(item => (
+                <option key={item.mes} value={item.mes}>{item.nombreMes}</option>
+              ))}
+            </select>
+            <button className="btn btn-primary"   onClick={handleCambiarUsuario}>Cambiar Usuario</button>
+            <button className="btn btn-secondary" onClick={handleGenerarPDF}>Generar PDF</button>
           </div>
         </div>
       </div>
 
-
-
-      {/* ============================================
-          FILA DE KPIs
-      ============================================ */}
+      {/* KPIs */}
       <div className="row g-4 mb-4 pt-2">
-        
         <div className="col-6 col-lg-3 mb-4">
-          <KPICard title="Tareas Totales" value={metricas.tareasTotales} loading={false} color="blue"/>
+          <KPICard title="Tareas Totales" value={metricas.tareasTotales} loading={false} color="blue" />
         </div>
-
         <div className="col-6 col-lg-3 mb-4">
-          <KPICard className="Completadas" title="Completadas" value={metricas.completadas}  color="green"
-            valueColor="#10b948" loading={false} />
+          <KPICard title="Completadas"    value={metricas.completadas}   valueColor="#10b948" loading={false} />
         </div>
-
         <div className="col-6 col-lg-3 mb-4">
-          <KPICard title="Pendientes" value={metricas.pendientes} color="orange" loading={false} />
+          <KPICard title="Pendientes"     value={metricas.pendientes}    color="orange" loading={false} />
         </div>
-
         <div className="col-6 col-lg-3 mb-4">
-          <KPICard title="Atrasadas" value={metricas.atrasadas} color="red" valueColor="#e94c4c" loading={false} />
+          <KPICard title="Atrasadas"      value={metricas.atrasadas}     valueColor="#e94c4c" loading={false} />
         </div>
-
       </div>
 
-      
-      {/* ============================================
-          GRID DE GRÁFICOS -
-      ============================================ */}
+      {/* GRÁFICOS */}
       <div className="row g-4">
 
-        {/* Gráfico 1 */}
+        {/* Tareas completadas por mes */}
         <div className="col-12 col-xl-6 mb-4">
           <ChartCard title="Tareas Completadas Por Mes" loading={false}>
             {dataMeses.length > 0 ? (
@@ -297,7 +294,7 @@ const ReporteDashboard = () => {
           </ChartCard>
         </div>
 
-        {/* Gráfico 2 */}
+        {/* Tareas por categoría */}
         <div className="col-12 col-xl-6 mb-4">
           <ChartCard title="Tareas Por Categoría" loading={false}>
             {dataCategorias.length > 0 ? (
@@ -306,18 +303,22 @@ const ReporteDashboard = () => {
                   <Pie
                     data={dataCategorias}
                     cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    cy="45%"
+                    label={false}
                     outerRadius={90}
                     dataKey="value"
                   >
-                    {dataCategorias.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {dataCategorias.map((_, index) => (
+                      <Cell key={`cat-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
-                  <Legend />
+                  <Tooltip content={<TooltipPie />} />
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -326,7 +327,7 @@ const ReporteDashboard = () => {
           </ChartCard>
         </div>
 
-        {/* Gráfico 3 */}
+        {/* Estado actual de las tareas */}
         <div className="col-12 col-xl-6 mb-4">
           <ChartCard title="Estado Actual de las Tareas" loading={false}>
             {dataEstados.length > 0 ? (
@@ -335,18 +336,23 @@ const ReporteDashboard = () => {
                   <Pie
                     data={dataEstados}
                     cx="50%"
-                    cy="50%"
+                    cy="45%"
+                    label={false}
                     labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
                     outerRadius={90}
                     dataKey="value"
                   >
-                    {dataEstados.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    {dataEstados.map((_, index) => (
+                      <Cell key={`est-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
-                  <Legend />
+                  <Tooltip content={<TooltipPie />} />
+                  <Legend
+                    layout="horizontal"
+                    verticalAlign="bottom"
+                    align="center"
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
@@ -355,7 +361,7 @@ const ReporteDashboard = () => {
           </ChartCard>
         </div>
 
-        {/* Gráfico 4 */}
+        {/* Rendimiento semanal */}
         <div className="col-12 col-xl-6 mb-4">
           <ChartCard title="Rendimiento Semanal" loading={false}>
             <div className="chart-placeholder">Próximamente</div>
@@ -364,8 +370,7 @@ const ReporteDashboard = () => {
 
       </div>
 
-      {/* Modal de selección de usuario */}
-      <ModalSeleccionUsuario 
+      <ModalSeleccionUsuario
         mostrar={mostrarModal}
         funcionarios={listaFuncionarios}
         onSeleccionar={handleSeleccionarUsuario}

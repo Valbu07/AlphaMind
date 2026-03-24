@@ -352,8 +352,9 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
         {/* Sección: Crear Usuario */}
         {seccionActiva === "crear" && (
           <div className="seccion">
-            <h2>{modoEdicion ? "Editar Usuario" : "Crear Usuario"}</h2>
+            
             <form className="formulario mt-4" onSubmit={handleSubmit}>
+              <h2>{modoEdicion ? "Editar Usuario" : "Crear Usuario"}</h2>
               <select 
                 name="documento" 
                 value={formData.documento}
@@ -557,7 +558,7 @@ const Usuarios = () => { //Creo mi componente llamado Usuarios
                           <button 
                             onClick={() => handleEditarClick(usuario)}
                             disabled={loading}
-                            style={{ backgroundColor: '#007bff' }}
+                            style={{ backgroundColor: '#6cadf3', color:'#ffffff', border: 'none'}}
                           >
                             Editar
                           </button>
