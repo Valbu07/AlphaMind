@@ -91,8 +91,20 @@ const chatService = {
       throw error;
     }
 
-  }
+  },
 
+  async eliminarMensaje(mensajeId) {
+    try {
+      const response = await axios.delete(
+        `${API_URL}/mensajes/${mensajeId}`,
+        getAuthHeaders()
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error al eliminar mensaje:', error);
+      throw error;
+    }
+  }
 };
 
 export default chatService;

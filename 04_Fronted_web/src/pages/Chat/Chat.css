@@ -1,5 +1,5 @@
 :root {
-  --chat-naranja: #f7a840;
+  --chat-naranja: #e9d9c554;
   --chat-naranja-oscuro: #3a2000;
   --chat-naranja-hover: #e89530;
   --bg-panel: #f0f4ff;
@@ -145,7 +145,7 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: var(--sombra);
-  overflow: hidden;
+  overflow: visible; /* ← cambiado de hidden a visible para que el botón no se corte */
 }
 
 /* ── HEADER ── */
@@ -159,6 +159,7 @@ body {
   min-height: 68px;
   flex-shrink: 0;
   position: relative;
+  border-radius: var(--r-md) var(--r-md) 0 0;
 }
 
 .chat-header h5 {
@@ -199,9 +200,10 @@ body {
 /* ── ÁREA MENSAJES ── */
 .chat-mensaje {
   flex: 1;
-  padding: 16px;
+  padding: 16px 36px; /* ← padding lateral aumentado para dar espacio al botón */
   background: var(--bg-chat);
   overflow-y: auto;
+  overflow-x: visible;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -312,6 +314,7 @@ body {
   background: white;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
+  border-radius: 0 0 var(--r-md) var(--r-md);
 }
 
 .chat-enviar input[type="text"] {
@@ -365,7 +368,7 @@ body {
 .btn-enviar {
   background: var(--chat-naranja);
   color: var(--chat-naranja-oscuro);
-  font-size: 0; /* oculta el texto "Enviar" */
+  font-size: 0;
   position: relative;
 }
 
@@ -479,3 +482,57 @@ body {
 .usuarios-list-mobile::-webkit-scrollbar-track { background: transparent; }
 .panel-usuarios::-webkit-scrollbar-thumb,
 .usuarios-list-mobile::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 3px; }
+
+/* ── BOTÓN ELIMINAR MENSAJE ── */
+.mensaje-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.mensaje-wrapper.propio {
+  align-items: flex-end;
+}
+
+.mensaje-wrapper.ajeno {
+  align-items: flex-start;
+}
+
+.btn-eliminar-mensaje {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.15);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  transition: background 0.2s, transform 0.15s;
+  z-index: 2;
+}
+
+/* Mensajes propios: botón a la izquierda de la burbuja */
+.mensaje-wrapper.propio .btn-eliminar-mensaje {
+  left: 0;
+}
+
+/* Mensajes ajenos: botón a la derecha de la burbuja */
+.mensaje-wrapper.ajeno .btn-eliminar-mensaje {
+  right: 0;
+}
+
+.mensaje-wrapper:hover .btn-eliminar-mensaje {
+  display: flex;
+}
+
+.btn-eliminar-mensaje:hover {
+  background: rgba(220, 38, 38, 0.75);
+  transform: translateY(-50%) scale(1.1);
+}

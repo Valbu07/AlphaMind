@@ -23,11 +23,9 @@ const Chat = () => {
   const mensajesRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // ✅ FIX 1: Funciones toggleMenu y cerrarMenu definidas
   const toggleMenu = () => setMenuAbierto(prev => !prev);
   const cerrarMenu = () => setMenuAbierto(false);
 
-  // ✅ FIX 2: seleccionadoId definido antes del return
   const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
 
   useEffect(() => {
@@ -109,6 +107,18 @@ const Chat = () => {
     }
   };
 
+  const eliminarMensaje = async (mensajeId) => {
+    if (!window.confirm('¿Eliminar este mensaje para todos?')) return;
+    try {
+      const response = await chatService.eliminarMensaje(mensajeId);
+      if (response.success) {
+        cargarMensajes();
+      }
+    } catch (error) {
+      console.error('Error al eliminar mensaje:', error);
+    }
+  };
+
   const enviarMensaje = async (e) => {
     e.preventDefault();
     if ((!nuevoMensaje.trim() && !archivo) || !usuarioSeleccionado || !idUsuarioActual) return;
@@ -154,7 +164,7 @@ const Chat = () => {
   return (
     <div className="chat-wrapper">
 
-      {/* ✅ Overlay para cerrar menú en móvil */}
+      {/* Overlay para cerrar menú en móvil */}
       {menuAbierto && (
         <div
           className="overlay-mobile activo"
@@ -307,55 +317,65 @@ const Chat = () => {
                       return (
                         <div
                           key={index}
-                          className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}
+                          className={`mensaje-wrapper ${esMensajePropio ? 'propio' : 'ajeno'}`}
                         >
-                          {mensaje.txt_mensaje && (
-                            <p style={{ margin: 0 }}>{mensaje.txt_mensaje}</p>
-                          )}
+                          <button
+                            className="btn-eliminar-mensaje"
+                            onClick={() => eliminarMensaje(mensaje.id_Mensaje)}
+                            title="Eliminar mensaje"
+                          >
+                            🗑️
+                          </button>
 
-                          {mensaje.url_archivo && (() => {
-                            const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
-                            const tipo = mensaje.tipo_de_archivo || '';
+                          <div className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}>
+                            {mensaje.txt_mensaje && (
+                              <p style={{ margin: 0 }}>{mensaje.txt_mensaje}</p>
+                            )}
 
-                            if (tipo.startsWith('image/')) {
-                              return (
-                                <div>
-                                  <img
-                                    src={urlCompleta}
-                                    alt="imagen"
-                                    style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '5px' }}
-                                  />
-                                  <br />
+                            {mensaje.url_archivo && (() => {
+                              const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
+                              const tipo = mensaje.tipo_de_archivo || '';
+
+                              if (tipo.startsWith('image/')) {
+                                return (
+                                  <div>
+                                    <img
+                                      src={urlCompleta}
+                                      alt="imagen"
+                                      style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '5px' }}
+                                    />
+                                    <br />
+                                    <a href={urlCompleta} download target="_blank" rel="noreferrer"
+                                      style={{ fontSize: '11px' }}>
+                                      Descargar imagen
+                                    </a>
+                                  </div>
+                                );
+                              }
+
+                              if (tipo === 'application/pdf') {
+                                return (
                                   <a href={urlCompleta} download target="_blank" rel="noreferrer"
-                                    style={{ fontSize: '11px' }}>
-                                    Descargar imagen
+                                    style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                                    Descargar PDF
                                   </a>
-                                </div>
-                              );
-                            }
+                                );
+                              }
 
-                            if (tipo === 'application/pdf') {
                               return (
                                 <a href={urlCompleta} download target="_blank" rel="noreferrer"
                                   style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                                  Descargar PDF
+                                  Descargar archivo
                                 </a>
                               );
-                            }
-
-                            return (
-                              <a href={urlCompleta} download target="_blank" rel="noreferrer"
-                                style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                                Descargar archivo
-                              </a>
-                            );
-                          })()}
+                            })()}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
 
-                  {/* ✅ FIX 3: Form correctamente cerrado con botón submit */}
+                  {/* Formulario de envío */}
                   <form className="chat-enviar" onSubmit={enviarMensaje}>
                     <button
                       type="button"
@@ -379,13 +399,12 @@ const Chat = () => {
                       onChange={(e) => setNuevoMensaje(e.target.value)}
                     />
 
-                    {/* ✅ FIX 4: Botón de envío que antes faltaba */}
                     <button type="submit" className="btn-enviar">
                       Enviar
                     </button>
                   </form>
 
-                  {/* ✅ FIX 5: Panel mobile FUERA del form */}
+                  {/* Panel mobile FUERA del form */}
                   <div className={`panel-usuarios-mobile ${menuAbierto ? 'mostrar-mobile' : ''}`}>
                     <div className="panel-mobile-header">
                       <h6 className="titulo-panel">Chats</h6>
@@ -439,7 +458,6 @@ const Chat = () => {
                   </div>
                 </>
               ) : (
-                // ✅ Estado vacío cuando no hay usuario seleccionado
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
                   <p>Selecciona un usuario para comenzar a chatear</p>
                 </div>

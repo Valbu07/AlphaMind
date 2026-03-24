@@ -219,7 +219,28 @@ const ChatModel = {
     `;
     
     db.query(query, [usuario1, usuario2, usuario2, usuario1], callback);
+  },
+
+  // =========================
+  // ELIMINAR MENSAJE
+  // =========================
+  eliminarMensaje: (mensajeId, callback) => {
+    // Primero eliminamos registros relacionados, luego el mensaje
+    const q1 = `DELETE FROM archivo_adjunto WHERE mensaje_idMensaje = ?`;
+    db.query(q1, [mensajeId], (err1) => {
+      if (err1) return callback(err1);
+
+      const q2 = `DELETE FROM chat WHERE mensaje_idMensaje = ?`;
+      db.query(q2, [mensajeId], (err2) => {
+        if (err2) return callback(err2);
+
+        const q3 = `DELETE FROM mensaje WHERE id_Mensaje = ?`;
+        db.query(q3, [mensajeId], callback);
+      });
+    });
   }
+
+
 
 };
 
