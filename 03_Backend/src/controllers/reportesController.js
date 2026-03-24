@@ -3,13 +3,14 @@
 const { 
   obtenerReporteFuncionario,
   obtenerFuncionarios
-} = require("../models/reportes.model");
+} = require("../models/reportes.model.js");
 
 
 const obtenerReporte = async (req, res) => {
   try {
 
     const { num_documento } = req.params;
+const { mes } = req.query; 
 
     if (!num_documento || num_documento.trim() === '') {
       return res.status(400).json({
@@ -18,9 +19,9 @@ const obtenerReporte = async (req, res) => {
       });
     }
 
-    const reporte = await obtenerReporteFuncionario(num_documento);
+    const reporte = await obtenerReporteFuncionario(num_documento, mes);
 
-    if (!reporte) {
+    if (!reporte) { 
       return res.status(404).json({
         success: false,
         message: 'No se encontró información para este usuario'

@@ -1,303 +1,263 @@
 .recuperar-contrasena {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #a59f9f27 0%, #e8e8e8 100%);
-
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f7f8fb;
+  font-family: 'DM Sans', sans-serif;
+  padding: 24px 16px;
 }
 
-.recuperar-contrasena * {
-    box-sizing: border-box;
-}
+.recuperar-contrasena * { box-sizing: border-box; }
 
-.recuperar-contrasena .header {
-    width: 100%;
-    max-width: 1200px;
-}
-
-.recuperar-contrasena .Titulo {
-    text-align: center;
-}
-
-.recuperar-contrasena .Titulo h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin: 0;
-}
-
-.recuperar-contrasena hr {
-    border: none;
-    border-top: 2px solid #160468;
-    margin-top : auto;
-    opacity: 0.3;
-    width: 100%;
-}
-
-.recuperar-contrasena .container {
-    width: 100%;
-    max-width: 1200px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-}
-
-.recuperar-contrasena .row {
-    width: 100%;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-}
-
-.recuperar-contrasena .col-12 {
-    display: flex;
-    justify-content: center;
-    padding: 0;
-}
-
+/* ─── CARD ─── */
 .recuperar-contrasena .Validacion {
-    width: 100%;
-    max-width: 32rem;
-    padding: 0 2em 2em;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid #d4d4d4;
-    border-radius: 1.25rem;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    animation: slideUp 0.5s ease-out;
+  max-width: 4200px;
+  padding: 36px 36px 32px;
+  background: #ffffff;
+  border: 1px solid #e8eaf0;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.09);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) both;
 }
 
-.recuperar-contrasena .icono {
-    display: flex;
-    justify-content: center;
+.recuperar-contrasena .Validacion::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #ffd080, #f7a840, #ffd080);
+}
 
+/* ─── ICON ─── */
+.recuperar-contrasena .icono {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 
 .recuperar-contrasena .bi-person-fill-lock {
-    font-size: 7em;
-    color: #374e9f;
-    filter: drop-shadow(0 8px 2px rgba(55, 78, 159, 0.3));
-    animation: fadeInScale 0.6s ease-out;
+  font-size: 5em;
+  color: #f7a840;
+  filter: drop-shadow(0 6px 12px rgba(247,168,64,0.25));
+  animation: fadeInScale 0.5s ease-out 0.1s both;
 }
 
 .recuperar-contrasena .bi-badge-cc-fill {
-    font-size: 1.8em;
-    color: #374e9f;
+  font-size: 1.6em;
+  color: #f7a840;
 }
 
-/* Tipografía */
+/* ─── TYPOGRAPHY ─── */
 .recuperar-contrasena h3 {
-    text-align: center;
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: #1a1a1a;
-    margin-bottom: 1rem;
+  text-align: center;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #111318;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .recuperar-contrasena p {
-    text-align: center;
-    color: #666;
-    line-height: 1.6;
-    margin: 0.75rem 0;
-    font-size: 0.95rem;
+  text-align: center;
+  color: #9aa0b4;
+  line-height: 1.6;
+  margin: 0 0 8px;
+  font-size: 13.5px;
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* Formulario */
+.recuperar-contrasena hr {
+  border: none;
+  border-top: 1px solid #e8eaf0;
+  margin: 16px 0;
+  width: 100%;
+  opacity: 1;
+}
+
+/* ─── HEADER / TITLE (outside card) ─── */
+.recuperar-contrasena .header {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 0;
+}
+
+.recuperar-contrasena .Titulo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.recuperar-contrasena .Titulo h1 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111318;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+/* ─── FORM ─── */
 .recuperar-contrasena .input-group {
-    margin: 1.5rem 0;
+  margin: 20px 0;
+  display: flex;
+  align-items: stretch;
 }
 
 .recuperar-contrasena .input-group-text {
-    background-color: #f8f9fa;
-    border: 2px solid #d4d4d4;
-    border-right: none;
-    border-radius: 0.5rem 0 0 0.5rem;
-    padding: 0 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: #f7f8fb;
+  border: 1.5px solid #e8eaf0;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9aa0b4;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .recuperar-contrasena .form-floating {
-    flex: 1;
+  flex: 1;
 }
 
 .recuperar-contrasena .form-control {
-    transition: all 0.3s ease;
-    border: 2px solid #d4d4d4;
-    border-left: none;
-    border-radius: 0 0.5rem 0.5rem 0;
-    padding: 0.75rem 1rem;
-    font-size: 1rem;
-    height: 3.5rem;
+  border: 1.5px solid #e8eaf0;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  height: 50px;
+  background: #f7f8fb;
+  color: #111318;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
 }
 
-.recuperar-contrasena .form-control:hover {
-    border-color: #374e9f;
-    border-left: none;
-}
+.recuperar-contrasena .form-control::placeholder { color: #9aa0b4; }
 
 .recuperar-contrasena .form-control:focus {
-    border-color: #374e9f;
-    border-left: none;
-    box-shadow: 0 0 0 0.2rem rgba(55, 78, 159, 0.25);
-    outline: none;
+  border-color: #f7a840;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(247,168,64,0.18);
+  border-left: none;
 }
 
-.recuperar-contrasena .form-control:hover + .input-group-text,
 .recuperar-contrasena .input-group:focus-within .input-group-text {
-    border-color: #374e9f;
+  border-color: #f7a840;
+  background: #fff4e0;
+  color: #f7a840;
 }
 
 .recuperar-contrasena .form-floating label {
-    padding-left: 1rem;
-    color: #666;
-    font-weight: 500;
+  padding-left: 14px;
+  color: #9aa0b4;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
 }
 
+/* ─── BUTTON ─── */
 .recuperar-contrasena .boton {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
 }
 
 .recuperar-contrasena .btn-primary {
-    color: #0d0d0e;
-    background: linear-gradient(135deg, #fc9222 0%, #ffb347 100%);
-    border: 2px solid #faca77;
-    border-radius: 0.5rem;
-    padding: 0.75rem 2rem;
-    font-size: 1rem;
-    font-weight: 600;
-    width: 100%;
-    max-width: 16rem;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(252, 146, 34, 0.3);
+  width: 100%;
+  max-width: 100%;
+  height: 50px;
+  background: linear-gradient(135deg, #ffd080, #f7a840);
+  border: none;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(247,168,64,0.35);
+  letter-spacing: 0.01em;
 }
 
 .recuperar-contrasena .btn-primary:hover:not(:disabled) {
-    background: linear-gradient(135deg, #ffb347 0%, #ffd699 100%);
-    border-color: #ffffff;
-    box-shadow: 0 6px 25px rgba(252, 146, 34, 0.5);
-    transform: translateY(-2px);
+  background: linear-gradient(135deg, #f7a840, #e8920a);
+  box-shadow: 0 6px 22px rgba(247,168,64,0.45);
+  transform: translateY(-1px);
 }
 
 .recuperar-contrasena .btn-primary:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(252, 146, 34, 0.4);
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 .recuperar-contrasena .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
-/* Animaciones */
+/* ─── CONTAINER OVERRIDES ─── */
+.recuperar-contrasena .container {
+  width: 100%;
+  max-width: 420px;
+  padding: 0;
+  margin: 0;
+}
+
+.recuperar-contrasena .row {
+  width: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.recuperar-contrasena .col-12 {
+  display: flex;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ─── ANIMATIONS ─── */
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 @keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+  from { opacity: 0; transform: scale(0.75); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-/* Responsive */
+/* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
-    .recuperar-contrasena {
-        padding: 1.5rem 1rem;
-    }
+  .recuperar-contrasena { padding: 20px 16px; }
 
-    .recuperar-contrasena .header {
-        padding: 0 0 1.5rem;
-    }
-
-    .recuperar-contrasena .Validacion {
-        padding: 2rem 1.5rem;
-    }
-
-    .recuperar-contrasena .Titulo h1 {
-        font-size: 2rem;
-    }
-
-    .recuperar-contrasena h3 {
-        font-size: 1.5rem;
-    }
-
-    .recuperar-contrasena .bi-person-fill-lock {
-        font-size: 5em;
-    }
-
-    .recuperar-contrasena hr {
-        max-width: 150px;
-    }
+  .recuperar-contrasena .Validacion { padding: 28px 24px; }
+  .recuperar-contrasena .Titulo h1 { font-size: 24px; }
+  .recuperar-contrasena h3 { font-size: 20px; }
+  .recuperar-contrasena .bi-person-fill-lock { font-size: 4em; }
 }
 
 @media (max-width: 480px) {
-    .recuperar-contrasena {
-        padding: 1rem 0.5rem;
-    }
+  .recuperar-contrasena { padding: 16px 10px; }
 
-    .recuperar-contrasena .Validacion {
-        padding: 1.5rem 1rem;
-        border-radius: 1rem;
-    }
+  .recuperar-contrasena .Validacion {
+    padding: 24px 18px;
+    border-radius: 16px;
+  }
 
-    .recuperar-contrasena .Titulo h1 {
-        font-size: 1.75rem;
-    }
+  .recuperar-contrasena .Titulo h1 { font-size: 20px; }
+  .recuperar-contrasena h3 { font-size: 18px; }
+  .recuperar-contrasena p { font-size: 13px; }
+  .recuperar-contrasena .bi-person-fill-lock { font-size: 3.5em; }
 
-    .recuperar-contrasena h3 {
-        font-size: 1.35rem;
-    }
-
-    .recuperar-contrasena p {
-        font-size: 0.9rem;
-    }
-
-    .recuperar-contrasena .bi-person-fill-lock {
-        font-size: 4em;
-    }
-
-    .recuperar-contrasena .form-control {
-        padding: 0.625rem 0.875rem;
-        font-size: 0.95rem;
-        height: 3.2rem;
-    }
-
-    .recuperar-contrasena .input-group-text {
-        padding: 0 0.75rem;
-    }
-
-    .recuperar-contrasena .bi-badge-cc-fill {
-        font-size: 1.5em;
-    }
-
-    .recuperar-contrasena .btn-primary {
-        max-width: 100%;
-        padding: 0.75rem 1.5rem;
-    }
-
-    .recuperar-contrasena hr {
-        max-width: 120px;
-    }
+  .recuperar-contrasena .form-control {
+    font-size: 13.5px;
+    height: 46px;
+  }
 }
