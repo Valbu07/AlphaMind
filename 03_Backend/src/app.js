@@ -7,6 +7,7 @@ const reportes = require('./routes/reportes');
 const chat = require('./routes/chatRoutes');
 const recuperarContraseña = require('./routes/recuperarContraseña');
 const fotoPerfilRoutes = require("./routes/fotoPerfilRoutes");
+const perfilRoutes = require("./routes/perfilRoutes");
 const cors = require('cors');
 const path = require('path');
 
@@ -61,6 +62,7 @@ app.use('/reportes', reportes);
 app.use('/recuperar', recuperarContraseña);
 app.use('/chat', chat);
 app.use("/foto-perfil", fotoPerfilRoutes);
+app.use("/perfil", perfilRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 module.exports = app;
