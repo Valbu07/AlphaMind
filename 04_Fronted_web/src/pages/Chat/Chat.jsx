@@ -72,7 +72,7 @@ const Chat = () => {
         const filtrados = response.data.filter(
           user => (user.id_usuario || user.Id_Usuario) != idUsuarioActual
         );
-        setUsuarios(usuariosFiltrados);
+        setUsuarios(filtrados);
       }
     } catch (error) {
       setError('No se pudieron cargar los usuarios');

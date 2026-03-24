@@ -16,20 +16,10 @@ const ChatModel = {
         f.segundo_apellido,
         f.correo_electronico,
         f.numero_telefonico,
-        foto_perfil
+        u.foto_perfil
       FROM usuario u
-<<<<<<< HEAD
       INNER JOIN funcionario f ON u.id_usuario = f.id_usuario
       WHERE f.estado = 'activo' AND u.estado = 'activo'
-=======
-<<<<<<< HEAD
-      INNER JOIN funcionario f ON u.id_usuario = f.id_usuario
-      WHERE f.estado = 'activo' AND u.estado = 'activo'
-=======
-      INNER JOIN funcionario f 
-      ON u.id_usuario = f.id_usuario
->>>>>>> 9db0250976115fea2958c6a3a74fbf02726250b6
->>>>>>> main
       ORDER BY f.primer_nombre, f.primer_apellido
     `;
     
@@ -39,7 +29,6 @@ const ChatModel = {
 
   // =========================
   // OBTENER MENSAJES ENTRE DOS USUARIOS
-  // (AHORA TAMBIÉN TRAE ARCHIVOS)
   // =========================
   obtenerMensajesEntreUsuarios: (usuario1, usuario2, callback) => {
 
