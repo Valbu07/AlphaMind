@@ -9,19 +9,11 @@ import ChartCard from '../../components/reportes/ChartCard';
 import { pdfService } from '../../services/pdfService';
 import ModalSeleccionUsuario from '../../components/reportes/ModalSeleccionUsuario';
 
-// ── Helpers visuales ─────────────────────────────────────────────────────────
 
-/** Trunca una cadena a `max` caracteres y agrega "…" si se recortó */
 const truncarNombre = (nombre, max = 18) =>
   nombre?.length > max ? `${nombre.slice(0, max)}…` : nombre;
 
-/**
- * Toma un array { name, value } y:
- *  1. Ordena de mayor a menor.
- *  2. Conserva las primeras `max` entradas.
- *  3. Agrupa el resto en "Otros".
- *  4. Trunca los nombres largos.
- */
+
 const prepararDatosPie = (data, max = 5) => {
   if (!data?.length) return [];
 
@@ -39,7 +31,7 @@ const prepararDatosPie = (data, max = 5) => {
   return resultado;
 };
 
-/** Tooltip personalizado: muestra "X tareas" en lugar del número seco */
+
 const TooltipPie = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const { name, value } = payload[0];
@@ -59,7 +51,7 @@ const TooltipPie = ({ active, payload }) => {
   );
 };
 
-// ── Componente principal ─────────────────────────────────────────────────────
+
 
 const ReporteDashboard = () => {
   const { usuario, cargando: cargandoAuth } = useContext(AuthContext);
@@ -84,9 +76,7 @@ const ReporteDashboard = () => {
   const [error, setError]                     = useState(null);
 
   const COLORS = ['#faca77', '#1E3A8A', '#60A5FA', '#FCD34D', '#A78BFA', '#94A3B8'];
-  //                                                                       ^Otros
 
-  // ── Carga inicial ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (cargandoAuth) return;
     if (!usuario) {
@@ -148,7 +138,7 @@ const ReporteDashboard = () => {
     }
   };
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
+
   const handleCambiarMes = (e) => {
     const mes = e.target.value;
     setMesFiltro(mes);
@@ -181,7 +171,6 @@ const ReporteDashboard = () => {
     if (!resultado?.success) alert('Ocurrió un error al generar el PDF');
   };
 
-  // ── Estados de carga / error ───────────────────────────────────────────────
   if (cargandoAuth || cargando) {
     return (
       <div className="container-fluid p-4 cargando">
@@ -211,12 +200,11 @@ const ReporteDashboard = () => {
     );
   }
 
-  // ── Transformación de datos ────────────────────────────────────────────────
   const dataMeses = dataGraficos.completadasMes.map(item => ({
     mes: item.nombreMes, total: item.total
   }));
 
-  // Pie charts procesados con agrupación + truncado
+
   const dataCategorias = prepararDatosPie(
     dataGraficos.categorias.map(i => ({ name: i.categoria, value: i.total }))
   );
@@ -225,7 +213,7 @@ const ReporteDashboard = () => {
     dataGraficos.estados.map(i => ({ name: i.estado, value: i.total }))
   );
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+
   return (
     <div className="container-fluid p-4 pt-5">
 

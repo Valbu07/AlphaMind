@@ -61,8 +61,6 @@ async function obtenerReporteFuncionario(num_documento, mes = null) {
       filtroMes ? [id_usuario, filtroMes] : [id_usuario]
     );
 
-    // ── COMPLETADAS POR MES (para el gráfico de barras) ──────────────
-    // Siempre sin filtroMes → muestra todos los meses del año
     const completadasMes = await db.queryPromise(
       `SELECT 
         num_mes AS mes,
@@ -87,10 +85,9 @@ async function obtenerReporteFuncionario(num_documento, mes = null) {
          GROUP BY MONTH(a.fecha_creacion)
        ) AS sub
        ORDER BY mes`,
-      [id_usuario]  // sin filtroMes — siempre muestra todos
+      [id_usuario] 
     );
 
-    // ── MESES DISPONIBLES (para el selector — todos los meses con actividades) ─
     const mesesDisponibles = await db.queryPromise(
       `SELECT 
         num_mes AS mes,
@@ -113,7 +110,6 @@ async function obtenerReporteFuncionario(num_documento, mes = null) {
       [id_usuario]
     );
 
-    // ── CATEGORÍAS ───────────────────────────────────────────────────
     const categorias = await db.queryPromise(
       `SELECT 
         t.tarea AS categoria,
@@ -129,7 +125,6 @@ async function obtenerReporteFuncionario(num_documento, mes = null) {
       filtroMes ? [id_usuario, filtroMes] : [id_usuario]
     );
 
-    // ── ESTADOS ──────────────────────────────────────────────────────
     const estados = await db.queryPromise(
       `SELECT 
         a.estado_actual AS estado,
