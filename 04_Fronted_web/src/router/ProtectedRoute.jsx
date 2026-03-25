@@ -1,15 +1,21 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-export default function ProtectedRoute() {
-  const { token } = useAuth();
+// Rutas que solo puede ver el Admi
+const RUTAS_ADMIN = ["/usuarios", "/crear-actividades"];
 
-  if (!token) {
-    return <Navigate to="/" />;
+export default function ProtectedRoute() {
+  const { token, usuario } = useAuth();
+  const { pathname } = useLocation();
+
+  // 1. Sin sesión → al login
+  if (!token) return <Navigate to="/" replace />;
+
+  // 2. Ruta exclusiva de Admin 
+  const esAdmin = usuario?.tipo_de_rol === "Administrador";
+  if (RUTAS_ADMIN.includes(pathname) && !esAdmin) {
+    return <Navigate to="/actividades" replace />;
   }
 
   return <Outlet />;
 }
-
-
-// Componente de ruta protegida que verifica la autenticación del usuario antes de permitir el acceso a las rutas hijas.
