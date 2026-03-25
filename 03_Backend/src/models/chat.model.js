@@ -22,7 +22,6 @@ const ChatModel = {
       WHERE f.estado = 'activo' AND u.estado = 'activo'
       ORDER BY f.primer_nombre, f.primer_apellido
     `;
-    
     db.query(query, callback);
   },
 
@@ -31,7 +30,6 @@ const ChatModel = {
   // OBTENER MENSAJES ENTRE DOS USUARIOS
   // =========================
   obtenerMensajesEntreUsuarios: (usuario1, usuario2, callback) => {
-
     const query = `
     SELECT 
       m.id_Mensaje,
@@ -73,7 +71,6 @@ const ChatModel = {
 
     ORDER BY m.fecha_hora ASC
     `;
-
     db.query(query, [usuario1, usuario2], callback);
   },
 
@@ -86,7 +83,6 @@ const ChatModel = {
       INSERT INTO mensaje (txt_mensaje, fecha_hora) 
       VALUES (?, NOW())
     `;
-    
     db.query(query, [texto], callback);
   },
 
@@ -99,7 +95,6 @@ const ChatModel = {
       INSERT INTO chat (tipo_de_Chat, mensaje_idMensaje, Usuario_id_Usuario)
       VALUES ('Directo', ?, ?)
     `;
-    
     db.query(query, [mensajeId, usuarioId], callback);
   },
 
@@ -108,23 +103,18 @@ const ChatModel = {
   // CREAR CONVERSACIÓN
   // =========================
   crearConversacion: (mensajeId, remitenteId, destinatarioId, callback) => {
-
     const query1 = `
       INSERT INTO chat (tipo_de_Chat, mensaje_idMensaje, Usuario_id_Usuario)
       VALUES ('Directo', ?, ?)
     `;
-
     db.query(query1, [mensajeId, remitenteId], (err1) => {
-
       if (err1) return callback(err1);
 
       const query2 = `
         INSERT INTO chat (tipo_de_Chat, mensaje_idMensaje, Usuario_id_Usuario)
         VALUES ('Directo', ?, ?)
       `;
-
       db.query(query2, [mensajeId, destinatarioId], callback);
-
     });
   },
 
@@ -133,7 +123,6 @@ const ChatModel = {
   // OBTENER ÚLTIMO MENSAJE
   // =========================
   obtenerUltimoMensaje: (usuario1, usuario2, callback) => {
-
     const query = `
       SELECT DISTINCT
         m.txt_mensaje,
@@ -159,7 +148,6 @@ const ChatModel = {
       ORDER BY m.fecha_hora DESC
       LIMIT 1
     `;
-    
     db.query(query, [usuario1, usuario2, usuario2, usuario1], callback);
   },
 
@@ -168,12 +156,10 @@ const ChatModel = {
   // GUARDAR ARCHIVO
   // =========================
   guardarArchivo: (url, tipo, callback) => {
-
     const query = `
       INSERT INTO archivo (url_archivo, tipo_de_archivo)
       VALUES (?, ?)
     `;
-
     db.query(query, [url, tipo], callback);
   },
 
@@ -182,12 +168,10 @@ const ChatModel = {
   // RELACIONAR ARCHIVO CON MENSAJE
   // =========================
   adjuntarArchivoAMensaje: (mensajeId, archivoId, callback) => {
-
     const query = `
       INSERT INTO archivo_adjunto (mensaje_idMensaje, archivo_idArchivo)
       VALUES (?, ?)
     `;
-
     db.query(query, [mensajeId, archivoId], callback);
   },
 
@@ -196,7 +180,6 @@ const ChatModel = {
   // VERIFICAR SI EXISTE CONVERSACIÓN
   // =========================
   existeConversacion: (usuario1, usuario2, callback) => {
-
     const query = `
       SELECT COUNT(DISTINCT m.id_Mensaje) as total
       FROM mensaje m
@@ -217,15 +200,14 @@ const ChatModel = {
           ))
         )
     `;
-    
     db.query(query, [usuario1, usuario2, usuario2, usuario1], callback);
   },
+
 
   // =========================
   // ELIMINAR MENSAJE
   // =========================
   eliminarMensaje: (mensajeId, callback) => {
-    // Primero eliminamos registros relacionados, luego el mensaje
     const q1 = `DELETE FROM archivo_adjunto WHERE mensaje_idMensaje = ?`;
     db.query(q1, [mensajeId], (err1) => {
       if (err1) return callback(err1);
@@ -238,10 +220,22 @@ const ChatModel = {
         db.query(q3, [mensajeId], callback);
       });
     });
-  }
+  },  // 
 
 
-
+  // =========================
+  // OBTENER REMITENTE DEL MENSAJE
+  // =========================
+  obtenerRemitenteMensaje: (mensajeId, callback) => {
+    const query = `
+      SELECT Usuario_id_Usuario 
+      FROM chat 
+      WHERE mensaje_idMensaje = ? 
+      ORDER BY id_Chat ASC 
+      LIMIT 1
+    `;
+    db.query(query, [mensajeId], callback);
+  }  
 };
 
 module.exports = ChatModel;
