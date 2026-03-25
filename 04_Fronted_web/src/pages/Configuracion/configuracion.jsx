@@ -1,10 +1,18 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { subirFotoPerfil, cambiarContrasena } from "../../services/perfilService";
 import "./configuracion.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const DEFAULT_AVATAR = "/default-avatar.png";
+
+// ── Clave para guardar la preferencia en localStorage ──────────────────────
+const NOTIF_KEY = "alphamind_notificaciones_activas";
+
+// ── Función utilitaria exportada para que useNotifications la consulte ──────
+export function getNotificacionesActivas() {
+  return localStorage.getItem(NOTIF_KEY) !== "false"; // activo por defecto
+}
 
 export default function PerfilUsuario() {
   const { usuario, token, updateAvatar } = useContext(AuthContext);
@@ -48,9 +56,20 @@ export default function PerfilUsuario() {
   const [apiError, setApiError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ── Estado cuenta ─────────────────────────────────────────
-  const [activo, setActivo] = useState(true);
+  // ── Notificaciones: leer preferencia guardada ──────────────────────────────
+  // Se inicializa desde localStorage; si no existe, activo por defecto.
+  const [notifActivo, setNotifActivo] = useState(getNotificacionesActivas);
 
+  // Persistir en localStorage cada vez que cambie el toggle
+  useEffect(() => {
+    localStorage.setItem(NOTIF_KEY, String(notifActivo));
+    // Disparar un evento custom para que useNotifications reaccione en tiempo real
+    window.dispatchEvent(new CustomEvent("alphamind:notif-toggle", { detail: { activo: notifActivo } }));
+  }, [notifActivo]);
+
+  const handleToggleNotif = () => setNotifActivo((prev) => !prev);
+
+  // ── Contraseña: validación ────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.actual) e.actual = "Ingresa tu contraseña actual.";
@@ -105,7 +124,7 @@ export default function PerfilUsuario() {
         <div className="card-perfil text-center">
 
           {/* ── Header ── */}
-          <div className="bienvenido-tag"> Panel de usuario</div>
+          <div className="bienvenido-tag">Panel de usuario</div>
           <h1 className="titulo-bienvenido">¡Bienvenido!</h1>
           <p className="subtitulo">Gestiona tu cuenta desde aquí</p>
 
@@ -141,34 +160,42 @@ export default function PerfilUsuario() {
 
           <hr className="divider" />
 
-          {/* ── Switch noti ── */}
+          {/* ── Toggle de Notificaciones ── */}
           <div className="switch-row">
             <div className="switch-info">
               <span className="switch-label">Notificaciones</span>
-              <span className={`switch-badge ${activo ? "badge-activo" : "badge-inactivo"}`}>
-                {activo ? "Activo" : "Inactivo"}
+              <span className={`switch-badge ${notifActivo ? "badge-activo" : "badge-inactivo"}`}>
+                {notifActivo ? "Activas" : "Inactivas"}
               </span>
             </div>
             <div className="switch-control">
               <span className="switch-action-text">
-                {activo ? "Desactivar" : "Activar"}
+                {notifActivo ? "Desactivar" : "Activar"}
               </span>
               <button
-                className={`toggle-switch ${activo ? "toggle-on" : "toggle-off"}`}
-                onClick={() => setActivo(!activo)}
-                aria-label="Cambiar estado de cuenta"
+                className={`toggle-switch ${notifActivo ? "toggle-on" : "toggle-off"}`}
+                onClick={handleToggleNotif}
+                aria-label="Activar o desactivar notificaciones"
+                title={notifActivo ? "Desactivar notificaciones" : "Activar notificaciones"}
               >
                 <span className="toggle-thumb" />
               </button>
             </div>
           </div>
 
+          {/* Mensaje de confirmación bajo el toggle */}
+          {!notifActivo && (
+            <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "6px", marginBottom: 0 }}>
+              No recibirás avisos de nuevas tareas mientras estén desactivadas.
+            </p>
+          )}
+
           <hr className="divider" />
 
           {/* ── Cambiar contraseña ── */}
           {!showForm && (
             <button className="btn-cambiar" onClick={() => setShowForm(true)}>
-               Cambiar contraseña
+              Cambiar contraseña
             </button>
           )}
 
