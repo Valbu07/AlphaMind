@@ -51,6 +51,27 @@ const TooltipPie = ({ active, payload }) => {
   );
 };
 
+// ── Tooltip personalizado para la comparativa ────────────────────────────────
+const TooltipComparativa = ({ active, payload, label, comparativa }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      background: '#fff',
+      border: '1px solid #e2e8f0',
+      borderRadius: 8,
+      padding: '8px 14px',
+      fontSize: 13,
+      boxShadow: '0 2px 8px rgba(0,0,0,.10)'
+    }}>
+      <p style={{ fontWeight: 600, marginBottom: 4 }}>{label}</p>
+      {payload.map((entry, i) => (
+        <p key={i} style={{ color: entry.color, margin: '2px 0' }}>
+          {entry.name}: <strong>{entry.value}</strong> {entry.value === 1 ? 'tarea' : 'tareas'}
+        </p>
+      ))}
+    </div>
+  );
+};
 
 
 const ReporteDashboard = () => {
@@ -61,7 +82,8 @@ const ReporteDashboard = () => {
   });
 
   const [dataGraficos, setDataGraficos] = useState({
-    completadasMes: [], categorias: [], estados: [], mesesDisponibles: []
+    completadasMes: [], categorias: [], estados: [], mesesDisponibles: [],
+    comparativa: null,
   });
 
   const [funcionario, setFuncionario] = useState({
@@ -124,7 +146,8 @@ const ReporteDashboard = () => {
         completadasMes:   datosReporte.graficos.completadasMes   || [],
         categorias:       datosReporte.graficos.categorias       || [],
         estados:          datosReporte.graficos.estados           || [],
-        mesesDisponibles: datosReporte.graficos.mesesDisponibles || []
+        mesesDisponibles: datosReporte.graficos.mesesDisponibles || [],
+        comparativa:      datosReporte.graficos.comparativa      || null,
       });
       setFuncionario({
         primer_nombre:   datosReporte.funcionario?.primer_nombre   || '',
@@ -204,7 +227,6 @@ const ReporteDashboard = () => {
     mes: item.nombreMes, total: item.total
   }));
 
-
   const dataCategorias = prepararDatosPie(
     dataGraficos.categorias.map(i => ({ name: i.categoria, value: i.total }))
   );
@@ -213,6 +235,11 @@ const ReporteDashboard = () => {
     dataGraficos.estados.map(i => ({ name: i.estado, value: i.total }))
   );
 
+  // ── Datos para la comparativa ─────────────────────────────────────────────
+  const comparativa      = dataGraficos.comparativa;
+  const dataComparativa  = comparativa?.datos || [];
+  const nombreMesActual  = comparativa?.mesActual?.nombre  || 'Mes actual';
+  const nombreMesAnterior = comparativa?.mesAnterior?.nombre || 'Mes anterior';
 
   return (
     <div className="container-fluid p-4 pt-5">
@@ -237,7 +264,9 @@ const ReporteDashboard = () => {
                 <option key={item.mes} value={item.mes}>{item.nombreMes}</option>
               ))}
             </select>
-            <button className="btn btn-primary"   onClick={handleCambiarUsuario}>Cambiar Usuario</button>
+            {usuario?.tipo_de_rol === "Administrador" && (
+              <button className="btn btn-primary" onClick={handleCambiarUsuario}>Cambiar Usuario</button>
+            )}
             <button className="btn btn-secondary" onClick={handleGenerarPDF}>Generar PDF</button>
           </div>
         </div>
@@ -349,10 +378,44 @@ const ReporteDashboard = () => {
           </ChartCard>
         </div>
 
-        {/* Rendimiento semanal */}
+        {/* Comparativa mes actual vs mes anterior */}
         <div className="col-12 col-xl-6 mb-4">
-          <ChartCard title="Rendimiento Semanal" loading={false}>
-            <div className="chart-placeholder">Próximamente</div>
+          <ChartCard title={`Comparativa: ${nombreMesActual} vs ${nombreMesAnterior}`} loading={false}>
+            {dataComparativa.length > 0 ? (
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart
+                  data={dataComparativa}
+                  margin={{ top: 8, right: 16, left: 0, bottom: 4 }}
+                  barCategoryGap="30%"
+                  barGap={4}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="categoria" tick={{ fontSize: 12 }} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+                  <Tooltip content={<TooltipComparativa />} />
+                  <Legend
+                    wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }}
+                    formatter={(value) =>
+                      value === 'actual' ? nombreMesActual : nombreMesAnterior
+                    }
+                  />
+                  <Bar
+                    dataKey="actual"
+                    name="actual"
+                    fill="#1E3A8A"
+                    radius={[6, 6, 0, 0]}
+                  />
+                  <Bar
+                    dataKey="anterior"
+                    name="anterior"
+                    fill="#60A5FA"
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="chart-placeholder">Sin datos</div>
+            )}
           </ChartCard>
         </div>
 

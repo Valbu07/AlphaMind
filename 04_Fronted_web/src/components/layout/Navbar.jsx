@@ -15,6 +15,7 @@ const DEFAULT_AVATAR = "/default-avatar.png";
 
 export default function Navbar() {
   const { usuario, logout } = useContext(AuthContext);
+  const esAdmin = usuario?.tipo_de_rol === "Administrador";
 
   const fotoPerfil = usuario?.foto_perfil
     ? `${API}${usuario.foto_perfil}`
@@ -63,18 +64,22 @@ export default function Navbar() {
 
           <div className="offcanvas-body">
             <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
-              <li className="nav-item">
-                <Link className="nav-link" to="/usuarios" onClick={handleCloseOffcanvas}>
-                  <BsPersonFill className="icon-menu" />
-                  <span className="link-text">Usuarios</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/crear-actividades" onClick={handleCloseOffcanvas}>
-                  <BsPencilSquare className="icon-menu" />
-                  <span className="link-text">Crear Actividades</span>
-                </Link>
-              </li>
+              {esAdmin && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/usuarios" onClick={handleCloseOffcanvas}>
+                    <BsPersonFill className="icon-menu" />
+                    <span className="link-text">Usuarios</span>
+                  </Link>
+                </li>
+              )}
+              {esAdmin && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/crear-actividades" onClick={handleCloseOffcanvas}>
+                    <BsPencilSquare className="icon-menu" />
+                    <span className="link-text">Crear Actividades</span>
+                  </Link>
+                </li>
+              )}
               <li className="nav-item">
                 <Link className="nav-link" to="/actividades" onClick={handleCloseOffcanvas}>
                   <BsJournalText className="icon-menu" />
@@ -112,7 +117,6 @@ export default function Navbar() {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            {/* Foto sin cámara — el cambio de foto va en Configuración */}
             <img
               src={fotoPerfil}
               alt="Foto de perfil"
