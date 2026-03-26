@@ -603,3 +603,15 @@
   color: var(--text-primary) !important;
   -webkit-text-fill-color: var(--text-primary) !important;
 }
+@media (max-width: 767px) {
+  .col-md-4 {
+    display: none;
+  }
+
+  .col-md-8,
+  .col-lg-9 {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 0 0 100% !important;
+  }
+}

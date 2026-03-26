@@ -19,7 +19,7 @@ const Chat = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [archivo, setArchivo] = useState(null);
-  const [eliminando, setEliminando] = useState(null); // 👈 nuevo
+  const [eliminando, setEliminando] = useState(null);
 
   const mensajesRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -107,13 +107,13 @@ const Chat = () => {
   };
 
   const eliminarMensaje = async (mensajeId) => {
-    if (eliminando) return; // 👈 evita doble ejecución
+    if (eliminando) return;
     if (!window.confirm('¿Eliminar este mensaje para todos?')) return;
     try {
       setEliminando(mensajeId);
       const response = await chatService.eliminarMensaje(mensajeId);
       if (response.success) {
-        setMensajes(prev => prev.filter(m => m.id_Mensaje !== mensajeId)); // 👈 actualiza sin recargar
+        setMensajes(prev => prev.filter(m => m.id_Mensaje !== mensajeId));
       }
     } catch (error) {
       console.error('Error al eliminar mensaje:', error);
@@ -279,7 +279,7 @@ const Chat = () => {
             <div className="panel-chat">
               {usuarioSeleccionado ? (
                 <>
-                  {/* Header */}
+                  {/* Header con usuario seleccionado */}
                   <div className="chat-header">
                     {isMobile && (
                       <button
@@ -297,13 +297,13 @@ const Chat = () => {
 
                   {/* Área de mensajes */}
                   <div className="chat-mensaje" ref={mensajesRef}>
-                    {mensajes.map((mensaje) => { // 👈 quitamos index
+                    {mensajes.map((mensaje) => {
                       const esMensajePropio = parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
                       const BASE_URL = 'http://localhost:3000';
 
                       return (
                         <div
-                          key={mensaje.id_Mensaje} // 👈 key por id real
+                          key={mensaje.id_Mensaje}
                           className={`mensaje-wrapper ${esMensajePropio ? 'propio' : 'ajeno'}`}
                         >
                           {esMensajePropio && (
@@ -311,7 +311,7 @@ const Chat = () => {
                               className="btn-eliminar-mensaje"
                               onClick={() => eliminarMensaje(mensaje.id_Mensaje)}
                               title="Eliminar mensaje"
-                              disabled={eliminando === mensaje.id_Mensaje} // 👈 deshabilita mientras elimina
+                              disabled={eliminando === mensaje.id_Mensaje}
                             >
                               <i className="bi bi-trash-fill"></i>
                             </button>
@@ -403,51 +403,25 @@ const Chat = () => {
                       <i className="bi bi-send"></i>
                     </button>
                   </form>
-
-                  {/* Panel mobile FUERA del form */}
-                  <div className={`panel-usuarios-mobile ${menuAbierto ? 'mostrar-mobile' : ''}`}>
-                    <div className="panel-mobile-header">
-                      <h6 className="titulo-panel">Chats</h6>
-                      <button className="btn-cerrar-mobile" onClick={cerrarMenu}>✕</button>
-                    </div>
-
-                    <input
-                      type="text"
-                      className="buscador"
-                      placeholder="Buscar..."
-                      value={busqueda}
-                      onChange={(e) => setBusqueda(e.target.value)}
-                    />
-
-                    {loading && <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Cargando usuarios...</div>}
-                    {error && <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>{error}</div>}
-                    {!loading && usuariosFiltrados.length === 0 && (
-                      <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>No se encontraron usuarios</div>
-                    )}
-
-                    <div className="usuarios-list-mobile">
-                      {usuariosFiltrados.map((usuario) => {
-                        const userId = usuario.id_usuario || usuario.Id_Usuario;
-                        return (
-                          <div
-                            key={userId}
-                            className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
-                            onClick={() => seleccionarUsuario(usuario)}
-                          >
-                            <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
-                            <div>
-                              <strong>{obtenerNombreCompleto(usuario)}</strong>
-                              <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
                 </>
               ) : (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
-                  <p>Selecciona un usuario para comenzar a chatear</p>
+                /* Estado vacío - siempre muestra el botón ☰ en móvil */
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  {isMobile && (
+                    <div className="chat-header">
+                      <button
+                        type="button"
+                        className="btn-toggle-funcionarios"
+                        onClick={toggleMenu}
+                        aria-label="Abrir menú de chats"
+                      >
+                        ☰
+                      </button>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
+                    <p>Selecciona un usuario para comenzar a chatear</p>
+                  </div>
                 </div>
               )}
             </div>
