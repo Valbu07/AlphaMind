@@ -1,7 +1,9 @@
 // src/services/reportesServices.js
 import axios from "axios";
 
-const API = "http://localhost:3000/reportes";
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/reportes`;
+
+
 
 const getToken = () => {
   const token = localStorage.getItem('token');

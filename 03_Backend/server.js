@@ -9,7 +9,7 @@ initSocket(server);
 
 const PORT = app.get('port') || 3000;
 
-server.listen(PORT, () => {
-  console.log(` Servidor corriendo en http://localhost:${PORT}`);
-  console.log(` Swagger en http://localhost:${PORT}/api-docs`);
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
+

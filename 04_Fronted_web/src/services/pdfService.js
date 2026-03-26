@@ -2,7 +2,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
-// Paleta corporativa
+
 const C = {
   azul:        [30,  58,  138],
   azulClaro:   [96,  165, 250],

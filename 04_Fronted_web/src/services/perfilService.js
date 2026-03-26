@@ -2,7 +2,7 @@ import axios from "axios";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
-// ── Foto de perfil ──────────────────────────────────────────
+
 export const subirFotoPerfil = async (file, token) => {
   const formData = new FormData();
   formData.append("foto", file);

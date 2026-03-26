@@ -36,7 +36,7 @@ const swaggerOptions = {
         },
       },
     },
-    servers: [{ url: "http://localhost:3000" }],
+    servers: [{ url: "http://52.21.74.39:3000" }],
   },
   apis: ["./src/routes/*.js"],
 };
@@ -46,7 +46,12 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.set('port', config.app.port || 3000);
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    'http://localhost:5173',
+    'http://52.21.74.39',
+    'http://52.21.74.39:3000',
+    'http://52.21.74.39:5173'
+  ],
   credentials: true
 }));
 
@@ -54,7 +59,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/fotos_Perfil", express.static(path.join(__dirname, "../fotos_Perfil")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// ── Rutas API ─────────────────────────────────────────────────
 app.use('/funcionarios', funcionarios);
 app.use('/auth', login);
 app.use('/tareas', tareas);
@@ -64,5 +71,12 @@ app.use('/chat', chat);
 app.use("/foto-perfil", fotoPerfilRoutes);
 app.use("/perfil", perfilRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// ── Frontend ──
+app.use(express.static(path.join(__dirname, '../../04_Fronted_web/dist')));
+
+app.get('/{*path}', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../04_Fronted_web/dist/index.html'));
+});
 
 module.exports = app;

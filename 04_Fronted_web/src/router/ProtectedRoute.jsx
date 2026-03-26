@@ -5,7 +5,7 @@ import { useAuth } from "../hooks/useAuth";
 const RUTAS_ADMIN = ["/usuarios", "/crear-actividades"];
 
 export default function ProtectedRoute() {
-  const { token, usuario } = useAuth();
+  const { token, usuario } = useAuth();pm2
   const { pathname } = useLocation();
 
   // 1. Sin sesión → al login

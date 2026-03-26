@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 
 const NOTIF_KEY = "alphamind_notificaciones_activas";
 
-// Leer preferencia guardada (activo por defecto si no existe)
+
 function getNotifGuardada() {
   return localStorage.getItem(NOTIF_KEY) !== "false";
 }
@@ -14,16 +14,15 @@ let socket;
 export function useNotifications(token) {
   const [notifActivo, setNotifActivo] = useState(getNotifGuardada);
 
-  // Escuchar cambios del toggle en configuracion.jsx
+
   useEffect(() => {
     const handler = (e) => setNotifActivo(e.detail.activo);
     window.addEventListener("alphamind:notif-toggle", handler);
     return () => window.removeEventListener("alphamind:notif-toggle", handler);
   }, []);
 
-  // Conectar / desconectar según token y preferencia
+
   useEffect(() => {
-    // Sin token o notificaciones desactivadas → desconectar
     if (!token || !notifActivo) {
       if (socket) {
         socket.disconnect();
@@ -36,9 +35,9 @@ export function useNotifications(token) {
       ? token.slice(7)
       : token;
 
-    socket = io("http://localhost:3000", {
-      auth: { token: tokenLimpio },
-    });
+    socket = io("http://52.21.74.39:3000", {
+  auth: { token: tokenLimpio },
+});
 
     socket.on("connect", () => {});
 

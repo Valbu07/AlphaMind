@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API = 'http://localhost:3000/funcionarios';
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/funcionarios`;
+
+
 
 // obtener headers con token
 const getHeaders = (token) => ({
