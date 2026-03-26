@@ -7,12 +7,14 @@ const {
 } = require("../middlewares/authMiddleware");
 const respuesta = require("../utils/repuesta");
 
-router.get( "/",verificarToken, autorizaciondeRoles(["Administrador"]),
+// En funcionarioRoutes.js — ruta GET "/"
+router.get("/", verificarToken, autorizaciondeRoles(["Administrador"]),
   async (req, res) => {
     try {
       const data = await controlador.todos();
       respuesta.success(req, res, data, 200);
     } catch (error) {
+      console.error("❌ Error exacto:", error); // 👈 agrega esto
       respuesta.error(req, res, "Error al obtener los funcionarios", 500);
     }
   }

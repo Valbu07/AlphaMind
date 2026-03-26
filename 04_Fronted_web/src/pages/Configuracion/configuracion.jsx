@@ -1,15 +1,75 @@
-import { useState } from "react";
-import "./configuracion.css"
+import { useState, useRef, useContext, useEffect } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { subirFotoPerfil, cambiarContrasena } from "../../services/perfilService";
+import "./configuracion.css";
 
-const avatarUrl =
-  "https://www.elespectador.com/resizer/v2/A7TE2XK6CVCK3PWCI3JNE57IAU.jpg?auth=a9724b8a5a79ee80f538fc7bbd232fdb392e4bc7dd867d4910dcd12c2d08dbb8&width=920&height=613&focal=1925,975&quality=60";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const DEFAULT_AVATAR = "/default-avatar.png";
+
+// ── Clave para guardar la preferencia en localStorage ──────────────────────
+const NOTIF_KEY = "alphamind_notificaciones_activas";
+
+// ── Función utilitaria exportada para que useNotifications la consulte ──────
+export function getNotificacionesActivas() {
+  return localStorage.getItem(NOTIF_KEY) !== "false"; // activo por defecto
+}
 
 export default function PerfilUsuario() {
+  const { usuario, token, updateAvatar } = useContext(AuthContext);
+
+  // ── Foto ──────────────────────────────────────────────────
+  const inputFotoRef = useRef();
+  const [loadingFoto, setLoadingFoto] = useState(false);
+  const [fotoError, setFotoError] = useState("");
+
+  const fotoPerfil = usuario?.foto_perfil
+    ? `${API}${usuario.foto_perfil}`
+    : DEFAULT_AVATAR;
+
+  const handleClickFoto = () => inputFotoRef.current.click();
+
+  const handleCambioFoto = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setFotoError("La imagen no puede superar 5MB");
+      return;
+    }
+    setFotoError("");
+    setLoadingFoto(true);
+    try {
+      const resultado = await subirFotoPerfil(file, token);
+      updateAvatar(resultado.foto_perfil);
+    } catch {
+      setFotoError("No se pudo subir la imagen");
+    } finally {
+      setLoadingFoto(false);
+      e.target.value = "";
+    }
+  };
+
+  // ── Contraseña ────────────────────────────────────────────
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ actual: "", nueva: "", confirmar: "" });
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState(false);
+  const [apiError, setApiError] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // ── Notificaciones: leer preferencia guardada ──────────────────────────────
+  // Se inicializa desde localStorage; si no existe, activo por defecto.
+  const [notifActivo, setNotifActivo] = useState(getNotificacionesActivas);
+
+  // Persistir en localStorage cada vez que cambie el toggle
+  useEffect(() => {
+    localStorage.setItem(NOTIF_KEY, String(notifActivo));
+    // Disparar un evento custom para que useNotifications reaccione en tiempo real
+    window.dispatchEvent(new CustomEvent("alphamind:notif-toggle", { detail: { activo: notifActivo } }));
+  }, [notifActivo]);
+
+  const handleToggleNotif = () => setNotifActivo((prev) => !prev);
+
+  // ── Contraseña: validación ────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.actual) e.actual = "Ingresa tu contraseña actual.";
@@ -18,60 +78,129 @@ export default function PerfilUsuario() {
     return e;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const e = validate();
     if (Object.keys(e).length) return setErrors(e);
     setErrors({});
-    setSuccess(true);
-    setForm({ actual: "", nueva: "", confirmar: "" });
-    setTimeout(() => {
-      setSuccess(false);
-      setShowForm(false);
-    }, 2500);
+    setApiError("");
+    setLoading(true);
+    try {
+      await cambiarContrasena(
+        { contrasena_actual: form.actual, nueva_contrasena: form.nueva },
+        token
+      );
+      setSuccess(true);
+      setForm({ actual: "", nueva: "", confirmar: "" });
+      setTimeout(() => { setSuccess(false); setShowForm(false); }, 2500);
+    } catch (err) {
+      const msg = err?.response?.data?.body || "Error al cambiar la contraseña. Intenta de nuevo.";
+      setApiError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleCancelar = () => {
+    setShowForm(false);
+    setErrors({});
+    setApiError("");
+    setForm({ actual: "", nueva: "", confirmar: "" });
+  };
+
+  const nombreCompleto = usuario?.primer_nombre
+    ? `${usuario.primer_nombre} ${usuario.primer_apellido}`
+    : "Usuario";
+
+  const rolLabel =
+    usuario?.tipo_de_rol === "Administrador"
+      ? "Administrador · Activo"
+      : "Funcionario · Activo";
 
   return (
     <>
-      
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
 
       <div className="perfil-wrapper">
         <div className="card-perfil text-center">
 
-          {/* ── Bienvenido ── */}
-          <div className="bienvenido-tag">✦ Panel de usuario</div>
+          {/* ── Header ── */}
+          <div className="bienvenido-tag">Panel de usuario</div>
           <h1 className="titulo-bienvenido">¡Bienvenido!</h1>
           <p className="subtitulo">Gestiona tu cuenta desde aquí</p>
 
-          {/* ── Foto de perfil ── */}
-          <div className="avatar-ring mx-auto">
-            <img src={avatarUrl} alt="Avatar de usuario" />
+          {/* ── Foto ── */}
+          <div
+            className="avatar-ring mx-auto"
+            onClick={handleClickFoto}
+            title="Cambiar foto de perfil"
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src={fotoPerfil}
+              alt="Avatar de usuario"
+              style={{ opacity: loadingFoto ? 0.5 : 1, transition: "opacity 0.2s" }}
+              onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
+            />
             <div className="avatar-overlay">
-              <svg width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M15.232 5.232l3.536 3.536M9 13l6.364-6.364a2 2 0 012.828 2.828L11.828 15.828A2 2 0 0110 16H8v-2a2 2 0 01.586-1.414z"/>
-              </svg>
+              {loadingFoto ? (
+                <span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 600 }}>...</span>
+              ) : (
+                <svg width="22" height="22" fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M15.232 5.232l3.536 3.536M9 13l6.364-6.364a2 2 0 012.828 2.828L11.828 15.828A2 2 0 0110 16H8v-2a2 2 0 01.586-1.414z"/>
+                </svg>
+              )}
             </div>
           </div>
 
-          <div className="nombre-usuario">Carlos Martínez</div>
-          <div className="rol-usuario">Administrador · Activo</div>
+          <input ref={inputFotoRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCambioFoto} hidden />
+          {fotoError && <div className="error-text mt-1">{fotoError}</div>}
+
+          <div className="nombre-usuario mt-2">{nombreCompleto}</div>
+          <div className="rol-usuario">{rolLabel}</div>
 
           <hr className="divider" />
 
-          {/* ── Botón cambiar contraseña ── */}
+          {/* ── Toggle de Notificaciones ── */}
+          <div className="switch-row">
+            <div className="switch-info">
+              <span className="switch-label">Notificaciones</span>
+              <span className={`switch-badge ${notifActivo ? "badge-activo" : "badge-inactivo"}`}>
+                {notifActivo ? "Activas" : "Inactivas"}
+              </span>
+            </div>
+            <div className="switch-control">
+              <span className="switch-action-text">
+                {notifActivo ? "Desactivar" : "Activar"}
+              </span>
+              <button
+                className={`toggle-switch ${notifActivo ? "toggle-on" : "toggle-off"}`}
+                onClick={handleToggleNotif}
+                aria-label="Activar o desactivar notificaciones"
+                title={notifActivo ? "Desactivar notificaciones" : "Activar notificaciones"}
+              >
+                <span className="toggle-thumb" />
+              </button>
+            </div>
+          </div>
+
+          {/* Mensaje de confirmación bajo el toggle */}
+          {!notifActivo && (
+            <p style={{ fontSize: "0.75rem", color: "#9ca3af", marginTop: "6px", marginBottom: 0 }}>
+              No recibirás avisos de nuevas tareas mientras estén desactivadas.
+            </p>
+          )}
+
+          <hr className="divider" />
+
+          {/* ── Cambiar contraseña ── */}
           {!showForm && (
             <button className="btn-cambiar" onClick={() => setShowForm(true)}>
-               Cambiar contraseña
+              Cambiar contraseña
             </button>
           )}
 
-          {/* ── Formulario ── */}
           {showForm && (
             <div className="form-panel text-start">
-
               {success ? (
                 <div className="success-pill mb-3">
                   <span className="glow-dot" />
@@ -79,9 +208,11 @@ export default function PerfilUsuario() {
                 </div>
               ) : (
                 <>
+                  {apiError && <div className="error-text mb-3 text-center">{apiError}</div>}
+
                   {[
-                    { key: "actual",    label: "Contraseña actual",   placeholder: "••••••••" },
-                    { key: "nueva",     label: "Nueva contraseña",    placeholder: "Mínimo 6 caracteres" },
+                    { key: "actual",    label: "Contraseña actual",    placeholder: "••••••••" },
+                    { key: "nueva",     label: "Nueva contraseña",     placeholder: "Mínimo 6 caracteres" },
                     { key: "confirmar", label: "Confirmar contraseña", placeholder: "Repite la contraseña" },
                   ].map(({ key, label, placeholder }) => (
                     <div className="mb-3" key={key}>
@@ -91,15 +222,18 @@ export default function PerfilUsuario() {
                         className="form-control input-custom"
                         placeholder={placeholder}
                         value={form[key]}
-                        onChange={e => setForm({ ...form, [key]: e.target.value })}
+                        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                        disabled={loading}
                       />
                       {errors[key] && <div className="error-text">{errors[key]}</div>}
                     </div>
                   ))}
 
                   <div className="d-flex gap-2 mt-3">
-                    <button className="btn-guardar" onClick={handleSubmit}>Guardar</button>
-                    <button className="btn-cancelar" onClick={() => { setShowForm(false); setErrors({}); }}>
+                    <button className="btn-guardar" onClick={handleSubmit} disabled={loading}>
+                      {loading ? "Cambiando..." : "Cambiar"}
+                    </button>
+                    <button className="btn-cancelar" onClick={handleCancelar} disabled={loading}>
                       Cancelar
                     </button>
                   </div>

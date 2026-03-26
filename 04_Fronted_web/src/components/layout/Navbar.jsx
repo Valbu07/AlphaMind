@@ -3,57 +3,27 @@ import "./Navbar.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Link } from "react-router-dom";
-import { useContext, useRef, useState } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { subirFotoPerfil } from "../../services/perfilService";
 import {
   BsPersonFill, BsPencilSquare, BsJournalText, BsCalendarEvent,
-  BsClipboardData, BsChatDots, BsBoxArrowRight, BsGear, BsCameraFill,
+  BsClipboardData, BsChatDots, BsBoxArrowRight, BsGear,
 } from "react-icons/bs";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
 const DEFAULT_AVATAR = "/default-avatar.png";
 
 export default function Navbar() {
-  const { usuario, token, logout, updateAvatar } = useContext(AuthContext);
-  const [loading, setLoading] = useState(false);
-  const inputRef = useRef();
+  const { usuario, logout } = useContext(AuthContext);
+  const esAdmin = usuario?.tipo_de_rol === "Administrador";
 
- const fotoPerfil = usuario?.foto_perfil
-  ? `${API}${usuario.foto_perfil}`
-  : DEFAULT_AVATAR;
-
+  const fotoPerfil = usuario?.foto_perfil
+    ? `${API}${usuario.foto_perfil}`
+    : DEFAULT_AVATAR;
 
   const handleCloseOffcanvas = () => {
     const btnClose = document.querySelector("#offcanvasNavbar .btn-close");
     if (btnClose) btnClose.click();
-  };
-
-  const handleClickFoto = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    inputRef.current.click();
-  };
-
-  const handleCambioFoto = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    if (file.size > 5 * 1024 * 1024) {
-      alert("La imagen no puede superar 5MB");
-      return;
-    }
-    setLoading(true);
-    try {
-      const resultado = await subirFotoPerfil(file, token);
-      updateAvatar(resultado.foto_perfil); 
-
-    } catch (error) {
-  console.error("Error al subir foto:", error);
-  alert("No se pudo subir la imagen");
-}
-finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -94,18 +64,22 @@ finally {
 
           <div className="offcanvas-body">
             <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
-              <li className="nav-item">
-                <Link className="nav-link" to="/usuarios" onClick={handleCloseOffcanvas}>
-                  <BsPersonFill className="icon-menu" />
-                  <span className="link-text">Usuarios</span>
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link className="nav-link" to="/crear-actividades" onClick={handleCloseOffcanvas}>
-                  <BsPencilSquare className="icon-menu" />
-                  <span className="link-text">Crear Actividades</span>
-                </Link>
-              </li>
+              {esAdmin && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/usuarios" onClick={handleCloseOffcanvas}>
+                    <BsPersonFill className="icon-menu" />
+                    <span className="link-text">Usuarios</span>
+                  </Link>
+                </li>
+              )}
+              {esAdmin && (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/crear-actividades" onClick={handleCloseOffcanvas}>
+                    <BsPencilSquare className="icon-menu" />
+                    <span className="link-text">Crear Actividades</span>
+                  </Link>
+                </li>
+              )}
               <li className="nav-item">
                 <Link className="nav-link" to="/actividades" onClick={handleCloseOffcanvas}>
                   <BsJournalText className="icon-menu" />
@@ -136,7 +110,6 @@ finally {
 
         {/* ===== DROPDOWN USUARIO ===== */}
         <div className="dropdown">
-
           <a
             href="#"
             className="user-link"
@@ -144,41 +117,13 @@ finally {
             data-bs-toggle="dropdown"
             aria-expanded="false"
           >
-            <div style={{ position: "relative", display: "inline-block" }}>
-              <img
-                src={fotoPerfil}
-                alt="Foto de perfil"
-                className="foto-perfil"
-                onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
-                style={{ opacity: loading ? 0.5 : 1, transition: "opacity 0.2s" }}
-              />
-              <div
-                onClick={handleClickFoto}
-                title="Cambiar foto"
-                style={{
-                  position: "absolute", bottom: 0, right: 0,
-                  background: "#0d6efd", borderRadius: "50%",
-                  width: 20, height: 20,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  cursor: "pointer", boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
-                }}
-              >
-                {loading
-                  ? <span style={{ color: "#fff", fontSize: 9 }}>...</span>
-                  : <BsCameraFill color="#fff" size={11} />
-                }
-              </div>
-            </div>
+            <img
+              src={fotoPerfil}
+              alt="Foto de perfil"
+              className="foto-perfil"
+              onError={(e) => { e.target.src = DEFAULT_AVATAR; }}
+            />
           </a>
-
-          {/* Input oculto */}
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={handleCambioFoto}
-            hidden
-          />
 
           <ul
             className="dropdown-menu dropdown-menu-end"
@@ -191,30 +136,23 @@ finally {
                   : "Usuario"}
               </h2>
             </li>
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
+            <li><hr className="dropdown-divider" /></li>
             <li>
               <Link
                 className="dropdown-item d-flex align-items-center"
                 to="/"
                 onClick={logout}
               >
-                <BsBoxArrowRight className="me-2" /> Cerrar Sesión 
+                <BsBoxArrowRight className="me-2" /> Cerrar Sesión
               </Link>
             </li>
             <li>
-              <Link
-                className="dropdown-item d-flex"
-                to="/configuracion"
-              >
+              <Link className="dropdown-item d-flex align-items-center" to="/configuracion">
                 <BsGear className="me-2" /> Configuración
               </Link>
             </li>
           </ul>
-
         </div>
-        {/* ===== FIN DROPDOWN ===== */}
 
       </div>
     </nav>
