@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const API_URL = `${import.meta.env.VITE_API_URL}/chat`;
 
-// ✅ limpia "Bearer" duplicado si ya viene incluido en el token guardado
+
 const getCleanToken = () => {
   const token = localStorage.getItem('token');
   return token?.replace('Bearer ', '') || '';

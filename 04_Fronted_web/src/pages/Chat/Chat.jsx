@@ -156,24 +156,15 @@ const Chat = () => {
     return `${primerNombre} ${segundoNombre} ${primerApellido}`.trim();
   };
 
-  const descargarArchivo = async (urlCompleta, nombreArchivo) => {
-    try {
-      const response = await fetch(urlCompleta);
-      if (!response.ok) throw new Error('Error al descargar');
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = nombreArchivo || 'archivo';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error al descargar archivo:', error);
-      alert('No se pudo descargar el archivo');
-    }
-  };
+const descargarArchivo = (urlCompleta, nombreArchivo) => {
+  const link = document.createElement('a');
+  link.href = urlCompleta;
+  link.download = nombreArchivo || 'archivo';
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 
   const usuariosFiltrados = usuarios.filter(usuario =>
     obtenerNombreCompleto(usuario).toLowerCase().includes(busqueda.toLowerCase())
@@ -299,7 +290,7 @@ const Chat = () => {
                   <div className="chat-mensaje" ref={mensajesRef}>
                     {mensajes.map((mensaje) => {
                       const esMensajePropio = parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
-                      const BASE_URL = 'http://localhost:3000';
+                      const BASE_URL = import.meta.env.VITE_API_URL;
 
                       return (
                         <div
@@ -323,7 +314,7 @@ const Chat = () => {
                             )}
 
                             {mensaje.url_archivo && (() => {
-                              const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
+                              const urlCompleta = mensaje.url_archivo;
                               const tipo = mensaje.tipo_de_archivo || '';
                               const nombreArchivo = mensaje.url_archivo?.split('/').pop();
 
