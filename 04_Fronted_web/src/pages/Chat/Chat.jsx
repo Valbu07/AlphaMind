@@ -4,10 +4,10 @@ import chatService from '../../services/chatService';
 import { useAuth } from '../../hooks/useAuth';
 import { decodeToken } from '../../utils/jwtUtilis';
 import Avatar from "../../components/Avatar";
+
 const Chat = () => {
   const { token } = useAuth();
-  
-  // Estados
+
   const [usuarios, setUsuarios] = useState([]);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [mensajes, setMensajes] = useState([]);
@@ -18,35 +18,31 @@ const Chat = () => {
   const [idUsuarioActual, setIdUsuarioActual] = useState(null);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  
-  const mensajesRef = useRef(null);
+  const [archivo, setArchivo] = useState(null);
+  const [eliminando, setEliminando] = useState(null);
 
-  // Obtener ID del usuario actual desde el token
+  const mensajesRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  const toggleMenu = () => setMenuAbierto(prev => !prev);
+  const cerrarMenu = () => setMenuAbierto(false);
+
+  const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
+
   useEffect(() => {
     if (token) {
       const decoded = decodeToken(token);
       const idUsuario = decoded?.id_usuario || decoded?.Id_Usuario || decoded?.id || decoded?.ID;
-      
-      console.log("=== CHAT: DEBUG ===");
-      console.log(" Token decodificado:", decoded);
-      console.log(" ID Usuario extraído:", idUsuario);
-      
       if (idUsuario) {
         setIdUsuarioActual(idUsuario);
-      } else {
-        setError("No se pudo obtener el ID del usuario");
       }
     }
   }, [token]);
 
-  // Cargar usuarios cuando tengamos el ID
   useEffect(() => {
-    if (idUsuarioActual) {
-      cargarUsuarios();
-    }
+    if (idUsuarioActual) cargarUsuarios();
   }, [idUsuarioActual]);
 
-  // Cargar mensajes cuando se selecciona un usuario
   useEffect(() => {
     if (usuarioSeleccionado && idUsuarioActual) {
       cargarMensajes();
@@ -55,72 +51,29 @@ const Chat = () => {
     }
   }, [usuarioSeleccionado, idUsuarioActual]);
 
-  // Scroll automático al final de los mensajes
   useEffect(() => {
     if (mensajesRef.current) {
       mensajesRef.current.scrollTop = mensajesRef.current.scrollHeight;
     }
   }, [mensajes]);
 
-  // Cerrar menú con tecla ESC
   useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape' && menuAbierto) {
-        cerrarMenu();
-      }
-    };
-    
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setMenuAbierto(false);
-      }
-    };
-    
-    window.addEventListener('keydown', handleEsc);
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
-    
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [menuAbierto]);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
-  // Prevenir scroll del body cuando menú está abierto
-  useEffect(() => {
-    if (menuAbierto) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [menuAbierto]);
-
-  // Funciones
   const cargarUsuarios = async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await chatService.obtenerTodosLosUsuarios();
-      
-      console.log(" Respuesta usuarios:", response);
-      
       if (response.success) {
-        const usuariosFiltrados = response.data.filter(
-          user => {
-            const userId = user.id_usuario || user.Id_Usuario;
-            return userId != idUsuarioActual;
-          }
+        const filtrados = response.data.filter(
+          user => (user.id_usuario || user.Id_Usuario) != idUsuarioActual
         );
-        
-        console.log(" Usuarios cargados (sin usuario actual):", usuariosFiltrados.length);
-        setUsuarios(usuariosFiltrados);
+        setUsuarios(filtrados);
       }
     } catch (error) {
-      console.error(' Error al cargar usuarios:', error);
       setError('No se pudieron cargar los usuarios');
     } finally {
       setLoading(false);
@@ -129,74 +82,68 @@ const Chat = () => {
 
   const cargarMensajes = async () => {
     if (!usuarioSeleccionado || !idUsuarioActual) return;
-    
     try {
       const response = await chatService.obtenerMensajes(
-        idUsuarioActual, 
+        idUsuarioActual,
         usuarioSeleccionado.id_usuario || usuarioSeleccionado.Id_Usuario
       );
-      
-      console.log(" Respuesta mensajes:", response);
-      console.log(" Entre usuarios:", idUsuarioActual, "y", usuarioSeleccionado.id_usuario);
-      
       if (response.success && Array.isArray(response.data)) {
-        const mensajesFiltrados = response.data.filter(mensaje => {
-          const remitenteId = parseInt(mensaje.remitente_id);
-          const usuarioSelId = parseInt(usuarioSeleccionado.id_usuario || usuarioSeleccionado.Id_Usuario);
-          const usuarioActId = parseInt(idUsuarioActual);
-          
-          const esDelRemitente = remitenteId === usuarioActId;
-          const esDelDestinatario = remitenteId === usuarioSelId;
-          
-          return esDelRemitente || esDelDestinatario;
-        });
-        
-        console.log(" Mensajes filtrados:", mensajesFiltrados.length);
-        setMensajes(mensajesFiltrados);
+        setMensajes(response.data);
       } else {
         setMensajes([]);
       }
     } catch (error) {
-      console.error(' Error al cargar mensajes:', error);
       setMensajes([]);
+    }
+  };
+
+  const abrirSelectorArchivo = () => {
+    if (fileInputRef.current) fileInputRef.current.click();
+  };
+
+  const manejarArchivo = (e) => {
+    const file = e.target.files[0];
+    if (file) setArchivo(file);
+  };
+
+  const eliminarMensaje = async (mensajeId) => {
+    if (eliminando) return;
+    if (!window.confirm('¿Eliminar este mensaje para todos?')) return;
+    try {
+      setEliminando(mensajeId);
+      const response = await chatService.eliminarMensaje(mensajeId);
+      if (response.success) {
+        setMensajes(prev => prev.filter(m => m.id_Mensaje !== mensajeId));
+      }
+    } catch (error) {
+      console.error('Error al eliminar mensaje:', error);
+    } finally {
+      setEliminando(null);
     }
   };
 
   const enviarMensaje = async (e) => {
     e.preventDefault();
-    
-    if (!nuevoMensaje.trim() || !usuarioSeleccionado || !idUsuarioActual) return;
-    
+    if ((!nuevoMensaje.trim() && !archivo) || !usuarioSeleccionado || !idUsuarioActual) return;
     try {
       const destinatarioId = usuarioSeleccionado.id_usuario || usuarioSeleccionado.Id_Usuario;
-      
-      console.log(" Enviando mensaje:");
-      console.log("  De:", idUsuarioActual);
-      console.log("  Para:", destinatarioId);
-      console.log("  Texto:", nuevoMensaje);
-      
       const response = await chatService.enviarMensaje(
         idUsuarioActual,
         destinatarioId,
-        nuevoMensaje
+        nuevoMensaje,
+        archivo
       );
-      
-      console.log(" Respuesta envío:", response);
-      
       if (response.success) {
         setNuevoMensaje('');
-        setTimeout(() => {
-          cargarMensajes();
-        }, 100);
+        setArchivo(null);
+        cargarMensajes();
       }
     } catch (error) {
-      console.error(' Error al enviar mensaje:', error);
-      alert('Error al enviar el mensaje. Por favor, intenta de nuevo.');
+      console.error(error);
     }
   };
 
   const seleccionarUsuario = (usuario) => {
-    console.log(" Usuario seleccionado:", usuario);
     setUsuarioSeleccionado(usuario);
     setMensajes([]);
     cerrarMenu();
@@ -206,95 +153,120 @@ const Chat = () => {
     const primerNombre = usuario.primer_nombre || usuario.Primer_Nombre || '';
     const segundoNombre = usuario.segundo_nombre || usuario.Segundo_Nombre || '';
     const primerApellido = usuario.primer_apellido || usuario.Primer_Apellido || '';
-    
     return `${primerNombre} ${segundoNombre} ${primerApellido}`.trim();
   };
 
-  const toggleMenu = () => {
-    setMenuAbierto(!menuAbierto);
+  const descargarArchivo = async (urlCompleta, nombreArchivo) => {
+    try {
+      const response = await fetch(urlCompleta);
+      if (!response.ok) throw new Error('Error al descargar');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nombreArchivo || 'archivo';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar archivo:', error);
+      alert('No se pudo descargar el archivo');
+    }
   };
 
-  const cerrarMenu = () => {
-    setMenuAbierto(false);
-  };
+  const usuariosFiltrados = usuarios.filter(usuario =>
+    obtenerNombreCompleto(usuario).toLowerCase().includes(busqueda.toLowerCase())
+  );
 
-  // Filtrar usuarios según búsqueda
-  const usuariosFiltrados = usuarios.filter(usuario => {
-    const nombreCompleto = obtenerNombreCompleto(usuario).toLowerCase();
-    return nombreCompleto.includes(busqueda.toLowerCase());
-  });
-
-  // Si no hay token
   if (!token) {
-    return (
-      <div className="chat-wrapper">
-        <div style={{ textAlign: 'center', padding: '50px', color: '#64748b' }}>
-          Debes iniciar sesión para usar el chat
-        </div>
-      </div>
-    );
+    return <div className="chat-wrapper">Debes iniciar sesión</div>;
   }
 
   return (
     <div className="chat-wrapper">
-      {/* Overlay para cerrar menú en móvil */}
+
       {menuAbierto && (
-        <div 
-          className="overlay-mobile activo"
-          onClick={cerrarMenu}
-        ></div>
+        <div className="overlay-mobile activo" onClick={cerrarMenu}></div>
       )}
 
+      {/* Panel de usuarios MÓVIL */}
+      <div className={`panel-usuarios-mobile ${menuAbierto ? 'mostrar-mobile' : ''}`}>
+        <div className="panel-mobile-header">
+          <h6 className="titulo-panel">Chats</h6>
+          <button className="btn-cerrar-mobile" onClick={cerrarMenu}>✕</button>
+        </div>
+
+        <input
+          type="text"
+          className="buscador"
+          placeholder="Buscar..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+
+        {loading && <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Cargando usuarios...</div>}
+        {error && <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>{error}</div>}
+        {!loading && usuariosFiltrados.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>No se encontraron usuarios</div>
+        )}
+
+        <div className="usuarios-list-mobile">
+          {usuariosFiltrados.map((usuario) => {
+            const userId = usuario.id_usuario || usuario.Id_Usuario;
+            const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
+            return (
+              <div
+                key={userId}
+                className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
+                onClick={() => seleccionarUsuario(usuario)}
+              >
+                <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
+                <div>
+                  <strong>{obtenerNombreCompleto(usuario)}</strong>
+                  <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Contenido principal */}
       <div className="principal p-3">
         <div className="row">
-          {/* PANEL IZQUIERDO - SOLO DESKTOP/TABLET */}
-          <div className="col-lg-3 col-md-4 d-none d-md-block">
+
+          {/* PANEL IZQUIERDO - Lista de usuarios (escritorio) */}
+          <div className="col-lg-3 col-md-4">
             <div className="panel-usuarios">
               <h6 className="titulo-panel">Chats</h6>
-              <input 
-                type="text" 
-                className="buscador" 
-                placeholder="Buscar..." 
+
+              <input
+                type="text"
+                className="buscador"
+                placeholder="Buscar..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
               />
-              
-              {loading && (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
-                  Cargando usuarios...
-                </div>
-              )}
-              
-              {error && (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>
-                  {error}
-                </div>
-              )}
-              
+
+              {loading && <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Cargando usuarios...</div>}
+              {error && <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>{error}</div>}
               {!loading && usuariosFiltrados.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
-                  No se encontraron usuarios
-                </div>
+                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>No se encontraron usuarios</div>
               )}
-              
+
               {usuariosFiltrados.map((usuario) => {
                 const userId = usuario.id_usuario || usuario.Id_Usuario;
-                const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
-                
                 return (
-                  <div 
-                     key={userId}
-  className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
-  onClick={() => seleccionarUsuario(usuario)}
->
-
-  <Avatar
-    size={40}
-    src={usuario.foto_perfil || usuario.Foto_Perfil || null}
-  />
-  <div>
-    <strong>{obtenerNombreCompleto(usuario)}</strong>
-    <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
+                  <div
+                    key={userId}
+                    className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
+                    onClick={() => seleccionarUsuario(usuario)}
+                  >
+                    <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
+                    <div>
+                      <strong>{obtenerNombreCompleto(usuario)}</strong>
+                      <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
                     </div>
                   </div>
                 );
@@ -302,154 +274,160 @@ const Chat = () => {
             </div>
           </div>
 
-          {/* PANEL DERECHO */}
+          {/* PANEL DERECHO - Chat */}
           <div className="col-lg-9 col-md-8">
-            <div className="panel-chat ">
+            <div className="panel-chat">
               {usuarioSeleccionado ? (
                 <>
-                <div className="chat-header">
-  {isMobile && (
-    <button
-      type="button"
-      className="btn-toggle-funcionarios"
-      onClick={toggleMenu}
-      aria-label="Abrir menú de chats"
-    >
-      ☰
-    </button>
-  )}
-
-  {/* ✅ foto del usuario seleccionado en el header */}
-  <Avatar size={45} src={usuarioSeleccionado?.foto_perfil || usuarioSeleccionado?.Foto_Perfil || null} />
-  <h5>{obtenerNombreCompleto(usuarioSeleccionado)}</h5>
-</div>
-
-                  <div className="chat-mensaje" ref={mensajesRef}>
-                    {mensajes.length === 0 ? (
-                      <div style={{ textAlign: 'center', color: '#64748b', marginTop: '20px' }}>
-                        No hay mensajes aún. ¡Inicia la conversación!
-                      </div>
-                    ) : (
-                      mensajes.map((mensaje, index) => {
-                        const esMensajePropio = parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
-                        
-                        return (
-                          <div 
-                            key={`${mensaje.id_Mensaje}-${index}`}
-                            className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}
-                          >
-                            {mensaje.txt_mensaje}
-                            <div style={{ 
-                              fontSize: '10px', 
-                              marginTop: '4px', 
-                              opacity: 0.7 
-                            }}>
-                              {new Date(mensaje.fecha_hora).toLocaleTimeString('es-CO', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })
+                  {/* Header con usuario seleccionado */}
+                  <div className="chat-header">
+                    {isMobile && (
+                      <button
+                        type="button"
+                        className="btn-toggle-funcionarios"
+                        onClick={toggleMenu}
+                        aria-label="Abrir menú de chats"
+                      >
+                        ☰
+                      </button>
                     )}
+                    <Avatar size={45} src={usuarioSeleccionado?.foto_perfil || usuarioSeleccionado?.Foto_Perfil || null} />
+                    <h5>{obtenerNombreCompleto(usuarioSeleccionado)}</h5>
                   </div>
 
+                  {/* Área de mensajes */}
+                  <div className="chat-mensaje" ref={mensajesRef}>
+                    {mensajes.map((mensaje) => {
+                      const esMensajePropio = parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
+                      const BASE_URL = 'http://localhost:3000';
+
+                      return (
+                        <div
+                          key={mensaje.id_Mensaje}
+                          className={`mensaje-wrapper ${esMensajePropio ? 'propio' : 'ajeno'}`}
+                        >
+                          {esMensajePropio && (
+                            <button
+                              className="btn-eliminar-mensaje"
+                              onClick={() => eliminarMensaje(mensaje.id_Mensaje)}
+                              title="Eliminar mensaje"
+                              disabled={eliminando === mensaje.id_Mensaje}
+                            >
+                              <i className="bi bi-trash-fill"></i>
+                            </button>
+                          )}
+
+                          <div className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}>
+                            {mensaje.txt_mensaje && (
+                              <p style={{ margin: 0 }}>{mensaje.txt_mensaje}</p>
+                            )}
+
+                            {mensaje.url_archivo && (() => {
+                              const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
+                              const tipo = mensaje.tipo_de_archivo || '';
+                              const nombreArchivo = mensaje.url_archivo?.split('/').pop();
+
+                              if (tipo.startsWith('image/')) {
+                                return (
+                                  <div>
+                                    <img
+                                      src={urlCompleta}
+                                      alt="imagen"
+                                      style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '5px' }}
+                                    />
+                                    <br />
+                                    <button
+                                      onClick={() => descargarArchivo(urlCompleta, nombreArchivo)}
+                                      style={{ fontSize: '11px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: 0, marginTop: '4px' }}
+                                    >
+                                      Descargar imagen
+                                    </button>
+                                  </div>
+                                );
+                              }
+
+                              if (tipo === 'application/pdf') {
+                                return (
+                                  <button
+                                    onClick={() => descargarArchivo(urlCompleta, nombreArchivo)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: 0 }}
+                                  >
+                                    <i className="bi bi-file-earmark-pdf-fill"></i> Descargar PDF
+                                  </button>
+                                );
+                              }
+
+                              return (
+                                <button
+                                  onClick={() => descargarArchivo(urlCompleta, nombreArchivo)}
+                                  style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: 0 }}
+                                >
+                                  <i className="bi bi-file-earmark-fill"></i> Descargar archivo
+                                </button>
+                              );
+                            })()}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Formulario de envío */}
                   <form className="chat-enviar" onSubmit={enviarMensaje}>
-                    <button type="button" className="btn-archivo">
-                      <i className="bi bi-paperclip"></i>
+                    <button type="button" className="btn-archivo" onClick={abrirSelectorArchivo}>
+                      📎
                     </button>
-                    <input 
-                      type="text" 
-                      placeholder="Mensaje..." 
+
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      onChange={manejarArchivo}
+                    />
+
+                    {archivo && (
+                      <div className="archivo-preview">
+                        <span>📎 {archivo.name}</span>
+                        <button type="button" className="btn-eliminar-archivo" onClick={() => setArchivo(null)}>✕</button>
+                      </div>
+                    )}
+
+                    <input
+                      type="text"
+                      placeholder="Mensaje..."
                       value={nuevoMensaje}
                       onChange={(e) => setNuevoMensaje(e.target.value)}
                     />
+
                     <button type="submit" className="btn-enviar">
                       <i className="bi bi-send"></i>
                     </button>
                   </form>
                 </>
               ) : (
-                isMobile && (
-                  <div className="chat-empty">
-                    <button 
-                      className="btn btn-primary"
-                      onClick={toggleMenu}
-                      style={{
-                        background: '#2563eb',
-                        border: 'none',
-                        padding: '12px 24px',
-                        borderRadius: '8px',
-                        fontSize: '16px',
-                        color: 'white',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Ver lista de chats
-                    </button>
-                    <span>Selecciona un usuario para comenzar a chatear</span>
+                /* Estado vacío - siempre muestra el botón ☰ en móvil */
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  {isMobile && (
+                    <div className="chat-header">
+                      <button
+                        type="button"
+                        className="btn-toggle-funcionarios"
+                        onClick={toggleMenu}
+                        aria-label="Abrir menú de chats"
+                      >
+                        ☰
+                      </button>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
+                    <p>Selecciona un usuario para comenzar a chatear</p>
                   </div>
-                )
+                </div>
               )}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* PANEL DE USUARIOS PARA MÓVIL (FUNCIONAL) */}
-      <div className={`panel-usuarios-mobile ${menuAbierto ? 'mostrar-mobile' : ''}`}>
-        <div className="panel-mobile-header">
-          <h6 className="titulo-panel">Chats</h6>
-          <button className="btn-cerrar-mobile" onClick={cerrarMenu}>✕</button>
         </div>
-        <input 
-          type="text" 
-          className="buscador" 
-          placeholder="Buscar..." 
-          value={busqueda}
-          onChange={(e) => setBusqueda(e.target.value)}
-        />
-        
-        {loading && (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
-            Cargando usuarios...
-          </div>
-        )}
-        
-        {error && (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>
-            {error}
-          </div>
-        )}
-        
-        {!loading && usuariosFiltrados.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
-            No se encontraron usuarios
-          </div>
-        )}
-        
- <div className="usuarios-list-mobile">
-  {usuariosFiltrados.map((usuario) => {
-    const userId = usuario.id_usuario || usuario.Id_Usuario;
-    const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
-
-    return (
-      <div
-        key={userId}
-        className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
-        onClick={() => seleccionarUsuario(usuario)}
-      >
-        {/* ✅ antes tenías <img src={foto}> aquí */}
-        <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
-        <div>
-          <strong>{obtenerNombreCompleto(usuario)}</strong>
-          <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
-        </div>
-      </div>
-    );
-  })}
-</div>
       </div>
     </div>
   );

@@ -73,6 +73,8 @@ app.use("/perfil", perfilRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ── Frontend ──
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 app.use(express.static(path.join(__dirname, '../../04_Fronted_web/dist')));
 
 app.get('/{*path}', (req, res) => {
