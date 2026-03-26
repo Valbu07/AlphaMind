@@ -54,6 +54,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/fotos_Perfil", express.static(path.join(__dirname, "../fotos_Perfil")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use('/funcionarios', funcionarios);
 app.use('/auth', login);

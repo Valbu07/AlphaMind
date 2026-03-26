@@ -6,10 +6,10 @@ const chatController = {
     ChatModel.obtenerTodosLosUsuarios((err, results) => {
       if (err) {
         console.error('Error al obtener usuarios:', err);
-        return res.status(500).json({ 
-          success: false, 
+        return res.status(500).json({
+          success: false,
           message: 'Error al obtener usuarios',
-          error: err.message 
+          error: err.message
         });
       }
       res.json({ success: true, data: results });
@@ -19,157 +19,70 @@ const chatController = {
   // Obtener mensajes entre dos usuarios
   obtenerMensajes: (req, res) => {
     const { usuario1, usuario2 } = req.params;
-    
-    console.log('=== BACKEND: Obteniendo mensajes ===');
-    console.log('Usuario 1:', usuario1);
-    console.log('Usuario 2:', usuario2);
-    
     ChatModel.obtenerMensajesEntreUsuarios(usuario1, usuario2, (err, results) => {
       if (err) {
         console.error('Error al obtener mensajes:', err);
-        return res.status(500).json({ 
-          success: false, 
+        return res.status(500).json({
+          success: false,
           message: 'Error al obtener mensajes',
-          error: err.message 
+          error: err.message
         });
       }
-      
-      console.log('Mensajes encontrados:', results.length);
       res.json({ success: true, data: results });
     });
   },
 
   // Enviar archivo
-enviarArchivo: (req, res) => {
+  enviarArchivo: (req, res) => {
+    const { remitente_id, destinatario_id } = req.body;
+    const archivo = req.file;
 
-  const { remitente_id, destinatario_id } = req.body;
-  const archivo = req.file;
-  console.log("Archivo recibido:", req.file);
-
-  console.log('=== BACKEND: Enviando archivo ===');
-  console.log('De:', remitente_id);
-  console.log('Para:', destinatario_id);
-
-  if (!archivo) {
-    return res.status(400).json({
-      success: false,
-      message: "No se envió ningún archivo"
-    });
-  }
-
-const url = `uploads/${archivo.filename}`;
-  const tipo = archivo.mimetype;
-
-
-  ChatModel.crearMensaje("", (err, resultMensaje) => {
-
-    if (err) {
-      console.error("Error creando mensaje:", err);
-      return res.status(500).json({
-        success: false,
-        message: "Error al crear mensaje"
-      });
+    if (!archivo) {
+      return res.status(400).json({ success: false, message: "No se envió ningún archivo" });
     }
 
-    const mensajeId = resultMensaje.insertId;
+    const url = `uploads/${archivo.filename}`;
+    const tipo = archivo.mimetype;
 
-    ChatModel.crearConversacion(mensajeId, remitente_id, destinatario_id, (err2) => {
+    ChatModel.crearMensaje("", (err, resultMensaje) => {
+      if (err) return res.status(500).json({ success: false, message: "Error al crear mensaje" });
 
-      if (err2) {
-        console.error("Error creando conversación:", err2);
-        return res.status(500).json({
-          success: false,
-          message: "Error al registrar chat"
-        });
-      }
+      const mensajeId = resultMensaje.insertId;
 
-      ChatModel.guardarArchivo(url, tipo, (err3, resultArchivo) => {
+      ChatModel.crearConversacion(mensajeId, remitente_id, destinatario_id, (err2) => {
+        if (err2) return res.status(500).json({ success: false, message: "Error al registrar chat" });
 
-        if (err3) {
-          console.error("Error guardando archivo:", err3);
-          return res.status(500).json({
-            success: false,
-            message: "Error al guardar archivo"
+        ChatModel.guardarArchivo(url, tipo, (err3, resultArchivo) => {
+          if (err3) return res.status(500).json({ success: false, message: "Error al guardar archivo" });
+
+          const archivoId = resultArchivo.insertId;
+
+          ChatModel.adjuntarArchivoAMensaje(mensajeId, archivoId, (err4) => {
+            if (err4) return res.status(500).json({ success: false, message: "Error al adjuntar archivo" });
+
+            res.json({ success: true, message: "Archivo enviado correctamente", data: { mensajeId, archivo: url, tipo } });
           });
-        }
-
-        const archivoId = resultArchivo.insertId;
-
-        ChatModel.adjuntarArchivoAMensaje(mensajeId, archivoId, (err4) => {
-
-          if (err4) {
-            console.error("Error adjuntando archivo:", err4);
-            return res.status(500).json({
-              success: false,
-              message: "Error al adjuntar archivo"
-            });
-          }
-
-          res.json({
-            success: true,
-            message: "Archivo enviado correctamente",
-            data: {
-              mensajeId,
-              archivo: url,
-              tipo
-            }
-          });
-
         });
-
       });
-
     });
+  },
 
-  });
-
-},
-
-
+  // Enviar mensaje
   enviarMensaje: (req, res) => {
     const { remitente_id, destinatario_id, texto } = req.body;
-    
-    console.log('=== BACKEND: Enviando mensaje ===');
-    console.log('De:', remitente_id);
-    console.log('Para:', destinatario_id);
-    console.log('Texto:', texto);
-    
-    // Validación
+
     if (!remitente_id || !destinatario_id || !texto) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Faltan datos requeridos' 
-      });
+      return res.status(400).json({ success: false, message: 'Faltan datos requeridos' });
     }
-    
-    // 1. Crear el mensaje
+
     ChatModel.crearMensaje(texto, (err, resultMensaje) => {
-      if (err) {
-        console.error('Error al insertar mensaje:', err);
-        return res.status(500).json({ 
-          success: false, 
-          message: 'Error al crear mensaje',
-          error: err.message 
-        });
-      }
-      
+      if (err) return res.status(500).json({ success: false, message: 'Error al crear mensaje', error: err.message });
+
       const mensajeId = resultMensaje.insertId;
-      console.log('Mensaje creado con ID:', mensajeId);
-      
-      // 2. Crear AMBOS registros en chat (remitente Y destinatario)
+
       ChatModel.crearConversacion(mensajeId, remitente_id, destinatario_id, (err) => {
-        if (err) {
-          console.error('Error al crear conversación:', err);
-          return res.status(500).json({ 
-            success: false, 
-            message: 'Error al crear registro de chat',
-            error: err.message 
-          });
-        }
-        
-        console.log('✅ Conversación creada exitosamente');
-        
-        // 3. Retornar el mensaje creado
+        if (err) return res.status(500).json({ success: false, message: 'Error al crear registro de chat', error: err.message });
+
         res.status(201).json({
           success: true,
           message: 'Mensaje enviado correctamente',
@@ -184,26 +97,53 @@ const url = `uploads/${archivo.filename}`;
     });
   },
 
-  // Obtener último mensaje (opcional, para preview)
+  // Obtener último mensaje
   obtenerUltimoMensaje: (req, res) => {
     const { usuario1, usuario2 } = req.params;
-    
+
     ChatModel.obtenerUltimoMensaje(usuario1, usuario2, (err, results) => {
-      if (err) {
-        console.error('Error al obtener último mensaje:', err);
-        return res.status(500).json({ 
-          success: false, 
-          message: 'Error al obtener último mensaje',
-          error: err.message 
+      if (err) return res.status(500).json({ success: false, message: 'Error al obtener último mensaje', error: err.message });
+
+      res.json({ success: true, data: results.length > 0 ? results[0] : null });
+    });
+  },
+
+  // Eliminar mensaje 
+  eliminarMensaje: (req, res) => {
+    const { id } = req.params;
+    const usuarioActual = req.usuario.id_usuario || req.usuario.Id_Usuario || req.usuario.id;
+
+    console.log('=== ELIMINAR ===');
+    console.log('Token completo:', req.usuario);
+    console.log('usuarioActual extraído:', usuarioActual);
+
+
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: 'Falta el ID del mensaje' });
+    }
+
+    ChatModel.obtenerRemitenteMensaje(id, (err, results) => {
+      if (err || results.length === 0) {
+        return res.status(404).json({ success: false, message: 'Mensaje no encontrado' });
+      }
+
+      const remitenteReal = results[0].Usuario_id_Usuario;
+
+      if (parseInt(remitenteReal) !== parseInt(usuarioActual)) {
+        return res.status(403).json({
+          success: false,
+          message: 'No puedes eliminar mensajes de otros usuarios'
         });
       }
-      
-      res.json({ 
-        success: true, 
-        data: results.length > 0 ? results[0] : null 
+
+      ChatModel.eliminarMensaje(id, (err2) => {
+        if (err2) return res.status(500).json({ success: false, message: 'Error al eliminar mensaje' });
+
+        res.json({ success: true, message: 'Mensaje eliminado correctamente' });
       });
     });
-  }
-};
+  }  
 
+}; 
 module.exports = chatController;

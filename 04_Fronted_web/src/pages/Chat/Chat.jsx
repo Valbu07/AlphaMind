@@ -19,15 +19,15 @@ const Chat = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [archivo, setArchivo] = useState(null);
+  const [eliminando, setEliminando] = useState(null);
 
   const mensajesRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // ✅ Función cerrarMenu que faltaba
+  const toggleMenu = () => setMenuAbierto(prev => !prev);
   const cerrarMenu = () => setMenuAbierto(false);
 
-  // ✅ Función toggleMenu que faltaba
-  const toggleMenu = () => setMenuAbierto(prev => !prev);
+  const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
 
   useEffect(() => {
     if (token) {
@@ -40,9 +40,7 @@ const Chat = () => {
   }, [token]);
 
   useEffect(() => {
-    if (idUsuarioActual) {
-      cargarUsuarios();
-    }
+    if (idUsuarioActual) cargarUsuarios();
   }, [idUsuarioActual]);
 
   useEffect(() => {
@@ -59,7 +57,6 @@ const Chat = () => {
     }
   }, [mensajes]);
 
-  // ✅ Responsive: actualizar isMobile al redimensionar
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
@@ -71,10 +68,10 @@ const Chat = () => {
       setLoading(true);
       const response = await chatService.obtenerTodosLosUsuarios();
       if (response.success) {
-        const usuariosFiltrados = response.data.filter(
+        const filtrados = response.data.filter(
           user => (user.id_usuario || user.Id_Usuario) != idUsuarioActual
         );
-        setUsuarios(usuariosFiltrados);
+        setUsuarios(filtrados);
       }
     } catch (error) {
       setError('No se pudieron cargar los usuarios');
@@ -101,15 +98,27 @@ const Chat = () => {
   };
 
   const abrirSelectorArchivo = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const manejarArchivo = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setArchivo(file);
+    if (file) setArchivo(file);
+  };
+
+  const eliminarMensaje = async (mensajeId) => {
+    if (eliminando) return;
+    if (!window.confirm('¿Eliminar este mensaje para todos?')) return;
+    try {
+      setEliminando(mensajeId);
+      const response = await chatService.eliminarMensaje(mensajeId);
+      if (response.success) {
+        setMensajes(prev => prev.filter(m => m.id_Mensaje !== mensajeId));
+      }
+    } catch (error) {
+      console.error('Error al eliminar mensaje:', error);
+    } finally {
+      setEliminando(null);
     }
   };
 
@@ -137,7 +146,7 @@ const Chat = () => {
   const seleccionarUsuario = (usuario) => {
     setUsuarioSeleccionado(usuario);
     setMensajes([]);
-    if (isMobile) cerrarMenu(); // ✅ cerrar menú al seleccionar en móvil
+    cerrarMenu();
   };
 
   const obtenerNombreCompleto = (usuario) => {
@@ -147,37 +156,89 @@ const Chat = () => {
     return `${primerNombre} ${segundoNombre} ${primerApellido}`.trim();
   };
 
-  const usuariosFiltrados = usuarios.filter(usuario => {
-    const nombre = obtenerNombreCompleto(usuario).toLowerCase();
-    return nombre.includes(busqueda.toLowerCase());
-  });
+  const descargarArchivo = async (urlCompleta, nombreArchivo) => {
+    try {
+      const response = await fetch(urlCompleta);
+      if (!response.ok) throw new Error('Error al descargar');
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = nombreArchivo || 'archivo';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error al descargar archivo:', error);
+      alert('No se pudo descargar el archivo');
+    }
+  };
+
+  const usuariosFiltrados = usuarios.filter(usuario =>
+    obtenerNombreCompleto(usuario).toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   if (!token) {
-    return (
-      <div className="chat-wrapper">
-        Debes iniciar sesión
-      </div>
-    );
+    return <div className="chat-wrapper">Debes iniciar sesión</div>;
   }
 
   return (
     <div className="chat-wrapper">
 
-      {/* ✅ Overlay para cerrar menú en móvil */}
       {menuAbierto && (
-        <div
-          className="overlay-mobile activo"
-          onClick={cerrarMenu}
-        ></div>
+        <div className="overlay-mobile activo" onClick={cerrarMenu}></div>
       )}
 
+      {/* Panel de usuarios MÓVIL */}
+      <div className={`panel-usuarios-mobile ${menuAbierto ? 'mostrar-mobile' : ''}`}>
+        <div className="panel-mobile-header">
+          <h6 className="titulo-panel">Chats</h6>
+          <button className="btn-cerrar-mobile" onClick={cerrarMenu}>✕</button>
+        </div>
+
+        <input
+          type="text"
+          className="buscador"
+          placeholder="Buscar..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+        />
+
+        {loading && <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Cargando usuarios...</div>}
+        {error && <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>{error}</div>}
+        {!loading && usuariosFiltrados.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>No se encontraron usuarios</div>
+        )}
+
+        <div className="usuarios-list-mobile">
+          {usuariosFiltrados.map((usuario) => {
+            const userId = usuario.id_usuario || usuario.Id_Usuario;
+            const seleccionadoId = usuarioSeleccionado?.id_usuario || usuarioSeleccionado?.Id_Usuario;
+            return (
+              <div
+                key={userId}
+                className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
+                onClick={() => seleccionarUsuario(usuario)}
+              >
+                <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
+                <div>
+                  <strong>{obtenerNombreCompleto(usuario)}</strong>
+                  <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Contenido principal */}
       <div className="principal p-3">
         <div className="row">
 
-          {/* PANEL IZQUIERDO - Lista de usuarios */}
+          {/* PANEL IZQUIERDO - Lista de usuarios (escritorio) */}
           <div className="col-lg-3 col-md-4">
             <div className="panel-usuarios">
-
               <h6 className="titulo-panel">Chats</h6>
 
               <input
@@ -188,36 +249,37 @@ const Chat = () => {
                 onChange={(e) => setBusqueda(e.target.value)}
               />
 
+              {loading && <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Cargando usuarios...</div>}
+              {error && <div style={{ textAlign: 'center', padding: '20px', color: '#ef4444' }}>{error}</div>}
+              {!loading && usuariosFiltrados.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>No se encontraron usuarios</div>
+              )}
+
               {usuariosFiltrados.map((usuario) => {
                 const userId = usuario.id_usuario || usuario.Id_Usuario;
-                // ✅ Se usa foto_perfil del usuario, con fallback a null
-                const fotoPerfil = usuario.foto_perfil || usuario.Foto_Perfil || null;
-
                 return (
                   <div
                     key={userId}
-                    className="usuario"
+                    className={`usuario ${seleccionadoId === userId ? 'activo' : ''}`}
                     onClick={() => seleccionarUsuario(usuario)}
                   >
-                    {/* ✅ Reemplazado <img src={foto}> (variable indefinida) por Avatar */}
-                    <Avatar size={40} src={fotoPerfil} />
+                    <Avatar size={40} src={usuario.foto_perfil || usuario.Foto_Perfil || null} />
                     <div>
                       <strong>{obtenerNombreCompleto(usuario)}</strong>
-                      <small>{usuario.correo_electronico}</small>
+                      <small>{usuario.correo_electronico || usuario.Correo_Electronico}</small>
                     </div>
                   </div>
                 );
               })}
-
             </div>
           </div>
 
           {/* PANEL DERECHO - Chat */}
           <div className="col-lg-9 col-md-8">
             <div className="panel-chat">
-
               {usuarioSeleccionado ? (
                 <>
+                  {/* Header con usuario seleccionado */}
                   <div className="chat-header">
                     {isMobile && (
                       <button
@@ -229,76 +291,90 @@ const Chat = () => {
                         ☰
                       </button>
                     )}
-                    <Avatar
-                      size={45}
-                      src={usuarioSeleccionado?.foto_perfil || usuarioSeleccionado?.Foto_Perfil || null}
-                    />
+                    <Avatar size={45} src={usuarioSeleccionado?.foto_perfil || usuarioSeleccionado?.Foto_Perfil || null} />
                     <h5>{obtenerNombreCompleto(usuarioSeleccionado)}</h5>
                   </div>
 
+                  {/* Área de mensajes */}
                   <div className="chat-mensaje" ref={mensajesRef}>
-                    {mensajes.map((mensaje, index) => {
-                      const esMensajePropio =
-                        parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
+                    {mensajes.map((mensaje) => {
+                      const esMensajePropio = parseInt(mensaje.remitente_id) === parseInt(idUsuarioActual);
                       const BASE_URL = 'http://localhost:3000';
 
                       return (
                         <div
-                          key={index}
-                          className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}
+                          key={mensaje.id_Mensaje}
+                          className={`mensaje-wrapper ${esMensajePropio ? 'propio' : 'ajeno'}`}
                         >
-                          {mensaje.txt_mensaje && (
-                            <p style={{ margin: 0 }}>{mensaje.txt_mensaje}</p>
+                          {esMensajePropio && (
+                            <button
+                              className="btn-eliminar-mensaje"
+                              onClick={() => eliminarMensaje(mensaje.id_Mensaje)}
+                              title="Eliminar mensaje"
+                              disabled={eliminando === mensaje.id_Mensaje}
+                            >
+                              <i className="bi bi-trash-fill"></i>
+                            </button>
                           )}
 
-                          {mensaje.url_archivo && (() => {
-                            const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
-                            const tipo = mensaje.tipo_de_archivo || '';
+                          <div className={esMensajePropio ? 'mensaje-enviado' : 'mensaje-recibido'}>
+                            {mensaje.txt_mensaje && (
+                              <p style={{ margin: 0 }}>{mensaje.txt_mensaje}</p>
+                            )}
 
-                            if (tipo.startsWith('image/')) {
+                            {mensaje.url_archivo && (() => {
+                              const urlCompleta = `${BASE_URL}/${mensaje.url_archivo}`;
+                              const tipo = mensaje.tipo_de_archivo || '';
+                              const nombreArchivo = mensaje.url_archivo?.split('/').pop();
+
+                              if (tipo.startsWith('image/')) {
+                                return (
+                                  <div>
+                                    <img
+                                      src={urlCompleta}
+                                      alt="imagen"
+                                      style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '5px' }}
+                                    />
+                                    <br />
+                                    <button
+                                      onClick={() => descargarArchivo(urlCompleta, nombreArchivo)}
+                                      style={{ fontSize: '11px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: 0, marginTop: '4px' }}
+                                    >
+                                      Descargar imagen
+                                    </button>
+                                  </div>
+                                );
+                              }
+
+                              if (tipo === 'application/pdf') {
+                                return (
+                                  <button
+                                    onClick={() => descargarArchivo(urlCompleta, nombreArchivo)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: 0 }}
+                                  >
+                                    <i className="bi bi-file-earmark-pdf-fill"></i> Descargar PDF
+                                  </button>
+                                );
+                              }
+
                               return (
-                                <div>
-                                  <img
-                                    src={urlCompleta}
-                                    alt="imagen"
-                                    style={{ maxWidth: '200px', borderRadius: '8px', marginTop: '5px' }}
-                                  />
-                                  <br />
-                                  <a href={urlCompleta} download target="_blank" rel="noreferrer"
-                                    style={{ fontSize: '11px' }}>
-                                    Descargar imagen
-                                  </a>
-                                </div>
+                                <button
+                                  onClick={() => descargarArchivo(urlCompleta, nombreArchivo)}
+                                  style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px', background: 'none', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: 0 }}
+                                >
+                                  <i className="bi bi-file-earmark-fill"></i> Descargar archivo
+                                </button>
                               );
-                            }
-
-                            if (tipo === 'application/pdf') {
-                              return (
-                                <a href={urlCompleta} download target="_blank" rel="noreferrer"
-                                  style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                                  Descargar PDF
-                                </a>
-                              );
-                            }
-
-                            return (
-                              <a href={urlCompleta} download target="_blank" rel="noreferrer"
-                                style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
-                                Descargar archivo
-                              </a>
-                            );
-                          })()}
+                            })()}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
 
+                  {/* Formulario de envío */}
                   <form className="chat-enviar" onSubmit={enviarMensaje}>
-                    <button
-                      type="button"
-                      className="btn-archivo"
-                      onClick={abrirSelectorArchivo}
-                    >
+                    <button type="button" className="btn-archivo" onClick={abrirSelectorArchivo}>
                       📎
                     </button>
 
@@ -309,6 +385,13 @@ const Chat = () => {
                       onChange={manejarArchivo}
                     />
 
+                    {archivo && (
+                      <div className="archivo-preview">
+                        <span>📎 {archivo.name}</span>
+                        <button type="button" className="btn-eliminar-archivo" onClick={() => setArchivo(null)}>✕</button>
+                      </div>
+                    )}
+
                     <input
                       type="text"
                       placeholder="Mensaje..."
@@ -317,22 +400,30 @@ const Chat = () => {
                     />
 
                     <button type="submit" className="btn-enviar">
-                      ➤
+                      <i className="bi bi-send"></i>
                     </button>
                   </form>
-
-                  {archivo && (
-                    <div style={{ padding: "6px 15px", fontSize: "12px" }}>
-                      📎 {archivo.name}
-                    </div>
-                  )}
                 </>
               ) : (
-                <div className="chat-empty">
-                  Selecciona un usuario
+                /* Estado vacío - siempre muestra el botón ☰ en móvil */
+                <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  {isMobile && (
+                    <div className="chat-header">
+                      <button
+                        type="button"
+                        className="btn-toggle-funcionarios"
+                        onClick={toggleMenu}
+                        aria-label="Abrir menú de chats"
+                      >
+                        ☰
+                      </button>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#64748b' }}>
+                    <p>Selecciona un usuario para comenzar a chatear</p>
+                  </div>
                 </div>
               )}
-
             </div>
           </div>
 

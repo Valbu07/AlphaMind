@@ -4,6 +4,9 @@ const keys = require('../config/config').jwt;
 
 function verificarToken(req, res, next) {
   const authHeader = req.headers['authorization'];
+
+ console.log('Authorization header:', authHeader);
+
   if (!authHeader) {
     return res.status(403).json({
       success: false,
