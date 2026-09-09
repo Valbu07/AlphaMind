@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/tareas`;
+const API = `${import.meta.env.VITE_API_URL}/tareas`;
 
 const bearer = (t) => `Bearer ${t?.startsWith('Bearer ') ? t.slice(7) : t}`;
 

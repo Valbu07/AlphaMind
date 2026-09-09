@@ -1,7 +1,7 @@
 // src/services/reportesServices.js
 import axios from "axios";
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/reportes`;
+const API = `${import.meta.env.VITE_API_URL}/reportes`;
 
 
 

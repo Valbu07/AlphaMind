@@ -1,5 +1,5 @@
 // URL base de tu API
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/recuperar`;
+const API = `${import.meta.env.VITE_API_URL}/recuperar`;
 
 
 
