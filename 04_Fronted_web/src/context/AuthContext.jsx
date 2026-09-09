@@ -38,9 +38,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (token, user) => {
-    localStorage.setItem("token", token);
+    const cleanToken = token?.startsWith("Bearer ") ? token.slice(7) : token;
+    localStorage.setItem("token", cleanToken);
     localStorage.setItem("user", JSON.stringify(user));
-    setAuth({ token, user });
+    setAuth({ token: cleanToken, user });
     console.log('[AuthContext] Token y usuario guardados exitosamente');
   };
 

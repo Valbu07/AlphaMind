@@ -35,7 +35,8 @@ export function useNotifications(token) {
       ? token.slice(7)
       : token;
 
-    socket = io("http://52.21.74.39:3000", {
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+    socket = io(API_URL, {
   auth: { token: tokenLimpio },
 });
 

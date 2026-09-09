@@ -1,13 +1,15 @@
 import axios from 'axios';
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/tareas`;
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/tareas`;
+
+const bearer = (t) => `Bearer ${t?.startsWith('Bearer ') ? t.slice(7) : t}`;
 
 export const actividadesService = {
   // Obtener todas las actividades
   getAll: async (token) => {
     const { data } = await axios.get(API, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': bearer(token)
       }
     });
     return data;
@@ -17,7 +19,7 @@ export const actividadesService = {
   getAsignadasAMi: async (token, id_usuario) => {
     const { data } = await axios.get(`${API}/asignadas-a-mi/${id_usuario}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': bearer(token)
       }
     });
     return data;
@@ -27,7 +29,7 @@ export const actividadesService = {
   getByFuncionario: async (token, num_documento) => {
     const { data } = await axios.get(`${API}/${num_documento}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': bearer(token)
       }
     });
     return data;
@@ -37,7 +39,7 @@ export const actividadesService = {
   create: async (token, actividadData) => {
     const { data } = await axios.post(`${API}/crearTarea`, actividadData, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': bearer(token),
         'Content-Type': 'application/json'
       }
     });
@@ -48,7 +50,7 @@ export const actividadesService = {
   update: async (token, id_actividad, actividadData) => {
     const { data } = await axios.put(`${API}/editarTarea/${id_actividad}`, actividadData, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': bearer(token),
         'Content-Type': 'application/json'
       }
     });
@@ -59,7 +61,7 @@ export const actividadesService = {
   delete: async (token, id_actividad) => {
     const { data } = await axios.delete(`${API}/${id_actividad}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': bearer(token)
       }
     });
     return data;
@@ -72,7 +74,7 @@ export const actividadesService = {
       {},
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': bearer(token),
           'Content-Type': 'application/json'
         }
       }
@@ -84,7 +86,7 @@ export const actividadesService = {
   getActividadesCalendario: async (token, id_usuario) => {
     const { data } = await axios.get(`${API}/asignadas-a-mi/${id_usuario}`, {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': bearer(token)
       }
     });
     

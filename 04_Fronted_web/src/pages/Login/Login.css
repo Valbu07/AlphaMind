@@ -268,11 +268,57 @@
 .lp-success { background: #dcfce7; color: #16a34a; }
 
 .lp-footer-note {
-  margin-top: 40px;
+  margin-top: 24px;
   font-size: 11px;
   color: #9aa0b4;
   text-align: center;
 }
+
+/* ─── Burbuja demo ─────────────────────────────── */
+.lp-demo {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border: 1.5px dashed #f7a840;
+  border-radius: 12px;
+  background: #fff8ec;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lp-demo-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #92600a;
+  margin: 0;
+}
+.lp-demo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+  color: #111318;
+}
+.lp-demo-row strong { display: block; font-size: 12px; }
+.lp-demo-row code {
+  font-family: monospace;
+  font-size: 12.5px;
+  background: #fff;
+  border: 1px solid #f0d9ac;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+.lp-demo-btn {
+  border: none;
+  border-radius: 8px;
+  background: #f7a840;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.lp-demo-btn:hover { background: #e8920a; }
 
 /* ─── Keyframes ──────────────────────────────────── */
 @keyframes lp-rise {

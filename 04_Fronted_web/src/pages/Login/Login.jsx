@@ -13,6 +13,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { authService } from "../../services/authService";
 
 const SLIDES = [Admin1, Trabajador1, Admin2, Trabajador2];
+console.log(SLIDES);
 
 export default function Login() {
   const navigate = useNavigate();
@@ -35,14 +36,18 @@ export default function Login() {
     setCargando(true);
     setMensaje("");
     try {
-      const data = await authService.login({ num_documento, contraseña });
+      const doc = num_documento.trim();
+      if (!doc || !contraseña) throw new Error("Ingresa documento y contraseña");
+      const data = await authService.login({ num_documento: doc, contraseña });
       if (!data.body?.token) throw new Error("No se recibió el token del servidor");
       login(data.body.token, data.body.usuario || { num_documento });
       setMensaje("ok");
       setTimeout(() => navigate("/actividades"), 600);
     } catch (error) {
       if (error.response) {
-        setMensaje(error.response.data.body || error.response.data.message || "Credenciales incorrectas");
+        const status = error.response.status;
+        const body = error.response.data?.body || error.response.data?.message;
+        setMensaje(typeof body === 'string' ? body : (status === 401 ? "Documento o contraseña incorrectos" : "Credenciales incorrectas"));
       } else if (error.request) {
         setMensaje("Sin conexión con el servidor");
       } else {
@@ -190,6 +195,37 @@ export default function Login() {
               </div>
             )}
           </form>
+
+          {/* ── Burbuja demo ── */}
+          <div className="lp-demo">
+            <p className="lp-demo-title">Este es un demo — usa estas credenciales</p>
+            <div className="lp-demo-row">
+              <div>
+                <strong>Admin</strong>
+                <code>1001001001 / admin123</code>
+              </div>
+              <button
+                type="button"
+                className="lp-demo-btn"
+                onClick={() => { setDocumento("1001001001"); setContraseña("admin123"); }}
+              >
+                Usar
+              </button>
+            </div>
+            <div className="lp-demo-row">
+              <div>
+                <strong>Funcionario</strong>
+                <code>1001001003 / admin123</code>
+              </div>
+              <button
+                type="button"
+                className="lp-demo-btn"
+                onClick={() => { setDocumento("1001001003"); setContraseña("admin123"); }}
+              >
+                Usar
+              </button>
+            </div>
+          </div>
 
           <p className="lp-footer-note">© {new Date().getFullYear()} Cediplus — Todos los derechos reservados</p>
         </div>

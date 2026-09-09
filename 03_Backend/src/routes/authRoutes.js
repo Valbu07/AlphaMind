@@ -5,16 +5,22 @@ const respuesta = require("../utils/repuesta");
 router.post('/login', async (req, res) => {
   try {
   
-    const { funcionario, usuario } = req.body; //tomamos los dos elementos y los guardamos 
-    const token = await controlador.login( //segun el controlador miramos si esta bien o mal 
-      funcionario.num_documento,  // parametros khe vamos a pasar
-      usuario.contraseña         
+    const { funcionario, usuario } = req.body || {};
+    const num_documento = String(funcionario?.num_documento ?? '').trim();
+    const contraseña = String(usuario?.contraseña ?? '');
+    if (!num_documento || !contraseña) {
+      return respuesta.error(req, res, 'Documento y contraseña son requeridos', 400);
+    }
+    const token = await controlador.login(
+      num_documento,
+      contraseña
     );
-    respuesta.success(req, res, token, 200); // si fue exitosa mandamos el token 
+    respuesta.success(req, res, token, 200); 
 
   } catch (error) {
-    console.log("Error en login:", error);
-    respuesta.error(req, res, 'Error con las credenciales', 500);
+    console.log("Error en login:", error.message);
+    const msg = /no existe|incorrecta/i.test(error.message || '') ? error.message : 'Error con las credenciales';
+    respuesta.error(req, res, msg, 401);
   }
 });
 

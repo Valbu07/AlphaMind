@@ -1,5 +1,5 @@
 // URL base de tu API
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/recuperar`;
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/recuperar`;
 
 
 
@@ -45,7 +45,7 @@ export const recuperarContrasena = async (numDocumento) => {
     console.error('Error completo:', error);
     
     if (error.message.includes('Failed to fetch')) {
-      throw new Error('No se puede conectar con el servidor. Verifica que esté ejecutándose en http://localhost:3000');
+      throw new Error('No se puede conectar con el servidor. Verifica que esté ejecutándose en http://localhost:3001');
     }
     
     throw error;

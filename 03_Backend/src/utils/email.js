@@ -58,7 +58,7 @@ async function enviarContrasena(correoDestino, nombre, contrasenaTemporal) {
               <p>Si no solicitaste este cambio, contacta inmediatamente al administrador del sistema.</p>
               
               <div style="text-align: center; margin-top: 30px;">
-                <a href="http://localhost:5173" style="background: #fc9222; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                <a href="http://localhost:3000" style="background: #fc9222; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">
                   Ir a Iniciar Sesión
                 </a>
               </div>

@@ -1,13 +1,13 @@
 import axios from 'axios';
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/funcionarios`;
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/funcionarios`;
 
 
 
-// obtener headers con token
+// obtener headers con token (acepta con o sin prefijo Bearer)
 const getHeaders = (token) => ({
   'Content-Type': 'application/json',
-  'Authorization': token
+  'Authorization': token?.startsWith('Bearer ') ? token : `Bearer ${token}`
 });
 
 export const funcionariosService = {

@@ -10,7 +10,7 @@ import {
   BsClipboardData, BsChatDots, BsBoxArrowRight, BsGear,
 } from "react-icons/bs";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
 const DEFAULT_AVATAR = "/default-avatar.png";
 
 export default function Navbar() {

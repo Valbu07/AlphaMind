@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/auth`;
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/auth`;
 
 
 export const authService = {
@@ -8,7 +8,8 @@ export const authService = {
   login: async ({ num_documento, contraseña }) => {
     try {
       console.log('Enviando credenciales:', { num_documento });
-
+      console.log('VITE_API_URL =', import.meta.env.VITE_API_URL);
+console.log('API =', API);
       const { data } = await axios.post(`${API}/login`, {
         funcionario: { num_documento },
         usuario: { contraseña }

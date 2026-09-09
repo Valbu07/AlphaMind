@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
+const bearer = (t) => (t?.startsWith('Bearer ') ? t : `Bearer ${t}`);
 
 
 export const subirFotoPerfil = async (file, token) => {
@@ -9,7 +11,7 @@ export const subirFotoPerfil = async (file, token) => {
 
   const { data } = await axios.post(`${API}/foto-perfil`, formData, {
     headers: {
-      Authorization: token,
+      Authorization: bearer(token),
       "Content-Type": "multipart/form-data",
     },
   });
@@ -19,7 +21,7 @@ export const subirFotoPerfil = async (file, token) => {
 
 export const eliminarFotoPerfil = async (token) => {
   const { data } = await axios.delete(`${API}/foto-perfil`, {
-    headers: { Authorization: token },
+    headers: { Authorization: bearer(token) },
   });
   return data.body;
 };
@@ -29,7 +31,7 @@ export const cambiarContrasena = async ({ contrasena_actual, nueva_contrasena },
   const { data } = await axios.put(
     `${API}/perfil/cambiar-contrasena`,
     { contrasena_actual, nueva_contrasena },
-    { headers: { Authorization: token } }
+    { headers: { Authorization: bearer(token) } }
   );
   return data;
 };
@@ -39,7 +41,7 @@ export const cambiarContrasenaAdmin = async ({ id_usuario_objetivo, nueva_contra
   const { data } = await axios.put(
     `${API}/perfil/cambiar-contrasena-admin`,
     { id_usuario_objetivo, nueva_contrasena },
-    { headers: { Authorization: token } }
+    { headers: { Authorization: bearer(token) } }
   );
   return data;
 };

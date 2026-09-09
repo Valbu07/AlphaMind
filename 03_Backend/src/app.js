@@ -36,21 +36,19 @@ const swaggerOptions = {
         },
       },
     },
-    servers: [{ url: "http://52.21.74.39:3000" }],
+    servers: [{ url: "http://localhost:3001" }],
   },
   apis: ["./src/routes/*.js"],
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-app.set('port', config.app.port || 3000);
+app.set('port', config.app.port || 3001);
 
 app.use(cors({
   origin: [
-    'http://localhost:5173',
-    'http://52.21.74.39',
-    'http://52.21.74.39:3000',
-    'http://52.21.74.39:5173'
+    'http://localhost:3000',
+    'http://localhost:3001',
   ],
   credentials: true
 }));

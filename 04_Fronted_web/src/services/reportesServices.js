@@ -1,14 +1,14 @@
 // src/services/reportesServices.js
 import axios from "axios";
 
-const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/reportes`;
+const API = `${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/reportes`;
 
 
 
 const getToken = () => {
-  const token = localStorage.getItem('token');
-  if (!token) throw new Error("No hay sesión activa. Inicia sesión nuevamente.");
-  return token;
+  const raw = localStorage.getItem('token');
+  if (!raw) throw new Error("No hay sesión activa. Inicia sesión nuevamente.");
+  return raw.startsWith('Bearer ') ? raw : `Bearer ${raw}`;
 };
 
 const estructuraVacia = {

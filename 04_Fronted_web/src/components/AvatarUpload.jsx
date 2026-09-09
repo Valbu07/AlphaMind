@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { subirFotoPerfil, eliminarFotoPerfil } from "../services/perfilService";
 import { BsCameraFill } from "react-icons/bs";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:3000"; // 
+const API = import.meta.env.VITE_API_URL || "http://localhost:3001"; // 
 const DEFAULT_AVATAR = "/default-avatar.png";
 
 export default function AvatarUpload() {
