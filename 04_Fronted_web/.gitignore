@@ -9,8 +9,6 @@ lerna-debug.log*
 03_Backend/dist/
 ngrok.exe
 node_modules
-dist
-dist-ssr
 *.local
 
 # Editor directories and files
