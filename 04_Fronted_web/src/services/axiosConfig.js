@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-
+console.log(API_URL)
 const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
@@ -10,7 +10,6 @@ const axiosInstance = axios.create({
   },
 });
 
-// Interceptor para agregar el token a cada petición
 axiosInstance.interceptors.request.use(
   (config) => {
     const stored = localStorage.getItem('token');
