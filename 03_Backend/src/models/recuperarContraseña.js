@@ -1,5 +1,5 @@
 const conexion = require("../config/db");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 /**
  * Busca funcionario por documento
